@@ -12,8 +12,12 @@ const navLinks = [
   { id: 'contact', labelId: 'Kontak', labelEn: 'Contact' },
 ];
 
-export default function Navbar() {
-  const [lang, setLang] = useState<'id' | 'en'>('id');
+interface NavbarProps {
+  lang: 'id' | 'en';
+  setLang: (lang: 'id' | 'en') => void;
+}
+
+export default function Navbar({ lang, setLang }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
