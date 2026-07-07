@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
+import AboutSection from './components/AboutSection';
 
 type Lang = 'id' | 'en';
 
@@ -13,6 +14,7 @@ export default function Home() {
     <main>
       <Navbar lang={lang} setLang={setLang} />
       <HeroSection lang={lang} />
+      <AboutSection lang={lang} />
     </main>
   );
 }
