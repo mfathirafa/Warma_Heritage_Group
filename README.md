@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Warma Heritage Group — Official Website
 
-## Getting Started
+![Status](https://img.shields.io/badge/Status-In%20Development-yellow)
+![Next.js](https://img.shields.io/badge/Next.js-15-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-4-06B6D4)
 
-First, run the development server:
+Website resmi **Warma Heritage Group**, sebuah holding company yang membawahi 6 anak perusahaan berbasis warisan budaya Indonesia. Dibangun sebagai single long-page landing page dengan dukungan dual language (Indonesia & English) dan blog terpisah untuk SEO.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## Anak Perusahaan
+
+| No | Perusahaan | Bidang |
+|----|-----------|--------|
+| 1 | Karya Rotan Indonesia | Produksi & ekspor produk rotan |
+| 2 | Rattan Export House Indonesia | Ekspor rotan ke pasar internasional |
+| 3 | Kriya Kayu Nusantara | Kerajinan kayu berbasis kearifan lokal |
+| 4 | Nada Upacara Bali | Penyedia kebutuhan upacara adat Bali |
+| 5 | Bali Menari | Seni pertunjukan & tari tradisional Bali |
+| 6 | Niaga Rasa Indonesia | Kuliner berbasis cita rasa Nusantara |
+
+---
+
+## Tech Stack
+
+- **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS v4
+- **Font:** Inter (body) + Playfair Display (heading)
+- **Deployment:** Vercel *(coming soon)*
+
+---
+
+## Struktur Halaman
+
+```
+/                 → Landing page (single long-page)
+  ├── Navbar      → Sticky, dual language toggle ID/EN, anchor scroll
+  ├── Hero        → Headline, tagline, CTA WhatsApp
+  ├── About       → Profil Warma Heritage Group
+  ├── Founder     → Profil Mahotama Warmasuta
+  ├── Companies   → 6 anak perusahaan (card grid)
+  ├── Services    → Layanan & keunggulan
+  ├── Impact      → Social impact & kegiatan sosial
+  ├── CTA         → Ajakan kontak via WhatsApp
+  └── Footer      → Kontak, alamat, copyright
+
+/blog             → Halaman blog terpisah (untuk SEO)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Metodologi Pengembangan
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Proyek ini menggunakan **Iterative-Incremental SDLC** dengan 6 fase:
 
-## Learn More
+| Fase | Keterangan | Status |
+|------|-----------|--------|
+| 1. Planning | Requirement & brief | ✅ Selesai |
+| 2. Design | Wireframe & design system | 🟡 Sedang berjalan |
+| 3. Development | Coding komponen | ⏳ Belum mulai |
+| 4. Testing | Responsive & functional test | ⏳ Belum mulai |
+| 5. Deployment | Build & deploy ke hosting | ⏳ Belum mulai |
+| 6. Maintenance | Monitoring & dokumentasi | ⏳ Belum mulai |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Cara Menjalankan Lokal
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Clone repo
+git clone https://github.com/mfathirafa/Warma_Heritage_Group.git
 
-## Deploy on Vercel
+# Masuk ke folder project
+cd Warma_Heritage_Group/warma-heritage-group
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Install dependencies
+npm install
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Jalankan dev server
+npm run dev
+```
+
+Buka [http://localhost:3000](http://localhost:3000) di browser.
+
+---
+
+## Kontak Perusahaan
+
+- **Email:** WarmaGroup@gmail.com
+- **WhatsApp:** +62 812-3966-9880
+- **Alamat:** Jalan Tukad Yeh Aya IX No. 90, Denpasar, Bali 80226
+- **Director:** Mahotama Warmasuta
+
+---
+
+## Developer
+
+Dikembangkan oleh **Muhammad Fathi Rafa** sebagai bagian dari program Web Developer Internship di Warma Heritage Group (Juli – Oktober 2026).
