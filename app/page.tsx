@@ -6,6 +6,7 @@ import HeroSection from './components/HeroSection';
 import AboutSection from './components/AboutSection';
 import FounderSection from './components/FounderSection';
 import CompaniesSection from './components/CompaniesSection';
+import ServicesSection from './components/ServicesSection';
 
 type Lang = 'id' | 'en';
 
@@ -19,6 +20,7 @@ export default function Home() {
       <AboutSection lang={lang} />
       <FounderSection lang={lang} />
       <CompaniesSection lang={lang} />
+      <ServicesSection lang={lang} />
     </main>
   );
 }
