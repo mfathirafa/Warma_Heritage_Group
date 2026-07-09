@@ -10,6 +10,7 @@ const navLinks = [
   { id: 'services', labelId: 'Layanan', labelEn: 'Services' },
   { id: 'impact', labelId: 'Dampak Sosial', labelEn: 'Social Impact' },
   { id: 'contact', labelId: 'Kontak', labelEn: 'Contact' },
+  { id: 'blog', labelId: 'Blog', labelEn: 'Blog'},
 ];
 
 interface NavbarProps {
@@ -30,6 +31,10 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
 
   // Smooth scroll ke section
   const scrollToSection = (id: string) => {
+    if (id === 'blog') {
+      window.location.href = '/blog';
+      return;
+    }
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
     setMenuOpen(false);
