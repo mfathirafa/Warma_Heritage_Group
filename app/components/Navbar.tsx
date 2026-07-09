@@ -107,9 +107,10 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
 
           {/* Mobile hamburger */}
           <button
-            className="md:hidden flex flex-col gap-1.5"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
+              aria-label={lang === 'id' ? 'Buka menu navigasi' : 'Open navigation menu'}
+              className="md:hidden flex flex-col gap-1.5"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
             <span className={`block w-5 h-0.5 bg-black transition-all ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
             <span className={`block w-5 h-0.5 bg-black transition-all ${menuOpen ? 'opacity-0' : ''}`} />
             <span className={`block w-5 h-0.5 bg-black transition-all ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
