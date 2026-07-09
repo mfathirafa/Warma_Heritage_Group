@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
@@ -21,6 +22,7 @@ interface NavbarProps {
 export default function Navbar({ lang, setLang }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
 
   // Detect scroll untuk shadow navbar
   useEffect(() => {
@@ -32,9 +34,16 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
   // Smooth scroll ke section
   const scrollToSection = (id: string) => {
     if (id === 'blog') {
-      window.location.href = '/blog';
+      router.push('/blog');
+      setMenuOpen(false);
       return;
     }
+
+    if (window.location.pathname !== '/') {
+      window.location.href = `/#${id}`;
+      return;
+    }
+
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
     setMenuOpen(false);

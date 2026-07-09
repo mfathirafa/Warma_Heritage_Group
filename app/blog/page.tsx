@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
@@ -43,9 +43,19 @@ export default function BlogPage() {
   const [lang, setLang] = useState<Lang>('id');
   const isId = lang === 'id';
 
+  useEffect(() => {
+    const saved = localStorage.getItem('lang') as Lang;
+    if (saved) setLang(saved);
+  }, []);
+
+  const handleSetLang = (newLang: Lang) => {
+    setLang(newLang);
+    localStorage.setItem('lang', newLang);
+  };
+
   return (
     <main>
-      <Navbar lang={lang} setLang={setLang} />
+      <Navbar lang={lang} setLang={handleSetLang} />
 
       {/* Header */}
       <section className="w-full bg-gray-50 pt-[72px] py-24 px-8">

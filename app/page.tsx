@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import AboutSection from './components/AboutSection';
@@ -16,9 +16,19 @@ type Lang = 'id' | 'en';
 export default function Home() {
   const [lang, setLang] = useState<Lang>('id');
 
+  useEffect(() => {
+    const saved = localStorage.getItem('lang') as Lang;
+    if (saved) setLang(saved);
+  }, []);
+
+  const handleSetLang = (newLang: Lang) => {
+    setLang(newLang);
+    localStorage.setItem('lang', newLang);
+  };
+
   return (
     <main>
-      <Navbar lang={lang} setLang={setLang} />
+      <Navbar lang={lang} setLang={handleSetLang} />
       <HeroSection lang={lang} />
       <AboutSection lang={lang} />
       <FounderSection lang={lang} />
