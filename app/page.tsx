@@ -7,6 +7,7 @@ import AboutSection from './components/AboutSection';
 import FounderSection from './components/FounderSection';
 import CompaniesSection from './components/CompaniesSection';
 import ServicesSection from './components/ServicesSection';
+import SocialImpactSection from './components/SocialImpactSection';
 
 type Lang = 'id' | 'en';
 
@@ -21,6 +22,7 @@ export default function Home() {
       <FounderSection lang={lang} />
       <CompaniesSection lang={lang} />
       <ServicesSection lang={lang} />
+      <SocialImpactSection lang={lang} />
     </main>
   );
 }
