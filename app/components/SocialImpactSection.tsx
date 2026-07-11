@@ -36,7 +36,7 @@ export default function SocialImpactSection({ lang }: SocialImpactSectionProps) 
   return (
     <section
       id="impact"
-      className="w-full bg-gray-900 py-24 px-8"
+      className="w-full bg-gray-100 py-24 px-8"
     >
       <div className="max-w-[1440px] mx-auto">
 
@@ -45,7 +45,7 @@ export default function SocialImpactSection({ lang }: SocialImpactSectionProps) 
           <p className="text-xs tracking-[0.2em] text-gray-400 uppercase mb-3">
             {isId ? 'Dampak Sosial' : 'Social Impact'}
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-white">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
             {isId ? 'Kontribusi Kami untuk Masyarakat' : 'Our Contribution to Society'}
           </h2>
         </div>
@@ -58,20 +58,20 @@ export default function SocialImpactSection({ lang }: SocialImpactSectionProps) 
               className="flex flex-col gap-6"
             >
               {/* Placeholder foto */}
-              <div className="w-full aspect-square bg-gray-700 flex items-center justify-center">
+              <div className="w-full aspect-square bg-gray-300 flex items-center justify-center">
                 <p className="text-gray-500 text-xs">[ Foto Kegiatan ]</p>
               </div>
 
               {/* Info */}
               <div className="flex flex-col gap-3">
-                <span className="text-xs text-gray-500 tracking-widest">
+                <span className="text-xs text-gray-400 tracking-widest">
                   0{index + 1}
                 </span>
-                <h3 className="text-base font-bold text-white">
+                <h3 className="text-base font-bold text-gray-900">
                   {isId ? impact.titleId : impact.titleEn}
                 </h3>
-                <div className="w-8 h-px bg-gray-600" />
-                <p className="text-sm text-gray-400 leading-relaxed">
+                <div className="w-8 h-px bg-gray-300" />
+                <p className="text-sm text-gray-500 leading-relaxed">
                   {isId ? impact.descId : impact.descEn}
                 </p>
               </div>

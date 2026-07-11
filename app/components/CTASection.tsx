@@ -47,11 +47,11 @@ export default function CTASection({ lang }: CTASectionProps) {
         </button>
 
         {/* Info kontak */}
-        <div className="flex flex-col md:flex-row gap-6 mt-4 text-sm text-gray-400">
+        <div className="flex flex-col md:flex-row gap-6 mt-4 text-sm text-gray-500">
           <span>WarmaGroup@gmail.com</span>
-          <span className="hidden md:block text-gray-200">|</span>
+          <span className="hidden md:block text-gray-300">|</span>
           <span>+62 812-3966-9880</span>
-          <span className="hidden md:block text-gray-200">|</span>
+          <span className="hidden md:block text-gray-300">|</span>
           <span>Jl. Tukad Yeh Aya IX No. 90, Denpasar, Bali</span>
         </div>
       </div>

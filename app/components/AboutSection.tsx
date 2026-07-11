@@ -1,7 +1,5 @@
 'use client';
 
-import Image from 'next/image';
-
 type Lang = 'id' | 'en';
 
 interface AboutSectionProps {
@@ -12,14 +10,18 @@ const content = {
   id: {
     label: 'Tentang Kami',
     headline: 'Warma Heritage Group',
-    body: 'Warma Heritage Group adalah perusahaan induk yang berfokus pada penciptaan ekosistem bisnis yang sehat, bersih, dan berkelanjutan. Dengan pendekatan berbasis warisan budaya Indonesia, kami membangun perusahaan yang tidak hanya menguntungkan secara ekonomi, tetapi juga memberikan dampak positif bagi masyarakat dan lingkungan.',
-    values: ['Sustainability', 'Heritage', 'Integrity'],
+    body1: 'Perusahaan induk multi-industri yang berkomitmen membangun bisnis berkelanjutan yang terinspirasi oleh kekayaan warisan Indonesia. Melalui berbagai unit usaha, kami menghadirkan produk, layanan, dan peluang yang menghubungkan potensi lokal dengan pasar global.',
+    body2: 'Seluruh perusahaan dalam grup kami dipersatukan oleh nilai Willpower, Adaptability, Responsibility, Mastery, dan Advancement. Prinsip yang membentuk cara kami bertumbuh, berkolaborasi, dan menciptakan nilai jangka panjang.',
+    body3: 'Kami percaya bahwa bisnis seharusnya memberikan lebih dari sekadar pertumbuhan ekonomi. Bisnis juga harus memperkuat komunitas, mendukung talenta lokal, dan menciptakan dampak positif yang berkelanjutan bagi generasi mendatang.',
+    values: ['Willpower', 'Adaptability', 'Responsibility', 'Mastery', 'Advancement'],
   },
   en: {
     label: 'About Us',
     headline: 'Warma Heritage Group',
-    body: 'Warma Heritage Group is a holding company focused on creating a healthy, clean, and sustainable business ecosystem. Rooted in Indonesian cultural heritage, we build companies that are not only economically profitable but also create positive impact for society and the environment.',
-    values: ['Sustainability', 'Heritage', 'Integrity'],
+    body1: 'A multi-industry holding company committed to building sustainable businesses inspired by Indonesia\'s rich heritage. Through a diverse portfolio of companies, we create products, services, and opportunities that connect local strengths with global markets.',
+    body2: 'Our businesses are guided by a shared commitment to Willpower, Adaptability, Responsibility, Mastery, and Advancement. The values that shape how we grow, collaborate, and create long-term value.',
+    body3: 'We believe business should create more than economic growth. It should strengthen communities, support local talent, and contribute to a more sustainable future for generations to come.',
+    values: ['Willpower', 'Adaptability', 'Responsibility', 'Mastery', 'Advancement'],
   },
 };
 
@@ -41,22 +43,24 @@ export default function AboutSection({ lang }: AboutSectionProps) {
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
             {t.headline}
           </h2>
-          <p className="text-base text-gray-500 leading-relaxed">
-            {t.body}
-          </p>
+          <p className="text-base text-gray-500 leading-relaxed">{t.body1}</p>
+          <p className="text-base text-gray-500 leading-relaxed">{t.body2}</p>
+          <p className="text-base text-gray-500 leading-relaxed">{t.body3}</p>
 
           {/* Values */}
-          <div className="flex gap-6 mt-2">
+          <div className="flex flex-wrap gap-3 mt-2">
             {t.values.map((value) => (
-              <div key={value} className="flex items-center gap-2">
-                <span className="w-1 h-1 bg-gray-900 rounded-full" />
-                <span className="text-sm text-gray-700 tracking-wide">{value}</span>
-              </div>
+              <span
+                key={value}
+                className="text-xs tracking-wide border border-gray-300 px-3 py-1 text-gray-600"
+              >
+                {value}
+              </span>
             ))}
           </div>
         </div>
 
-        {/* Foto kanan — persegi */}
+        {/* Foto kanan */}
         <div className="w-full aspect-square bg-gray-100 flex items-center justify-center">
           <p className="text-gray-400 text-sm">[ Foto Perusahaan ]</p>
         </div>

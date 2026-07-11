@@ -8,22 +8,23 @@ interface HeroSectionProps {
 
 const content = {
   id: {
-    headline: 'Membangun Perusahaan yang Sehat, Bersih & Berkelanjutan',
-    subheadline: 'Holding company yang membawahi 6 anak perusahaan berbasis warisan budaya Indonesia.',
-    cta: 'Hubungi Kami',
+    headline: 'Membangun Bisnis Berkelanjutan Berlandaskan Warisan Indonesia',
+    subheadline: 'Warma Heritage Group adalah holding company yang membangun dan mengembangkan berbagai bisnis yang berakar pada budaya, kerajinan, dan semangat kewirausahaan Indonesia. Kami menciptakan nilai yang berkelanjutan bagi masyarakat, komunitas, dan generasi mendatang.',
+    cta: 'Jelajahi Perusahaan Kami',
   },
   en: {
-    headline: 'Building Healthy, Clean & Sustainable Companies',
-    subheadline: 'A holding company overseeing 6 subsidiaries rooted in Indonesian cultural heritage.',
-    cta: 'Contact Us',
+    headline: 'Building Sustainable Businesses with Indonesian Heritage',
+    subheadline: 'Warma Heritage Group is a holding company that builds and grows businesses rooted in Indonesia\'s culture, craftsmanship, and entrepreneurial spirit. Creating lasting value for people, communities, and future generations.',
+    cta: 'Explore Our Companies',
   },
 };
 
 export default function HeroSection({ lang }: HeroSectionProps) {
   const t = content[lang];
 
-  const handleContact = () => {
-    window.open('https://wa.me/6281239669880', '_blank');
+  const handleCTA = () => {
+    const el = document.getElementById('companies');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -45,7 +46,7 @@ export default function HeroSection({ lang }: HeroSectionProps) {
             {t.subheadline}
           </p>
           <button
-            onClick={handleContact}
+            onClick={handleCTA}
             className="w-fit mt-2 px-8 py-4 bg-gray-900 text-white text-sm tracking-widest uppercase hover:bg-gray-700 transition-colors duration-300"
           >
             {t.cta}
