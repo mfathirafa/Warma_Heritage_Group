@@ -8,7 +8,7 @@ interface CompaniesSectionProps {
 
 const companies = [
   {
-    id: 'karya-rotan',
+    id: 'karya-rotan-indonesia',
     nameId: 'Karya Rotan Indonesia',
     nameEn: 'Karya Rotan Indonesia',
     descId: 'Produsen & eksportir produk rotan berkualitas tinggi berbasis kearifan lokal Indonesia.',
@@ -16,7 +16,7 @@ const companies = [
     wa: '6281239669880',
   },
   {
-    id: 'rattan-export',
+    id: 'rattan-export-house-indonesia',
     nameId: 'Rattan Export House Indonesia',
     nameEn: 'Rattan Export House Indonesia',
     descId: 'Menghubungkan produk rotan Indonesia dengan pasar internasional secara profesional.',
@@ -24,7 +24,7 @@ const companies = [
     wa: '6281239669880',
   },
   {
-    id: 'kriya-kayu',
+    id: 'kriya-kayu-nusantara',
     nameId: 'Kriya Kayu Nusantara',
     nameEn: 'Kriya Kayu Nusantara',
     descId: 'Kerajinan kayu premium berbasis kearifan dan seni budaya Nusantara.',
@@ -32,7 +32,7 @@ const companies = [
     wa: '6281239669880',
   },
   {
-    id: 'nada-upacara',
+    id: 'nada-upacara-bali',
     nameId: 'Nada Upacara Bali',
     nameEn: 'Nada Upacara Bali',
     descId: 'Penyedia lengkap kebutuhan upacara adat dan ritual keagamaan Bali.',
@@ -48,7 +48,7 @@ const companies = [
     wa: '6281239669880',
   },
   {
-    id: 'niaga-rasa',
+    id: 'niaga-rasa-indonesia',
     nameId: 'Niaga Rasa Indonesia',
     nameEn: 'Niaga Rasa Indonesia',
     descId: 'Usaha kuliner autentik berbasis cita rasa dan kekayaan kuliner Nusantara.',
@@ -100,12 +100,20 @@ export default function CompaniesSection({ lang }: CompaniesSectionProps) {
               </div>
 
               {/* CTA */}
-              <button
-                onClick={() => window.open(`https://wa.me/${company.wa}`, '_blank')}
-                className="w-fit text-xs tracking-widest uppercase border border-gray-900 px-4 py-2 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors duration-300"
-              >
-                {isId ? 'Hubungi →' : 'Contact →'}
-              </button>
+              <div className="flex gap-3 flex-wrap">
+                <button
+                  onClick={() => window.location.href = `/companies/${company.id}`}
+                  className="w-fit text-xs tracking-widest uppercase border border-gray-900 px-4 py-2 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors duration-300"
+                >
+                  {isId ? 'Selengkapnya →' : 'Learn More →'}
+                </button>
+                <button
+                  onClick={() => window.open(`https://wa.me/${company.wa}`, '_blank')}
+                  className="w-fit text-xs tracking-widest uppercase border border-gray-300 px-4 py-2 text-gray-600 hover:bg-gray-100 transition-colors duration-300"
+                >
+                  💬 {isId ? 'Hubungi' : 'Contact'}
+                </button>
+              </div>
             </div>
           ))}
         </div>
