@@ -18,6 +18,13 @@ export const metadata: Metadata = {
   title: "Warma Heritage Group",
   description:
     "Holding company yang membawahi 6 anak perusahaan berbasis warisan budaya Indonesia.",
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon.png', type: 'image/png' },
+    ],
+    apple: '/favicon.png',
+},
   verification: {
     google: '7JDJCwm4tTGmXT8I5oVcc22OOsW7TNb7kKSPGxG8HrM',
   },
