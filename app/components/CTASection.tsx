@@ -11,13 +11,13 @@ const content = {
     label: 'Kontak',
     headline: 'Tertarik Bermitra dengan Kami?',
     sub: 'Hubungi kami langsung melalui WhatsApp untuk konsultasi lebih lanjut.',
-    cta: '💬 Hubungi via WhatsApp',
+    cta: 'Hubungi via WhatsApp',
   },
   en: {
     label: 'Contact',
     headline: 'Interested in Partnering with Us?',
     sub: 'Contact us directly via WhatsApp for further consultation.',
-    cta: '💬 Contact via WhatsApp',
+    cta: 'Contact via WhatsApp',
   },
 };
 

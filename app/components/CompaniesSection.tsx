@@ -1,5 +1,7 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+
 type Lang = 'id' | 'en';
 
 interface CompaniesSectionProps {
@@ -59,12 +61,10 @@ const companies = [
 
 export default function CompaniesSection({ lang }: CompaniesSectionProps) {
   const isId = lang === 'id';
+  const router = useRouter();
 
   return (
-    <section
-      id="companies"
-      className="w-full bg-white py-24 px-8"
-    >
+    <section id="companies" className="w-full bg-white py-24 px-8">
       <div className="max-w-[1440px] mx-auto">
 
         {/* Header */}
@@ -80,40 +80,39 @@ export default function CompaniesSection({ lang }: CompaniesSectionProps) {
         {/* Grid 3x2 */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {companies.map((company) => (
-            <div
-              key={company.id}
-              className="flex flex-col gap-4 group"
-            >
-              {/* Placeholder foto — persegi */}
-              <div className="w-full aspect-square bg-gray-100 flex items-center justify-center">
-                <p className="text-gray-400 text-xs">[ Foto ]</p>
-              </div>
+            <div key={company.id} className="flex flex-col gap-4 group">
 
-              {/* Info */}
-              <div className="flex flex-col gap-2">
-                <h3 className="text-base font-bold text-gray-900">
-                  {isId ? company.nameId : company.nameEn}
-                </h3>
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  {isId ? company.descId : company.descEn}
+              {/* Foto — klikable */}
+              <div
+                onClick={() => router.push(`/companies/${company.id}`)}
+                className="w-full aspect-square bg-gray-100 flex items-center justify-center cursor-pointer overflow-hidden"
+              >
+                <p className="text-gray-400 text-xs group-hover:text-gray-600 transition-colors">
+                  [ Foto ]
                 </p>
               </div>
 
-              {/* CTA */}
-              <div className="flex gap-3 flex-wrap">
-                <button
-                  onClick={() => window.location.href = `/companies/${company.id}`}
-                  className="w-fit text-xs tracking-widest uppercase border border-gray-900 px-4 py-2 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors duration-300"
-                >
-                  {isId ? 'Selengkapnya →' : 'Learn More →'}
-                </button>
-                <button
-                  onClick={() => window.open(`https://wa.me/${company.wa}`, '_blank')}
-                  className="w-fit text-xs tracking-widest uppercase border border-gray-300 px-4 py-2 text-gray-600 hover:bg-gray-100 transition-colors duration-300"
-                >
-                  💬 {isId ? 'Hubungi' : 'Contact'}
-                </button>
-              </div>
+              {/* Nama — klikable */}
+              <h3
+                onClick={() => router.push(`/companies/${company.id}`)}
+                className="text-base font-bold text-gray-900 cursor-pointer hover:text-gray-500 transition-colors"
+              >
+                {isId ? company.nameId : company.nameEn}
+              </h3>
+
+              {/* Deskripsi */}
+              <p className="text-sm text-gray-500 leading-relaxed">
+                {isId ? company.descId : company.descEn}
+              </p>
+
+              {/* Tombol Hubungi saja */}
+              <button
+                onClick={() => window.open(`https://wa.me/${company.wa}`, '_blank')}
+                className="w-fit text-xs tracking-widest uppercase border border-gray-900 px-4 py-2 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors duration-300"
+              >
+                 {isId ? 'Hubungi' : 'Contact'}
+              </button>
+
             </div>
           ))}
         </div>

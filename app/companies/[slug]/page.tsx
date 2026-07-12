@@ -143,7 +143,7 @@ export default function CompanyDetailPage() {
                 onClick={() => window.open(`https://wa.me/${company.wa}`, '_blank')}
                 className="w-fit px-8 py-4 bg-gray-900 text-white text-sm tracking-widest uppercase hover:bg-gray-700 transition-colors duration-300"
               >
-                💬 {isId ? 'Hubungi Kami' : 'Contact Us'}
+                 {isId ? 'Hubungi Kami' : 'Contact Us'}
               </button>
             </div>
 
@@ -191,7 +191,7 @@ export default function CompanyDetailPage() {
             onClick={() => window.open(`https://wa.me/${company.wa}`, '_blank')}
             className="px-10 py-4 bg-gray-900 text-white text-sm tracking-widest uppercase hover:bg-gray-700 transition-colors duration-300"
           >
-            💬 {isId ? 'Hubungi via WhatsApp' : 'Contact via WhatsApp'}
+             {isId ? 'Hubungi via WhatsApp' : 'Contact via WhatsApp'}
           </button>
         </div>
       </section>
