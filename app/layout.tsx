@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   title: "Warma Heritage Group",
   description:
     "Holding company yang membawahi 6 anak perusahaan berbasis warisan budaya Indonesia.",
+  verification: {
+    google: '7JDJCwm4tTGmXT8I5oVcc22OOsW7TNb7kKSPGxG8HrM',
+  },
   keywords: [
     "Warma Heritage Group",
     "holding company",
