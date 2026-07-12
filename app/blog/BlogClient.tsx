@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { BlogPost } from '../lib/notion';
+import { useRouter } from 'next/navigation';
 
 type Lang = 'id' | 'en';
 
@@ -14,6 +15,7 @@ interface BlogClientProps {
 export default function BlogClient({ posts }: BlogClientProps) {
   const [lang, setLang] = useState<Lang>('id');
   const isId = lang === 'id';
+  const router = useRouter();
 
   useEffect(() => {
     const saved = localStorage.getItem('lang') as Lang;
@@ -59,9 +61,10 @@ export default function BlogClient({ posts }: BlogClientProps) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {posts.map((post) => (
                 <article
-                  key={post.id}
-                  className="flex flex-col gap-4 group cursor-pointer"
-                >
+                    key={post.id}
+                    onClick={() => router.push(`/blog/${post.slug}`)}
+                    className="flex flex-col gap-4 group cursor-pointer"
+                    >
                   {/* Cover image */}
                   <div className="w-full aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
                     {post.cover ? (
