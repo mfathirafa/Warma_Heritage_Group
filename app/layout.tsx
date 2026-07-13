@@ -15,6 +15,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://warma-heritage-group.vercel.app'),
   title: "Warma Heritage Group",
   description:
     "Holding company yang membawahi 6 anak perusahaan berbasis warisan budaya Indonesia.",
