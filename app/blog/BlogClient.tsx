@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { BlogPost } from '../lib/notion';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 type Lang = 'id' | 'en';
 
@@ -66,12 +67,14 @@ export default function BlogClient({ posts }: BlogClientProps) {
                     className="flex flex-col gap-4 group cursor-pointer"
                     >
                   {/* Cover image */}
-                  <div className="w-full aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
+                  <div className="relative w-full aspect-video bg-gray-100 flex items-center justify-center overflow-hidden">
                     {post.cover ? (
-                      <img
+                      <Image
                         src={post.cover}
                         alt={isId ? post.titleId : post.titleEn}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        sizes="(max-width: 768px) 100vw, 33vw"
                       />
                     ) : (
                       <p className="text-gray-400 text-xs">[ Foto Artikel ]</p>

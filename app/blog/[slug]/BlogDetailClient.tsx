@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { BlogPost } from '../../lib/notion';
+import Image from 'next/image'
 
 type Lang = 'id' | 'en';
 
@@ -73,11 +74,16 @@ export default function BlogDetailClient({ post }: BlogDetailClientProps) {
 
       {/* Cover image */}
       {post.cover && (
-        <div className="w-full max-h-[500px] overflow-hidden">
-          <img
+        <div className="relative w-full h-[300px] md:h-[500px] bg-gray-100 overflow-hidden">
+          <Image
             src={post.cover}
             alt={isId ? post.titleId : post.titleEn}
-            className="w-full object-cover"
+            fill
+            className="object-cover"
+            sizes="100vw"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none';
+            }}
           />
         </div>
       )}
