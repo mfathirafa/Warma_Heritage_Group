@@ -22,7 +22,7 @@ const content = {
 export default function HeroSection({ lang }: HeroSectionProps) {
   const t = content[lang];
 
-  const handleCTA = () => {
+  const scrollToCompanies = () => {
     const el = document.getElementById('companies');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
@@ -46,7 +46,7 @@ export default function HeroSection({ lang }: HeroSectionProps) {
             {t.subheadline}
           </p>
           <button
-            onClick={handleCTA}
+            onClick={scrollToCompanies}
             className="w-fit mt-2 px-8 py-4 bg-gray-900 text-white text-sm tracking-widest uppercase hover:bg-gray-700 transition-colors duration-300"
           >
             {t.cta}
