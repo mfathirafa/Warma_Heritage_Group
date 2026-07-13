@@ -25,6 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 0.9,
     },
+    ...blogUrls,
     {
       url: `${baseUrl}/companies/karya-rotan-indonesia`,
       lastModified: new Date(),
