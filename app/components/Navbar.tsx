@@ -58,7 +58,7 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
       <div className="max-w-[1440px] mx-auto px-8 h-[72px] flex items-center justify-between">
         
         {/* Logo */}
-        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+        <button onClick={() => router.push('/')}>
           <Image
             src="/Logo_clear.png"
             alt="Warma Heritage Group"
