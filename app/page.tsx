@@ -1,42 +1,9 @@
-'use client';
+import { getSocialImpacts } from './lib/notion';
+import HomeClient from './HomeClient';
 
-import { useState, useEffect } from 'react';
-import Navbar from './components/Navbar';
-import HeroSection from './components/HeroSection';
-import AboutSection from './components/AboutSection';
-import FounderSection from './components/FounderSection';
-import CompaniesSection from './components/CompaniesSection';
-import ServicesSection from './components/ServicesSection';
-import SocialImpactSection from './components/SocialImpactSection';
-import CTASection from './components/CTASection';
-import Footer from './components/Footer';
+export const revalidate = 60;
 
-type Lang = 'id' | 'en';
-
-export default function Home() {
-  const [lang, setLang] = useState<Lang>('id');
-
-  useEffect(() => {
-    const saved = localStorage.getItem('lang') as Lang;
-    if (saved) setLang(saved);
-  }, []);
-
-  const handleSetLang = (newLang: Lang) => {
-    setLang(newLang);
-    localStorage.setItem('lang', newLang);
-  };
-
-  return (
-    <main>
-      <Navbar lang={lang} setLang={handleSetLang} />
-      <HeroSection lang={lang} />
-      <AboutSection lang={lang} />
-      <FounderSection lang={lang} />
-      <CompaniesSection lang={lang} />
-      <ServicesSection lang={lang} />
-      <SocialImpactSection lang={lang} />
-      <CTASection lang={lang} />
-      <Footer lang={lang} />
-    </main>
-  );
+export default async function Home() {
+  const socialImpacts = await getSocialImpacts();
+  return <HomeClient socialImpacts={socialImpacts} />;
 }
