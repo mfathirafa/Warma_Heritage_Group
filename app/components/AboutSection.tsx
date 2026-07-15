@@ -1,5 +1,7 @@
 'use client';
 
+import { useScrollReveal } from '../hooks/useScrollReveal';
+
 type Lang = 'id' | 'en';
 
 interface AboutSectionProps {
@@ -27,28 +29,29 @@ const content = {
 
 export default function AboutSection({ lang }: AboutSectionProps) {
   const t = content[lang];
+  const { ref: textRef, isVisible: textVisible } = useScrollReveal();
+  const { ref: imageRef, isVisible: imageVisible } = useScrollReveal();
 
   return (
-    <section
-      id="about"
-      className="w-full bg-white py-24 px-8"
-    >
+    <section id="about" className="w-full bg-white py-24 px-8">
       <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
 
         {/* Teks kiri */}
-        <div className="flex flex-col gap-6">
-          <p className="text-xs tracking-[0.2em] text-gray-400 uppercase">
+        <div
+          ref={textRef as React.RefObject<HTMLDivElement>}
+          className="flex flex-col gap-6"
+        >
+          <p className={`text-xs tracking-[0.2em] text-gray-400 uppercase reveal ${textVisible ? 'visible' : ''}`}>
             {t.label}
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
+          <h2 className={`text-3xl md:text-4xl font-bold text-gray-900 leading-tight reveal reveal-delay-1 ${textVisible ? 'visible' : ''}`}>
             {t.headline}
           </h2>
-          <p className="text-base text-gray-500 leading-relaxed">{t.body1}</p>
-          <p className="text-base text-gray-500 leading-relaxed">{t.body2}</p>
-          <p className="text-base text-gray-500 leading-relaxed">{t.body3}</p>
+          <p className={`text-base text-gray-500 leading-relaxed reveal reveal-delay-2 ${textVisible ? 'visible' : ''}`}>{t.body1}</p>
+          <p className={`text-base text-gray-500 leading-relaxed reveal reveal-delay-2 ${textVisible ? 'visible' : ''}`}>{t.body2}</p>
+          <p className={`text-base text-gray-500 leading-relaxed reveal reveal-delay-2 ${textVisible ? 'visible' : ''}`}>{t.body3}</p>
 
-          {/* Values */}
-          <div className="flex flex-wrap gap-3 mt-2">
+          <div className={`flex flex-wrap gap-3 mt-2 reveal reveal-delay-3 ${textVisible ? 'visible' : ''}`}>
             {t.values.map((value) => (
               <span
                 key={value}
@@ -61,7 +64,10 @@ export default function AboutSection({ lang }: AboutSectionProps) {
         </div>
 
         {/* Foto kanan */}
-        <div className="w-full aspect-square bg-gray-100 flex items-center justify-center">
+        <div
+          ref={imageRef as React.RefObject<HTMLDivElement>}
+          className={`w-full aspect-square bg-gray-100 flex items-center justify-center reveal reveal-delay-1 ${imageVisible ? 'visible' : ''}`}
+        >
           <p className="text-gray-400 text-sm">[ Foto Perusahaan ]</p>
         </div>
 

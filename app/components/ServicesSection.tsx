@@ -1,5 +1,7 @@
 'use client';
 
+import { useScrollReveal } from '../hooks/useScrollReveal';
+
 type Lang = 'id' | 'en';
 
 interface ServicesSectionProps {
@@ -13,27 +15,23 @@ const content = {
     services: [
       {
         id: 'build',
-        icon: '🏢',
-        title: 'Membangun Bisnis',
-        desc: 'Kami mendirikan dan mengembangkan perusahaan dengan fondasi yang kuat, arah yang jelas, serta visi jangka panjang untuk mencapai pertumbuhan yang berkelanjutan.',
+        titleId: 'Membangun Bisnis',
+        descId: 'Kami mendirikan dan mengembangkan perusahaan dengan fondasi yang kuat, arah yang jelas, serta visi jangka panjang untuk mencapai pertumbuhan yang berkelanjutan.',
       },
       {
         id: 'partner',
-        icon: '🤝',
-        title: 'Membangun Kemitraan',
-        desc: 'Kami membangun hubungan yang saling menguatkan dengan pelanggan, mitra, pengrajin, komunitas, dan para pemangku kepentingan untuk menciptakan kolaborasi yang berkelanjutan.',
+        titleId: 'Membangun Kemitraan',
+        descId: 'Kami membangun hubungan yang saling menguatkan dengan pelanggan, mitra, pengrajin, komunitas, dan para pemangku kepentingan untuk menciptakan kolaborasi yang berkelanjutan.',
       },
       {
         id: 'connect',
-        icon: '🌏',
-        title: 'Menghubungkan Potensi Lokal dengan Peluang Global',
-        desc: 'Kami menghubungkan budaya, kerajinan, dan potensi kewirausahaan Indonesia dengan peluang di pasar internasional melalui portofolio bisnis yang kami kembangkan.',
+        titleId: 'Menghubungkan Potensi Lokal dengan Peluang Global',
+        descId: 'Kami menghubungkan budaya, kerajinan, dan potensi kewirausahaan Indonesia dengan peluang di pasar internasional melalui portofolio bisnis yang kami kembangkan.',
       },
       {
         id: 'sustain',
-        icon: '🌱',
-        title: 'Menciptakan Nilai yang Berkelanjutan',
-        desc: 'Kami mendorong pertumbuhan yang bertanggung jawab untuk menghasilkan nilai ekonomi, sosial, dan budaya yang memberikan manfaat jangka panjang bagi perusahaan, masyarakat, dan generasi mendatang.',
+        titleId: 'Menciptakan Nilai yang Berkelanjutan',
+        descId: 'Kami mendorong pertumbuhan yang bertanggung jawab untuk menghasilkan nilai ekonomi, sosial, dan budaya yang memberikan manfaat jangka panjang bagi perusahaan, masyarakat, dan generasi mendatang.',
       },
     ],
   },
@@ -43,69 +41,109 @@ const content = {
     services: [
       {
         id: 'build',
-        icon: '🏢',
-        title: 'Build Businesses',
-        desc: 'We establish and grow businesses with strong foundations, clear direction, and a long-term vision for sustainable success.',
+        titleEn: 'Build Businesses',
+        descEn: 'We establish and grow businesses with strong foundations, clear direction, and a long-term vision for sustainable success.',
       },
       {
         id: 'partner',
-        icon: '🤝',
-        title: 'Empower Partnerships',
-        desc: 'We foster meaningful relationships with customers, partners, artisans, communities, and stakeholders to create shared value and lasting collaboration.',
+        titleEn: 'Empower Partnerships',
+        descEn: 'We foster meaningful relationships with customers, partners, artisans, communities, and stakeholders to create shared value and lasting collaboration.',
       },
       {
         id: 'connect',
-        icon: '🌏',
-        title: 'Connect Local to Global',
-        desc: 'We connect Indonesia\'s culture, craftsmanship, and entrepreneurial potential with opportunities in global markets through our diverse business portfolio.',
+        titleEn: 'Connect Local to Global',
+        descEn: 'We connect Indonesia\'s culture, craftsmanship, and entrepreneurial potential with opportunities in global markets through our diverse business portfolio.',
       },
       {
         id: 'sustain',
-        icon: '🌱',
-        title: 'Create Sustainable Value',
-        desc: 'We pursue responsible growth that generates long-term economic, social, and cultural value for our businesses, communities, and future generations.',
+        titleEn: 'Create Sustainable Value',
+        descEn: 'We pursue responsible growth that generates long-term economic, social, and cultural value for our businesses, communities, and future generations.',
       },
     ],
   },
 };
 
+const icons = {
+  build: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/>
+    </svg>
+  ),
+  partner: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"/>
+    </svg>
+  ),
+  connect: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+    </svg>
+  ),
+  sustain: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 22V12"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/><path d="M8 5.07A10 10 0 0 1 22 12"/><path d="M2 12a10 10 0 0 1 14-9.16"/>
+    </svg>
+  ),
+};
+
+const servicesList = [
+  { id: 'build' as const },
+  { id: 'partner' as const },
+  { id: 'connect' as const },
+  { id: 'sustain' as const },
+];
+
 export default function ServicesSection({ lang }: ServicesSectionProps) {
-  const t = content[lang];
+  const isId = lang === 'id';
+  const t = isId ? content.id : content.en;
+  const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
+  const { ref: gridRef, isVisible: gridVisible } = useScrollReveal();
 
   return (
-    <section
-      id="services"
-      className="w-full bg-gray-50 py-24 px-8"
-    >
+    <section id="services" className="w-full bg-gray-50 py-24 px-8">
       <div className="max-w-[1440px] mx-auto">
 
         {/* Header */}
-        <div className="mb-16">
-          <p className="text-xs tracking-[0.2em] text-gray-400 uppercase mb-3">
+        <div
+          ref={headerRef as React.RefObject<HTMLDivElement>}
+          className="mb-16"
+        >
+          <p className={`text-xs tracking-[0.2em] text-gray-400 uppercase mb-3 reveal ${headerVisible ? 'visible' : ''}`}>
             {t.label}
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+          <h2 className={`text-3xl md:text-4xl font-bold text-gray-900 reveal reveal-delay-1 ${headerVisible ? 'visible' : ''}`}>
             {t.headline}
           </h2>
         </div>
 
         {/* Grid 4 kolom */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {t.services.map((service) => (
-            <div
-              key={service.id}
-              className="flex flex-col gap-4 p-8 bg-white"
-            >
-              <span className="text-3xl">{service.icon}</span>
-              <h3 className="text-base font-bold text-gray-900 leading-snug">
-                {service.title}
-              </h3>
-              <div className="w-8 h-px bg-gray-300" />
-              <p className="text-sm text-gray-500 leading-relaxed">
-                {service.desc}
-              </p>
-            </div>
-          ))}
+        <div
+          ref={gridRef as React.RefObject<HTMLDivElement>}
+          className="grid grid-cols-1 md:grid-cols-4 gap-8"
+        >
+          {servicesList.map((service, index) => {
+            const item = t.services.find(s => s.id === service.id)!;
+            const title = isId ? (item as any).titleId : (item as any).titleEn;
+            const desc = isId ? (item as any).descId : (item as any).descEn;
+
+            return (
+              <div
+                key={service.id}
+                className={`flex flex-col gap-4 p-8 bg-white reveal reveal-delay-${index + 1} ${gridVisible ? 'visible' : ''}`}
+              >
+                <span className="text-gray-700">
+                  {icons[service.id]}
+                </span>
+                <h3 className="text-base font-bold text-gray-900 leading-snug">
+                  {title}
+                </h3>
+                <div className="w-8 h-px bg-gray-300" />
+                <p className="text-sm text-gray-500 leading-relaxed">
+                  {desc}
+                </p>
+              </div>
+            );
+          })}
         </div>
 
       </div>

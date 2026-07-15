@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 type Lang = 'id' | 'en';
 
@@ -74,31 +75,41 @@ const companies = [
 export default function CompaniesSection({ lang }: CompaniesSectionProps) {
   const isId = lang === 'id';
   const router = useRouter();
+  const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
+  const { ref: gridRef, isVisible: gridVisible } = useScrollReveal();
 
   return (
     <section id="companies" className="w-full bg-white py-24 px-8">
       <div className="max-w-[1440px] mx-auto">
 
-        <div className="mb-16">
-          <p className="text-xs tracking-[0.2em] text-gray-400 uppercase mb-3">
+        {/* Header */}
+        <div
+          ref={headerRef as React.RefObject<HTMLDivElement>}
+          className="mb-16"
+        >
+          <p className={`text-xs tracking-[0.2em] text-gray-400 uppercase mb-3 reveal ${headerVisible ? 'visible' : ''}`}>
             {isId ? 'Anak Perusahaan' : 'Our Companies'}
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+          <h2 className={`text-3xl md:text-4xl font-bold text-gray-900 reveal reveal-delay-1 ${headerVisible ? 'visible' : ''}`}>
             {isId ? 'Perusahaan Kami' : 'Our Companies'}
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {companies.map((company) => (
-            <div key={company.id} className="flex flex-col gap-4 group">
-
+        {/* Grid */}
+        <div
+          ref={gridRef as React.RefObject<HTMLDivElement>}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+        >
+          {companies.map((company, index) => (
+            <div
+              key={company.id}
+              className={`flex flex-col gap-4 group reveal reveal-delay-${(index % 3) + 1} ${gridVisible ? 'visible' : ''}`}
+            >
               <div
                 onClick={() => router.push(`/companies/${company.id}`)}
-                className="w-full aspect-square bg-gray-100 flex items-center justify-center cursor-pointer overflow-hidden"
+                className="w-full aspect-square bg-gray-100 flex items-center justify-center cursor-pointer overflow-hidden transition-transform duration-300 group-hover:scale-[1.02]"
               >
-                <p className="text-gray-400 text-xs group-hover:text-gray-600 transition-colors">
-                  [ Foto ]
-                </p>
+                <p className="text-gray-400 text-xs">[ Foto ]</p>
               </div>
 
               <h3
@@ -112,7 +123,6 @@ export default function CompaniesSection({ lang }: CompaniesSectionProps) {
                 {isId ? company.descId : company.descEn}
               </p>
 
-              {/* Perbaikan: Menambahkan tag pembuka <a> di sini */}
               <a
                 href={`https://wa.me/${company.wa}?text=${isId ? company.waMessageId : company.waMessageEn}`}
                 target="_blank"
@@ -121,7 +131,6 @@ export default function CompaniesSection({ lang }: CompaniesSectionProps) {
               >
                 {isId ? 'Hubungi' : 'Contact'}
               </a>
-
             </div>
           ))}
         </div>
