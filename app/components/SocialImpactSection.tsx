@@ -1,5 +1,6 @@
 'use client';
 
+import { useScrollReveal } from '../hooks/useScrollReveal';
 import { SocialImpact } from '../lib/notion';
 
 type Lang = 'id' | 'en';
@@ -48,71 +49,78 @@ const fallback: SocialImpact[] = [
 export default function SocialImpactSection({ lang, impacts }: SocialImpactSectionProps) {
   const isId = lang === 'id';
   const displayImpacts = impacts.length > 0 ? impacts : fallback;
+  const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
+  const { ref: scrollRef, isVisible: scrollVisible } = useScrollReveal();
 
   return (
     <section id="impact" className="w-full bg-gray-100 py-24 px-8">
       <div className="max-w-[1440px] mx-auto">
 
         {/* Header */}
-        <div className="mb-16">
-          <p className="text-xs tracking-[0.2em] text-gray-400 uppercase mb-3">
+        <div
+          ref={headerRef as React.RefObject<HTMLDivElement>}
+          className="mb-16"
+        >
+          <p className={`text-xs tracking-[0.2em] text-gray-400 uppercase mb-3 reveal ${headerVisible ? 'visible' : ''}`}>
             {isId ? 'Dampak Sosial' : 'Social Impact'}
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+          <h2 className={`text-3xl md:text-4xl font-bold text-gray-900 reveal reveal-delay-1 ${headerVisible ? 'visible' : ''}`}>
             {isId ? 'Kontribusi Kami untuk Masyarakat' : 'Our Contribution to Society'}
           </h2>
         </div>
 
-        {/* Horizontal scroll container */}
+        {/* Horizontal scroll */}
         <div
-          className="flex gap-8 overflow-x-auto pb-4 snap-x snap-mandatory"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          ref={scrollRef as React.RefObject<HTMLDivElement>}
+          className={`reveal ${scrollVisible ? 'visible' : ''}`}
         >
-          {displayImpacts.map((impact) => (
-            <div
-              key={impact.id}
-              className="flex flex-col gap-6 flex-shrink-0 snap-start"
-              style={{ width: 'calc(33.333% - 1.5rem)' }}
-            >
-              {/* Foto */}
-              <div className="w-full aspect-square overflow-hidden bg-gray-300">
-                {impact.cover ? (
-                  <img
-                    src={impact.cover}
-                    alt={isId ? impact.titleId : impact.titleEn}
-                    className="w-full h-full object-cover"
-                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <p className="text-gray-500 text-xs">[ Foto Kegiatan ]</p>
-                  </div>
-                )}
-              </div>
+          <div
+            className="flex gap-8 overflow-x-auto pb-4 snap-x snap-mandatory"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {displayImpacts.map((impact) => (
+              <div
+                key={impact.id}
+                className="flex flex-col gap-6 flex-shrink-0 snap-start"
+                style={{ width: 'calc(33.333% - 1.5rem)' }}
+              >
+                <div className="w-full aspect-square overflow-hidden bg-gray-300">
+                  {impact.cover ? (
+                    <img
+                      src={impact.cover}
+                      alt={isId ? impact.titleId : impact.titleEn}
+                      className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <p className="text-gray-500 text-xs">[ Foto Kegiatan ]</p>
+                    </div>
+                  )}
+                </div>
 
-              {/* Info */}
-              <div className="flex flex-col gap-3">
-                <span className="text-xs text-gray-400 tracking-widest uppercase">
-                  {isId ? impact.categoryId : impact.categoryEn}
-                </span>
-                <h3 className="text-base font-bold text-gray-900">
-                  {isId ? impact.titleId : impact.titleEn}
-                </h3>
-                <div className="w-8 h-px bg-gray-300" />
-                <p className="text-sm text-gray-500 leading-relaxed">
-                  {isId ? impact.descId : impact.descEn}
-                </p>
+                <div className="flex flex-col gap-3">
+                  <span className="text-xs text-gray-400 tracking-widest uppercase">
+                    {isId ? impact.categoryId : impact.categoryEn}
+                  </span>
+                  <h3 className="text-base font-bold text-gray-900">
+                    {isId ? impact.titleId : impact.titleEn}
+                  </h3>
+                  <div className="w-8 h-px bg-gray-300" />
+                  <p className="text-sm text-gray-500 leading-relaxed">
+                    {isId ? impact.descId : impact.descEn}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          {displayImpacts.length > 3 && (
+            <p className="text-xs text-gray-400 text-right mt-4 tracking-wide">
+              {isId ? 'Geser untuk lihat lebih →' : 'Scroll to see more →'}
+            </p>
+          )}
         </div>
-
-        {/* Hint scroll — hanya muncul kalau lebih dari 3 item */}
-        {displayImpacts.length > 3 && (
-          <p className="text-xs text-gray-400 text-right mt-4 tracking-wide">
-            {isId ? 'Geser untuk lihat lebih →' : 'Scroll to see more →'}
-          </p>
-        )}
 
       </div>
     </section>

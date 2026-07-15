@@ -1,5 +1,7 @@
 'use client';
 
+import { useScrollReveal } from '../hooks/useScrollReveal';
+
 type Lang = 'id' | 'en';
 
 interface ServicesSectionProps {
@@ -94,30 +96,43 @@ const servicesList = [
 export default function ServicesSection({ lang }: ServicesSectionProps) {
   const isId = lang === 'id';
   const t = isId ? content.id : content.en;
+  
+  // Menggunakan dua ref terpisah untuk header dan grid item dari cabang develop
+  const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
+  const { ref: gridRef, isVisible: gridVisible } = useScrollReveal();
 
   return (
     <section id="services" className="w-full bg-gray-50 py-24 px-8">
       <div className="max-w-[1440px] mx-auto">
 
         {/* Header */}
-        <div className="mb-16">
-          <p className="text-xs tracking-[0.2em] text-gray-400 uppercase mb-3">
+        <div
+          ref={headerRef as React.RefObject<HTMLDivElement>}
+          className="mb-16"
+        >
+          <p className={`text-xs tracking-[0.2em] text-gray-400 uppercase mb-3 reveal ${headerVisible ? 'visible' : ''}`}>
             {t.label}
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+          <h2 className={`text-3xl md:text-4xl font-bold text-gray-900 reveal reveal-delay-1 ${headerVisible ? 'visible' : ''}`}>
             {t.headline}
           </h2>
         </div>
 
         {/* Grid 4 kolom */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {servicesList.map((service) => {
+        <div
+          ref={gridRef as React.RefObject<HTMLDivElement>}
+          className="grid grid-cols-1 md:grid-cols-4 gap-8"
+        >
+          {servicesList.map((service, index) => {
             const item = t.services.find(s => s.id === service.id)!;
             const title = isId ? (item as any).titleId : (item as any).titleEn;
             const desc = isId ? (item as any).descId : (item as any).descEn;
 
             return (
-              <div key={service.id} className="flex flex-col gap-4 p-8 bg-white">
+              <div
+                key={service.id}
+                className={`flex flex-col gap-4 p-8 bg-white reveal reveal-delay-${index + 1} ${gridVisible ? 'visible' : ''}`}
+              >
                 <span className="text-gray-700">
                   {icons[service.id]}
                 </span>

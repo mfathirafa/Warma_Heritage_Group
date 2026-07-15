@@ -1,5 +1,7 @@
 'use client';
 
+import { useScrollReveal } from '../hooks/useScrollReveal';
+
 type Lang = 'id' | 'en';
 
 interface FooterProps {
@@ -17,6 +19,7 @@ const navLinks = [
 
 export default function Footer({ lang }: FooterProps) {
   const isId = lang === 'id';
+  const { ref, isVisible } = useScrollReveal();
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
@@ -27,16 +30,13 @@ export default function Footer({ lang }: FooterProps) {
     <footer className="w-full bg-gray-100 py-16 px-8">
       <div className="max-w-[1440px] mx-auto">
 
-        {/* Top */}
-        <div className="flex flex-col md:flex-row justify-between gap-12 pb-12 border-b border-gray-300">
-
+        <div
+          ref={ref as React.RefObject<HTMLDivElement>}
+          className={`flex flex-col md:flex-row justify-between gap-12 pb-12 border-b border-gray-300 reveal ${isVisible ? 'visible' : ''}`}
+        >
           {/* Logo & deskripsi */}
           <div className="flex flex-col gap-4 max-w-xs">
-            <img
-              src="/Logo_clear.png"
-              alt="Warma Heritage Group"
-              className="w-32"
-            />
+            <img src="/Logo_clear.png" alt="Warma Heritage Group" className="w-32" />
             <p className="text-sm text-gray-600 leading-relaxed">
               {isId
                 ? 'Holding company berbasis warisan budaya Indonesia yang berfokus pada keberlanjutan dan integritas.'
@@ -72,7 +72,7 @@ export default function Footer({ lang }: FooterProps) {
               Denpasar, Bali 80226
             </p>
             
-            {/* Perbaikan: Menambahkan tag pembuka <a> di sini */}
+            {/* Tag pembuka <a> yang hilang sudah ditambahkan di bawah ini */}
             <a
               href={`https://wa.me/6281239669880?text=${isId ? 'Halo%20Warma%20Heritage%20Group%2C%20saya%20ingin%20menghubungi%20Anda.' : 'Hello%20Warma%20Heritage%20Group%2C%20I%20would%20like%20to%20get%20in%20touch%20with%20you.'}`}
               target="_blank"
@@ -85,17 +85,12 @@ export default function Footer({ lang }: FooterProps) {
               WhatsApp
             </a>
           </div>
-
         </div>
 
         {/* Bottom */}
         <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-gray-500">
-            © 2026 Warma Heritage Group. All rights reserved.
-          </p>
-          <p className="text-xs text-gray-500">
-            Denpasar, Bali, Indonesia
-          </p>
+          <p className="text-xs text-gray-500">© 2026 Warma Heritage Group. All rights reserved.</p>
+          <p className="text-xs text-gray-500">Denpasar, Bali, Indonesia</p>
         </div>
 
       </div>

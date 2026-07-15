@@ -1,5 +1,7 @@
 'use client';
 
+import { useScrollReveal } from '../hooks/useScrollReveal';
+
 type Lang = 'id' | 'en';
 
 interface FounderSectionProps {
@@ -51,35 +53,39 @@ const founders = {
 
 export default function FounderSection({ lang }: FounderSectionProps) {
   const list = founders[lang];
+  const { ref: headerRef, isVisible: headerVisible } = useScrollReveal();
+  const { ref: gridRef, isVisible: gridVisible } = useScrollReveal();
 
   return (
-    <section
-      id="founder"
-      className="w-full bg-gray-50 py-24 px-8"
-    >
+    <section id="founder" className="w-full bg-gray-50 py-24 px-8">
       <div className="max-w-[1440px] mx-auto">
 
         {/* Header */}
-        <div className="mb-16">
-          <p className="text-xs tracking-[0.2em] text-gray-400 uppercase mb-3">
+        <div
+          ref={headerRef as React.RefObject<HTMLDivElement>}
+          className="mb-16"
+        >
+          <p className={`text-xs tracking-[0.2em] text-gray-400 uppercase mb-3 reveal ${headerVisible ? 'visible' : ''}`}>
             {lang === 'id' ? 'Pendiri' : 'Our Founders'}
           </p>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+          <h2 className={`text-3xl md:text-4xl font-bold text-gray-900 reveal reveal-delay-1 ${headerVisible ? 'visible' : ''}`}>
             {lang === 'id' ? 'Bertemu dengan Para Pendiri' : 'Meet the Founders'}
           </h2>
         </div>
 
         {/* Grid 3 kolom */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {list.map((founder) => (
-            <div key={founder.id} className="flex flex-col gap-5">
-
-              {/* Foto — persegi */}
+        <div
+          ref={gridRef as React.RefObject<HTMLDivElement>}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+        >
+          {list.map((founder, index) => (
+            <div
+              key={founder.id}
+              className={`flex flex-col gap-5 reveal reveal-delay-${index + 1} ${gridVisible ? 'visible' : ''}`}
+            >
               <div className="w-full aspect-square bg-gray-200 flex items-center justify-center">
                 <p className="text-gray-400 text-xs">[ Foto ]</p>
               </div>
-
-              {/* Info */}
               <div className="flex flex-col gap-2">
                 <h3 className="text-lg font-bold text-gray-900 leading-snug">
                   {founder.name}
@@ -92,7 +98,6 @@ export default function FounderSection({ lang }: FounderSectionProps) {
                   {founder.bio}
                 </p>
               </div>
-
             </div>
           ))}
         </div>

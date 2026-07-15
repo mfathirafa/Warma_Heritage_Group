@@ -1,5 +1,7 @@
 'use client';
 
+import { useScrollReveal } from '../hooks/useScrollReveal';
+
 type Lang = 'id' | 'en';
 
 interface CTASectionProps {
@@ -25,35 +27,35 @@ const content = {
 
 export default function CTASection({ lang }: CTASectionProps) {
   const t = content[lang];
+  const { ref, isVisible } = useScrollReveal();
 
   return (
-    <section
-      id="contact"
-      className="w-full bg-white py-24 px-8"
-    >
-      <div className="max-w-[1440px] mx-auto flex flex-col items-center text-center gap-8">
-        <p className="text-xs tracking-[0.2em] text-gray-400 uppercase">
+    <section id="contact" className="w-full bg-white py-24 px-8">
+      <div
+        ref={ref as React.RefObject<HTMLDivElement>}
+        className="max-w-[1440px] mx-auto flex flex-col items-center text-center gap-8"
+      >
+        <p className={`text-xs tracking-[0.2em] text-gray-400 uppercase reveal ${isVisible ? 'visible' : ''}`}>
           {t.label}
         </p>
-        <h2 className="text-3xl md:text-5xl font-bold text-gray-900 max-w-2xl leading-tight">
+        <h2 className={`text-3xl md:text-5xl font-bold text-gray-900 max-w-2xl leading-tight reveal reveal-delay-1 ${isVisible ? 'visible' : ''}`}>
           {t.headline}
         </h2>
-        <p className="text-base text-gray-500 max-w-md leading-relaxed">
+        <p className={`text-base text-gray-500 max-w-md leading-relaxed reveal reveal-delay-2 ${isVisible ? 'visible' : ''}`}>
           {t.sub}
         </p>
         
-        {/* Perbaikan: Menambahkan tag pembuka <a> di sini */}
+        {/* Tag <a> yang hilang sudah ditambahkan di bawah ini */}
         <a
           href={`https://wa.me/6281239669880?text=${t.waMessage}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="px-10 py-4 bg-gray-900 text-white text-sm tracking-widest uppercase hover:bg-gray-700 transition-colors duration-300"
+          className={`px-10 py-4 bg-gray-900 text-white text-sm tracking-widest uppercase hover:bg-gray-700 transition-colors duration-300 reveal reveal-delay-3 ${isVisible ? 'visible' : ''}`}
         >
           {t.cta}
         </a>
 
-        {/* Info kontak */}
-        <div className="flex flex-col md:flex-row gap-6 mt-4 text-sm text-gray-500">
+        <div className={`flex flex-col md:flex-row gap-6 mt-4 text-sm text-gray-500 reveal reveal-delay-4 ${isVisible ? 'visible' : ''}`}>
           <span>WarmaGroup@gmail.com</span>
           <span className="hidden md:block text-gray-300">|</span>
           <span>+62 812-3966-9880</span>
