@@ -74,7 +74,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" suppressHydrationWarning>
-      <body className={`${inter.variable} ${sortMillGoudy.variable}`}>
+      <body className={`${inter.variable} ${sortMillGoudy.className}`}>
         <JsonLd />
         {children}
         <BackToTop />
