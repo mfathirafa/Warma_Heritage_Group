@@ -11,7 +11,7 @@ const navLinks = [
   { id: 'services', labelId: 'Layanan', labelEn: 'Services' },
   { id: 'impact', labelId: 'Dampak Sosial', labelEn: 'Social Impact' },
   { id: 'contact', labelId: 'Kontak', labelEn: 'Contact' },
-  { id: 'blog', labelId: 'Blog', labelEn: 'Blog'},
+  { id: 'blog', labelId: 'Blog', labelEn: 'Blog' },
 ];
 
 interface NavbarProps {
@@ -24,46 +24,39 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
 
-  // Detect scroll untuk shadow navbar
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener('scroll', handleScroll);
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Smooth scroll ke section
   const scrollToSection = (id: string) => {
-    if (id === 'blog') {
-      router.push('/blog');
-      setMenuOpen(false);
-      return;
-    }
-
-    if (window.location.pathname !== '/') {
-      window.location.href = `/#${id}`;
-      return;
-    }
-
+    setMenuOpen(false);
+    if (id === 'blog') { router.push('/blog'); return; }
+    if (window.location.pathname !== '/') { window.location.href = `/#${id}`; return; }
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
-    setMenuOpen(false);
   };
 
   return (
-    <nav
-      className={`fixed top-0 left-0 w-full z-50 bg-white transition-shadow duration-300 ${
-        scrolled ? 'shadow-sm' : ''
-      }`}
-    >
-      <div className="max-w-[1440px] mx-auto px-8 h-[72px] flex items-center justify-between">
-        
+    <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
+      scrolled
+        ? 'bg-white/95 backdrop-blur-sm border-b border-gray-100'
+        : 'bg-white'
+    }`}>
+      <div className="max-w-[1440px] mx-auto px-8 h-[80px] flex items-center justify-between">
+
         {/* Logo */}
-        <button onClick={() => router.push('/')}>
+        <button
+          onClick={() => router.push('/')}
+          className="transition-opacity duration-300 hover:opacity-70"
+          aria-label="Warma Heritage Group - Beranda"
+        >
           <Image
             src="/Logo_clear.png"
             alt="Warma Heritage Group"
-            width={140}
-            height={40}
+            width={130}
+            height={36}
             className="object-contain"
             priority
           />
@@ -75,30 +68,35 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
             <button
               key={link.id}
               onClick={() => scrollToSection(link.id)}
-              className="text-sm text-gray-600 hover:text-black transition-colors duration-200 tracking-wide"
+              className="text-[13px] text-gray-500 hover:text-gray-900 transition-colors duration-300 tracking-[0.05em] relative group"
             >
               {lang === 'id' ? link.labelId : link.labelEn}
+              <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-gray-900 transition-all duration-300 group-hover:w-full" />
             </button>
           ))}
         </div>
 
-        {/* Language Toggle + Mobile Menu Button */}
-        <div className="flex items-center gap-4">
+        {/* Right side */}
+        <div className="flex items-center gap-5">
           {/* Toggle ID/EN */}
-          <div className="flex items-center gap-1 border border-gray-200 rounded-sm px-2 py-1">
+          <div className="flex items-center gap-1">
             <button
               onClick={() => setLang('id')}
-              className={`text-xs font-medium px-1 transition-colors ${
-                lang === 'id' ? 'text-black' : 'text-gray-400'
+              className={`text-[11px] tracking-[0.1em] px-1.5 py-0.5 transition-all duration-300 ${
+                lang === 'id'
+                  ? 'text-gray-900 font-medium'
+                  : 'text-gray-400 hover:text-gray-600'
               }`}
             >
               ID
             </button>
-            <span className="text-gray-300 text-xs">|</span>
+            <span className="text-gray-200 text-xs">/</span>
             <button
               onClick={() => setLang('en')}
-              className={`text-xs font-medium px-1 transition-colors ${
-                lang === 'en' ? 'text-black' : 'text-gray-400'
+              className={`text-[11px] tracking-[0.1em] px-1.5 py-0.5 transition-all duration-300 ${
+                lang === 'en'
+                  ? 'text-gray-900 font-medium'
+                  : 'text-gray-400 hover:text-gray-600'
               }`}
             >
               EN
@@ -107,31 +105,33 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
 
           {/* Mobile hamburger */}
           <button
-              aria-label={lang === 'id' ? 'Buka menu navigasi' : 'Open navigation menu'}
-              className="md:hidden flex flex-col gap-1.5"
-              onClick={() => setMenuOpen(!menuOpen)}
-            >
-            <span className={`block w-5 h-0.5 bg-black transition-all ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-            <span className={`block w-5 h-0.5 bg-black transition-all ${menuOpen ? 'opacity-0' : ''}`} />
-            <span className={`block w-5 h-0.5 bg-black transition-all ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+            aria-label={lang === 'id' ? 'Buka menu navigasi' : 'Open navigation menu'}
+            className="md:hidden flex flex-col justify-center gap-[5px] w-6 h-6"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            <span className={`block w-full h-px bg-gray-900 transition-all duration-300 origin-center ${menuOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
+            <span className={`block w-full h-px bg-gray-900 transition-all duration-300 ${menuOpen ? 'opacity-0 scale-x-0' : ''}`} />
+            <span className={`block w-full h-px bg-gray-900 transition-all duration-300 origin-center ${menuOpen ? '-rotate-45 -translate-y-[7px]' : ''}`} />
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
-      {menuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-100 px-8 py-4 flex flex-col gap-4">
+      {/* Mobile Menu */}
+      <div className={`md:hidden overflow-hidden transition-all duration-300 ${
+        menuOpen ? 'max-h-96 border-t border-gray-100' : 'max-h-0'
+      }`}>
+        <div className="bg-white px-8 py-6 flex flex-col gap-5">
           {navLinks.map((link) => (
             <button
               key={link.id}
               onClick={() => scrollToSection(link.id)}
-              className="text-sm text-gray-600 hover:text-black text-left transition-colors"
+              className="text-sm text-gray-500 hover:text-gray-900 text-left transition-colors duration-300 tracking-wide"
             >
               {lang === 'id' ? link.labelId : link.labelEn}
             </button>
           ))}
         </div>
-      )}
+      </div>
     </nav>
   );
 }
