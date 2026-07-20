@@ -1,21 +1,20 @@
 'use client';
 
 import { useScrollReveal } from '../hooks/useScrollReveal';
-
-type Lang = 'id' | 'en';
+import {
+  NAV_LINKS,
+  Lang,
+  COMPANY_EMAIL,
+  COMPANY_PHONE,
+  COMPANY_ADDRESS,
+  COMPANY_CITY,
+  COMPANY_WA,
+  WA_MESSAGES,
+} from '../lib/constants';
 
 interface FooterProps {
   lang: Lang;
 }
-
-const navLinks = [
-  { id: 'about', labelId: 'Tentang Kami', labelEn: 'About Us' },
-  { id: 'founder', labelId: 'Pendiri', labelEn: 'Founders' },
-  { id: 'companies', labelId: 'Perusahaan', labelEn: 'Companies' },
-  { id: 'services', labelId: 'Layanan', labelEn: 'Services' },
-  { id: 'impact', labelId: 'Dampak Sosial', labelEn: 'Social Impact' },
-  { id: 'contact', labelId: 'Kontak', labelEn: 'Contact' },
-];
 
 export default function Footer({ lang }: FooterProps) {
   const isId = lang === 'id';
@@ -31,7 +30,7 @@ export default function Footer({ lang }: FooterProps) {
       <div className="max-w-[1440px] mx-auto">
 
         <div
-          ref={ref as React.RefObject<HTMLDivElement>}
+          ref={ref}
           className={`flex flex-col md:flex-row justify-between gap-12 pb-12 border-b border-gray-300 reveal ${isVisible ? 'visible' : ''}`}
         >
           {/* Logo & deskripsi */}
@@ -44,12 +43,12 @@ export default function Footer({ lang }: FooterProps) {
             </p>
           </div>
 
-          {/* Nav links */}
+          {/* Nav links — hanya tanpa blog */}
           <div className="flex flex-col gap-3">
             <p className="text-xs tracking-widest text-gray-500 uppercase mb-2">
               {isId ? 'Navigasi' : 'Navigation'}
             </p>
-            {navLinks.map((link) => (
+            {NAV_LINKS.filter(l => l.id !== 'blog').map((link) => (
               <button
                 key={link.id}
                 onClick={() => scrollToSection(link.id)}
@@ -65,16 +64,12 @@ export default function Footer({ lang }: FooterProps) {
             <p className="text-xs tracking-widest text-gray-500 uppercase mb-2">
               {isId ? 'Kontak' : 'Contact'}
             </p>
-            <p className="text-sm text-gray-600">WarmaGroup@gmail.com</p>
-            <p className="text-sm text-gray-600">+62 812-3966-9880</p>
-            <p className="text-sm text-gray-600">
-              Jl. Tukad Yeh Aya IX No. 90,<br />
-              Denpasar, Bali 80226
-            </p>
+            <p className="text-sm text-gray-600">{COMPANY_EMAIL}</p>
+            <p className="text-sm text-gray-600">{COMPANY_PHONE}</p>
+            <p className="text-sm text-gray-600">{COMPANY_ADDRESS}</p>
             
-            {/* Tag pembuka <a> yang hilang sudah ditambahkan di bawah ini */}
             <a
-              href={`https://wa.me/6281239669880?text=${isId ? 'Halo%20Warma%20Heritage%20Group%2C%20saya%20ingin%20menghubungi%20Anda.' : 'Hello%20Warma%20Heritage%20Group%2C%20I%20would%20like%20to%20get%20in%20touch%20with%20you.'}`}
+              href={`https://wa.me/${COMPANY_WA}?text=${isId ? WA_MESSAGES.general.id : WA_MESSAGES.general.en}`}
               target="_blank"
               rel="noopener noreferrer"
               className="w-fit mt-2 px-6 py-2 border border-gray-400 text-sm text-gray-600 hover:border-gray-900 hover:text-gray-900 transition-colors flex items-center gap-2"
@@ -90,7 +85,7 @@ export default function Footer({ lang }: FooterProps) {
         {/* Bottom */}
         <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-gray-500">© 2026 Warma Heritage Group. All rights reserved.</p>
-          <p className="text-xs text-gray-500">Denpasar, Bali, Indonesia</p>
+          <p className="text-xs text-gray-500">{COMPANY_CITY}</p>
         </div>
 
       </div>

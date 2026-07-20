@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { BlogPost } from '../lib/notion';
+import { useLang } from '../hooks/useLang';
 
 type Lang = 'id' | 'en';
 
@@ -18,20 +19,9 @@ function estimateReadTime(text: string): number {
 }
 
 export default function BlogClient({ posts }: BlogClientProps) {
-  const [lang, setLang] = useState<Lang>('id');
+  const { lang, setLang, isId } = useLang();
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const router = useRouter();
-  const isId = lang === 'id';
-
-  useEffect(() => {
-    const saved = localStorage.getItem('lang') as Lang;
-    if (saved) setLang(saved);
-  }, []);
-
-  const handleSetLang = (newLang: Lang) => {
-    setLang(newLang);
-    localStorage.setItem('lang', newLang);
-  };
 
   const categories = ['all', ...Array.from(new Set(posts.map(p => p.category).filter(Boolean)))];
   const filteredPosts = activeCategory === 'all'
@@ -40,7 +30,7 @@ export default function BlogClient({ posts }: BlogClientProps) {
 
   return (
     <main>
-      <Navbar lang={lang} setLang={handleSetLang} />
+      <Navbar lang={lang} setLang={setLang} />
 
       {/* Header */}
       <section className="w-full bg-white pt-[80px]">

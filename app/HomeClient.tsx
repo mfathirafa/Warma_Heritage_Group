@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useLang } from './hooks/useLang';
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import AboutSection from './components/AboutSection';
@@ -12,28 +12,16 @@ import CTASection from './components/CTASection';
 import Footer from './components/Footer';
 import { SocialImpact } from './lib/notion';
 
-type Lang = 'id' | 'en';
-
 interface HomeClientProps {
   socialImpacts: SocialImpact[];
 }
 
 export default function HomeClient({ socialImpacts }: HomeClientProps) {
-  const [lang, setLang] = useState<Lang>('id');
-
-  useEffect(() => {
-    const saved = localStorage.getItem('lang') as Lang;
-    if (saved) setLang(saved);
-  }, []);
-
-  const handleSetLang = (newLang: Lang) => {
-    setLang(newLang);
-    localStorage.setItem('lang', newLang);
-  };
+  const { lang, setLang } = useLang();
 
   return (
     <main>
-      <Navbar lang={lang} setLang={handleSetLang} />
+      <Navbar lang={lang} setLang={setLang} />
       <HeroSection lang={lang} />
       <AboutSection lang={lang} />
       <FounderSection lang={lang} />
