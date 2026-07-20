@@ -5,19 +5,17 @@
   --color-white: #FFFFFF;
   --color-black: #000000;
 
-  /* Abu-abu (dominan sesuai feedback supervisor) */
   --color-gray-50: #FAFAFA;
   --color-gray-100: #F5F5F5;
   --color-gray-200: #E8E8E8;
   --color-gray-300: #D1D1D1;
   --color-gray-400: #9E9E9E;
-  --color-gray-500: #737373;
-  --color-gray-600: #6B6B6B;
-  --color-gray-700: #404040;
-  --color-gray-800: #353535;
-  --color-gray-900: #1F1F1F;
+  --color-gray-500: #6B6B6B;
+  --color-gray-600: #4A4A4A;
+  --color-gray-700: #353535;
+  --color-gray-800: #1F1F1F;
+  --color-gray-900: #141414;
 
-  /* Brand colors */
   --color-brand-primary: #141414;
   --color-brand-secondary: #6B6B6B;
   --color-brand-bg: #FAFAFA;
@@ -67,16 +65,16 @@
   }
 
   /* Focus visible */
-  ::focus-visible {
+  :focus-visible {
     outline: 1.5px solid #141414;
-    color: #FAFAFA;
+    outline-offset: 3px;
   }
 
-    /* Scroll reveal animations */
+  /* Scroll reveal */
   .reveal {
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), 
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
                 transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
   }
 

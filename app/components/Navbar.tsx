@@ -3,20 +3,11 @@
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-
-const navLinks = [
-  { id: 'about', labelId: 'Tentang Kami', labelEn: 'About Us' },
-  { id: 'founder', labelId: 'Pendiri', labelEn: 'Founder' },
-  { id: 'companies', labelId: 'Perusahaan', labelEn: 'Companies' },
-  { id: 'services', labelId: 'Layanan', labelEn: 'Services' },
-  { id: 'impact', labelId: 'Dampak Sosial', labelEn: 'Social Impact' },
-  { id: 'contact', labelId: 'Kontak', labelEn: 'Contact' },
-  { id: 'blog', labelId: 'Blog', labelEn: 'Blog' },
-];
+import { NAV_LINKS, Lang } from '../lib/constants';
 
 interface NavbarProps {
-  lang: 'id' | 'en';
-  setLang: (lang: 'id' | 'en') => void;
+  lang: Lang;
+  setLang: (lang: Lang) => void;
 }
 
 export default function Navbar({ lang, setLang }: NavbarProps) {
@@ -64,7 +55,7 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
+          {NAV_LINKS.map((link) => (
             <button
               key={link.id}
               onClick={() => scrollToSection(link.id)}
@@ -83,9 +74,7 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
             <button
               onClick={() => setLang('id')}
               className={`text-[11px] tracking-[0.1em] px-1.5 py-0.5 transition-all duration-300 ${
-                lang === 'id'
-                  ? 'text-gray-900 font-medium'
-                  : 'text-gray-400 hover:text-gray-600'
+                lang === 'id' ? 'text-gray-900 font-medium' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
               ID
@@ -94,9 +83,7 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
             <button
               onClick={() => setLang('en')}
               className={`text-[11px] tracking-[0.1em] px-1.5 py-0.5 transition-all duration-300 ${
-                lang === 'en'
-                  ? 'text-gray-900 font-medium'
-                  : 'text-gray-400 hover:text-gray-600'
+                lang === 'en' ? 'text-gray-900 font-medium' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
               EN
@@ -121,7 +108,7 @@ export default function Navbar({ lang, setLang }: NavbarProps) {
         menuOpen ? 'max-h-96 border-t border-gray-100' : 'max-h-0'
       }`}>
         <div className="bg-white px-8 py-6 flex flex-col gap-5">
-          {navLinks.map((link) => (
+          {NAV_LINKS.map((link) => (
             <button
               key={link.id}
               onClick={() => scrollToSection(link.id)}

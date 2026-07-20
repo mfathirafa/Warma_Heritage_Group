@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { BlogPost } from '../../lib/notion';
+import { useLang } from '../../hooks/useLang';
 
 type Lang = 'id' | 'en';
 
@@ -19,17 +20,14 @@ function estimateReadTime(text: string): number {
 }
 
 export default function BlogDetailClient({ post }: BlogDetailClientProps) {
-  const [lang, setLang] = useState<Lang>('id');
+  const { lang, setLang, isId } = useLang();
   const [readProgress, setReadProgress] = useState(0);
   const [currentUrl, setCurrentUrl] = useState('');
   const [copied, setCopied] = useState(false);
   const articleRef = useRef<HTMLElement>(null);
   const router = useRouter();
-  const isId = lang === 'id';
 
   useEffect(() => {
-    const saved = localStorage.getItem('lang') as Lang;
-    if (saved) setLang(saved);
     setCurrentUrl(window.location.href);
   }, []);
 
@@ -44,11 +42,6 @@ export default function BlogDetailClient({ post }: BlogDetailClientProps) {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const handleSetLang = (newLang: Lang) => {
-    setLang(newLang);
-    localStorage.setItem('lang', newLang);
-  };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(currentUrl);
@@ -65,7 +58,7 @@ export default function BlogDetailClient({ post }: BlogDetailClientProps) {
 
   return (
     <main>
-      <Navbar lang={lang} setLang={handleSetLang} />
+      <Navbar lang={lang} setLang={setLang} />
 
       {/* Reading Progress */}
       <div className="fixed top-0 left-0 w-full h-[2px] z-[60] bg-transparent">
