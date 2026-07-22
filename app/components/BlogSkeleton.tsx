@@ -1,6 +1,6 @@
 export default function BlogSkeleton() {
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[1, 2, 3].map((i) => (
                 <div key={i} className="flex flex-col gap-4 animate-pulse">
                     <div className="w-full aspect-video bg-gray-200"/>

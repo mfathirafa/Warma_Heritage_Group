@@ -8,8 +8,6 @@ import Footer from '../../components/Footer';
 import { BlogPost } from '../../lib/notion';
 import { useLang } from '../../hooks/useLang';
 
-type Lang = 'id' | 'en';
-
 interface BlogDetailClientProps {
   post: BlogPost;
 }
@@ -53,7 +51,6 @@ export default function BlogDetailClient({ post }: BlogDetailClientProps) {
   const excerpt = isId ? post.excerptId : post.excerptEn;
   const content = isId ? post.contentId : post.contentEn;
   const readTime = estimateReadTime(content || excerpt || '');
-
   const paragraphs = content ? content.split('\n').filter(p => p.trim()) : [];
 
   return (
@@ -70,21 +67,31 @@ export default function BlogDetailClient({ post }: BlogDetailClientProps) {
 
       {/* Hero */}
       <section className="w-full bg-white pt-[80px]">
-        <div className="max-w-[680px] mx-auto px-8 pt-16 pb-12">
+        <div className="max-w-[800px] mx-auto px-8 pt-12 pb-8">
 
           {/* Back */}
           <button
             onClick={() => router.push('/blog')}
-            className="flex items-center gap-2 text-[11px] tracking-[0.12em] uppercase text-gray-400 hover:text-gray-900 transition-all duration-300 mb-12 group"
+            className="flex items-center gap-2 text-[11px] tracking-[0.12em] uppercase text-gray-400 hover:text-gray-900 transition-all duration-300 mb-10 group"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 group-hover:-translate-x-1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="12" height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="transition-transform duration-300 group-hover:-translate-x-1"
+            >
               <path d="M19 12H5M12 5l-7 7 7 7"/>
             </svg>
-            {isId ? 'Blog' : 'Blog'}
+            Blog
           </button>
 
-          {/* Meta row */}
-          <div className="flex flex-wrap items-center gap-3 mb-8">
+          {/* Meta */}
+          <div className="flex flex-wrap items-center gap-3 mb-6">
             {post.category && (
               <span className="text-[10px] tracking-[0.2em] uppercase text-gray-400 border border-gray-200 px-2.5 py-1">
                 {post.category}
@@ -99,26 +106,26 @@ export default function BlogDetailClient({ post }: BlogDetailClientProps) {
               </span>
             )}
             <span className="text-gray-200">·</span>
-            <span className="text-[11px] text-gray-400">
+            <span className="text-[11px] text-gray-400 font-medium">
               {readTime} {isId ? 'menit baca' : 'min read'}
             </span>
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl md:text-4xl text-gray-900 leading-[1.2] mb-8 tracking-[-0.01em]">
+          <h1 className="text-3xl md:text-4xl text-gray-900 leading-[1.2] mb-6 tracking-[-0.01em]">
             {title}
           </h1>
 
           {/* Excerpt */}
           {excerpt && (
-            <p className="text-base md:text-lg text-gray-500 leading-relaxed pl-4 border-l border-gray-200">
+            <p className="text-base md:text-lg text-gray-500 leading-relaxed pl-4 border-l-2 border-gray-200 mb-8">
               {excerpt}
             </p>
           )}
 
           {/* Author */}
-          <div className="flex items-center gap-3 mt-10 pt-8 border-t border-gray-100">
-            <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center">
+          <div className="flex items-center gap-3 pt-6 border-t border-gray-100">
+            <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
               </svg>
@@ -136,12 +143,12 @@ export default function BlogDetailClient({ post }: BlogDetailClientProps) {
 
       {/* Cover Image */}
       {post.cover && (
-        <div className="w-full h-[45vh] md:h-[60vh] relative bg-gray-100 overflow-hidden">
+        <div className="w-full aspect-[16/9] md:aspect-[21/9] relative bg-gray-100 overflow-hidden">
           <Image
             src={post.cover}
             alt={title}
             fill
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, 1200px"
             className="object-cover object-center"
             priority
             onError={(e) => {
@@ -152,30 +159,30 @@ export default function BlogDetailClient({ post }: BlogDetailClientProps) {
       )}
 
       {/* Article Content */}
-      <section ref={articleRef} className="w-full bg-white py-16 px-8">
-        <div className="max-w-[680px] mx-auto">
+      <section ref={articleRef} className="w-full bg-white py-12 px-8">
+        <div className="max-w-[800px] mx-auto">
 
           {paragraphs.length > 0 ? (
-            <div className="flex flex-col gap-0">
+            <div className="flex flex-col">
               {paragraphs.map((paragraph, index) => {
                 if (paragraph.startsWith('## ')) {
                   return (
-                    <h2 key={index} className="text-xl md:text-2xl text-gray-900 mt-12 mb-4 leading-snug">
+                    <h2 key={index} className="text-xl md:text-2xl text-gray-900 mt-10 mb-4 leading-snug">
                       {paragraph.replace('## ', '')}
                     </h2>
                   );
                 }
                 if (paragraph.startsWith('# ')) {
                   return (
-                    <h2 key={index} className="text-2xl md:text-3xl text-gray-900 mt-14 mb-5 leading-snug">
+                    <h2 key={index} className="text-2xl md:text-3xl text-gray-900 mt-12 mb-5 leading-snug">
                       {paragraph.replace('# ', '')}
                     </h2>
                   );
                 }
                 if (paragraph.startsWith('> ')) {
                   return (
-                    <blockquote key={index} className="border-l border-gray-200 pl-5 my-8">
-                      <p className="text-base md:text-lg text-gray-500 leading-relaxed italic">
+                    <blockquote key={index} className="border-l-[3px] border-gray-300 pl-6 my-8">
+                      <p className="text-xl text-gray-600 leading-relaxed italic">
                         {paragraph.replace('> ', '')}
                       </p>
                     </blockquote>
@@ -189,7 +196,7 @@ export default function BlogDetailClient({ post }: BlogDetailClientProps) {
               })}
             </div>
           ) : (
-            <div className="py-20 flex flex-col items-center gap-4">
+            <div className="py-16 flex flex-col items-center gap-4">
               <img src="/Logo_clear.png" alt="" className="w-10 opacity-10" />
               <p className="text-sm text-gray-400">
                 {isId ? 'Konten tidak tersedia.' : 'Content not available.'}
@@ -198,19 +205,18 @@ export default function BlogDetailClient({ post }: BlogDetailClientProps) {
           )}
 
           {/* Divider */}
-          <div className="my-16 flex items-center gap-6">
+          <div className="my-12 flex items-center gap-6">
             <div className="flex-1 h-px bg-gray-100" />
             <img src="/Logo_clear.png" alt="" className="w-6 opacity-15" />
             <div className="flex-1 h-px bg-gray-100" />
           </div>
 
           {/* Share */}
-          <div className="flex flex-col gap-5 mb-12">
+          <div className="flex flex-col gap-4 mb-10">
             <p className="text-[10px] tracking-[0.2em] uppercase text-gray-400">
               {isId ? 'Bagikan' : 'Share'}
             </p>
             <div className="flex gap-2 flex-wrap">
-              
               <a
                 href={`https://wa.me/?text=${encodeURIComponent(title + '\n' + currentUrl)}`}
                 target="_blank"

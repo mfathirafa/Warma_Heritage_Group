@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import {
   NAV_LINKS,
@@ -19,11 +20,23 @@ interface FooterProps {
 export default function Footer({ lang }: FooterProps) {
   const isId = lang === 'id';
   const { ref, isVisible } = useScrollReveal();
+  const router = useRouter();
 
   const scrollToSection = (id: string) => {
+    if (id === 'blog') {
+      router.push('/blog');
+      return;
+    }
+    if (window.location.pathname !== '/') {
+      window.location.href = `/#${id}`;
+      return;
+    }
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
+
+  // Tampilkan semua NAV_LINKS di footer termasuk blog
+  const footerLinks = NAV_LINKS;
 
   return (
     <footer className="w-full bg-gray-100 py-16 px-8">
@@ -43,12 +56,12 @@ export default function Footer({ lang }: FooterProps) {
             </p>
           </div>
 
-          {/* Nav links — hanya tanpa blog */}
+          {/* Nav links */}
           <div className="flex flex-col gap-3">
             <p className="text-xs tracking-widest text-gray-500 uppercase mb-2">
               {isId ? 'Navigasi' : 'Navigation'}
             </p>
-            {NAV_LINKS.filter(l => l.id !== 'blog').map((link) => (
+            {footerLinks.map((link) => (
               <button
                 key={link.id}
                 onClick={() => scrollToSection(link.id)}
@@ -67,7 +80,6 @@ export default function Footer({ lang }: FooterProps) {
             <p className="text-sm text-gray-600">{COMPANY_EMAIL}</p>
             <p className="text-sm text-gray-600">{COMPANY_PHONE}</p>
             <p className="text-sm text-gray-600">{COMPANY_ADDRESS}</p>
-            
             <a
               href={`https://wa.me/${COMPANY_WA}?text=${isId ? WA_MESSAGES.general.id : WA_MESSAGES.general.en}`}
               target="_blank"

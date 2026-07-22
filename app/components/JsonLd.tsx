@@ -10,7 +10,7 @@ export default function JsonLd() {
             '@type': 'PostalAddress',
             streetAddress: 'Jalan Tukad Yeh Aya IX No. 90',
             addressLocality: 'Denpasar',
-            adressRegion: 'Bali',
+            addressRegion: 'Bali',
             postalCode: '80226',
             addressCountry: 'ID',
         },
