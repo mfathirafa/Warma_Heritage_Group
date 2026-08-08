@@ -17,7 +17,7 @@ Website resmi **Warma Heritage Group**, sebuah holding company yang membawahi 6 
 | 2 | Rattan Export House Indonesia | Ekspor rotan ke pasar internasional |
 | 3 | Kriya Kayu Nusantara | Kerajinan kayu berbasis kearifan lokal |
 | 4 | Nada Upacara Bali | Penyedia kebutuhan upacara adat Bali |
-| 5 | Bali Menari | Seni pertunjukan & tari tradisional Bali |
+| 5 | Bali Menari Academy | Seni pertunjukan & tari tradisional Bali |
 | 6 | Niaga Rasa Indonesia | Kuliner berbasis cita rasa Nusantara |
 
 ---
@@ -88,9 +88,9 @@ Buka [http://localhost:3000](http://localhost:3000) di browser.
 
 ## Kontak Perusahaan
 
-- **Email:** WarmaGroup@gmail.com
+- **Email:** warmaheritagegroup@gmail.com
 - **WhatsApp:** +62 812-3966-9880
-- **Alamat:** Jalan Tukad Yeh Aya IX No. 90, Denpasar, Bali 80226
+- **Alamat:** Jalan Sekar Tunjung XV No. 1A, Denpasar, Bali 80237
 - **Director:** Mahotama Warmasuta
 
 ---

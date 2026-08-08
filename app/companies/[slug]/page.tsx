@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import CompanyDetailClient from './CompanyDetailClient';
+import type { Metadata } from 'next';
 
 export const companies: Record<string, {
   nameId: string; nameEn: string;
@@ -15,8 +16,8 @@ export const companies: Record<string, {
     nameEn: 'Karya Rotan Indonesia',
     taglineId: 'Produsen & eksportir produk rotan berkualitas tinggi berbasis kearifan lokal Indonesia.',
     taglineEn: 'Producer & exporter of high-quality rattan products rooted in local Indonesian craftsmanship.',
-    descId: 'Karya Rotan Indonesia adalah perusahaan yang bergerak di bidang produksi dan ekspor produk rotan berkualitas tinggi. Dengan mengutamakan kearifan lokal dan keahlian pengrajin Indonesia, kami menghadirkan produk rotan yang memenuhi standar internasional.',
-    descEn: 'Karya Rotan Indonesia is a company engaged in the production and export of high-quality rattan products. By prioritizing local wisdom and the expertise of Indonesian artisans, we deliver rattan products that meet international standards.',
+    descId: 'Merancang dan memproduksi furnitur rotan custom, pencahayaan, dan produk interior untuk hotel, vila, restoran, serta ruang komersial.',
+    descEn: 'Designing and manufactures custom rattan furniture, lighting, and interior products for hotels, villas, restaurants, and commercial spaces.',
     wa: '6281239669880',
     industry: 'Rattan',
     waMessageId: 'Halo%20Karya%20Rotan%20Indonesia%2C%20saya%20tertarik%20dengan%20produk%20rotan%20Anda.%20Boleh%20saya%20tahu%20lebih%20lanjut%3F',
@@ -38,8 +39,8 @@ export const companies: Record<string, {
     nameEn: 'Rattan Export House Indonesia',
     taglineId: 'Menghubungkan produk rotan Indonesia dengan pasar internasional secara profesional.',
     taglineEn: 'Connecting Indonesian rattan products to international markets professionally.',
-    descId: 'Rattan Export House Indonesia berfokus pada ekspor produk rotan ke pasar global. Kami menjadi jembatan antara pengrajin rotan Indonesia dengan pembeli internasional, memastikan kualitas dan ketepatan waktu pengiriman.',
-    descEn: 'Rattan Export House Indonesia focuses on exporting rattan products to global markets. We bridge Indonesian rattan artisans with international buyers, ensuring quality and timely delivery.',
+    descId: 'Agregator ekspor menyeluruh yang mengkhususkan diri pada produk rotan Indonesia, mulai dari bahan baku dan komponen setengah jadi hingga furnitur jadi dan dekorasi rumah.',
+    descEn: 'End-to-end export aggregator specializing in Indonesian rattan products, from raw materials and semi-finished components to finished furniture and home décor.',
     wa: '6281239669880',
     industry: 'Rattan Export',
     waMessageId: 'Halo%20Rattan%20Export%20House%20Indonesia%2C%20saya%20tertarik%20untuk%20mengekspor%20produk%20rotan%20Anda.%20Boleh%20saya%20tahu%20lebih%20lanjut%3F',
@@ -61,8 +62,8 @@ export const companies: Record<string, {
     nameEn: 'Kriya Kayu Nusantara',
     taglineId: 'Kerajinan kayu premium berbasis kearifan dan seni budaya Nusantara.',
     taglineEn: 'Premium woodcraft based on the art and wisdom of the Nusantara archipelago.',
-    descId: 'Kriya Kayu Nusantara menghadirkan kerajinan kayu premium yang terinspirasi dari kekayaan seni dan budaya Nusantara. Setiap produk dibuat dengan tangan oleh pengrajin terampil menggunakan bahan kayu pilihan.',
-    descEn: 'Kriya Kayu Nusantara presents premium woodcraft inspired by the richness of Nusantara arts and culture. Each product is handcrafted by skilled artisans using selected quality wood.',
+    descId: 'Menciptakan produk kayu buatan tangan mulai dari karya seni hingga furnitur custom untuk hotel, restoran, dan proyek komersial. Kami memadukan teknik pertukangan tradisional dengan desain kontemporer.',
+    descEn: 'Creating handcrafted wooden products ranging from artisan pieces to custom furniture for hotels, restaurants, and commercial projects. We combine traditional woodworking techniques with contemporary design.',
     wa: '6281239669880',
     industry: 'Woodcraft',
     waMessageId: 'Halo%20Kriya%20Kayu%20Nusantara%2C%20saya%20tertarik%20dengan%20produk%20kerajinan%20kayu%20Anda.%20Boleh%20saya%20tahu%20lebih%20lanjut%3F',
@@ -82,10 +83,10 @@ export const companies: Record<string, {
   'nada-upacara-bali': {
     nameId: 'Nada Upacara Bali',
     nameEn: 'Nada Upacara Bali',
-    taglineId: 'Penyedia lengkap kebutuhan upacara adat dan ritual keagamaan Bali.',
-    taglineEn: 'Complete provider of Balinese traditional ceremonial and religious ritual needs.',
-    descId: 'Nada Upacara Bali hadir sebagai penyedia terpercaya untuk kebutuhan upacara adat dan ritual keagamaan di Bali. Kami menyediakan berbagai perlengkapan upacara yang dibuat dengan penuh ketulusan dan mengikuti tradisi leluhur.',
-    descEn: 'Nada Upacara Bali is a trusted provider for traditional ceremonial and religious ritual needs in Bali. We provide various ceremonial supplies made with sincerity and following ancestral traditions.',
+    taglineId: 'Menyediakan pertunjukan budaya dan layanan upacara adat Bali yang autentik untuk komunitas, industri perhotelan, dan penyelenggara acara.',
+    taglineEn: 'Providing authentic Balinese cultural performances and ceremonial services for communities, the hospitality industry, and event organizers.',
+    descId: 'Menyediakan pertunjukan budaya dan layanan upacara adat Bali yang autentik bagi komunitas, industri perhotelan, dan penyelenggara acara. Kami berkomitmen melestarikan tradisi hidup Bali.',
+    descEn: 'Providing authentic Balinese cultural performances and ceremonial services for communities, the hospitality industry, and event organizers. We are committed to preserving Bali\'s living traditions.',
     wa: '6281239669880',
     industry: 'Cultural & Ceremony',
     waMessageId: 'Halo%20Nada%20Upacara%20Bali%2C%20saya%20tertarik%20dengan%20layanan%20upacara%20adat%20Bali%20Anda.%20Boleh%20saya%20tahu%20lebih%20lanjut%3F',
@@ -102,56 +103,59 @@ export const companies: Record<string, {
       { titleId: 'Perlengkapan Tari & Gamelan', titleEn: 'Dance & Gamelan Equipment', descId: 'Penyediaan perlengkapan tari tradisional Bali dan instrumen gamelan untuk keperluan upacara dan pertunjukan.', descEn: 'Supply of traditional Balinese dance equipment and gamelan instruments for ceremonies and performances.' },
     ],
   },
-  'bali-menari': {
-    nameId: 'Bali Menari',
-    nameEn: 'Bali Menari',
-    taglineId: 'Seni pertunjukan dan tari tradisional Bali yang memukau dunia.',
-    taglineEn: 'Captivating Balinese traditional dance and performing arts for the world.',
-    descId: 'Bali Menari adalah perusahaan seni pertunjukan yang berfokus pada pelestarian dan promosi tari tradisional Bali. Kami menghadirkan pertunjukan tari Bali yang autentik untuk berbagai acara lokal maupun internasional.',
-    descEn: 'Bali Menari is a performing arts company focused on preserving and promoting traditional Balinese dance. We present authentic Balinese dance performances for various local and international events.',
+  'bali-menari-academy': {
+    nameId: 'Bali Menari Academy',
+    nameEn: 'Bali Menari Academy',
+    taglineId: 'Kelas tari tradisional dan modern untuk anak-anak maupun dewasa melalui pendekatan Joyful Learning.',
+    taglineEn: 'Traditional and modern dance classes for children and adults through a Joyful Learning approach.',
+    descId: 'Kami menyelenggarakan kelas tari tradisional dan modern bagi anak-anak maupun dewasa melalui pendekatan Joyful Learning.',
+    descEn: 'We provide traditional and modern dance classes for children and adults through a Joyful Learning approach.',
     wa: '6281239669880',
     industry: 'Performing Arts',
-    waMessageId: 'Halo%20Bali%20Menari%2C%20saya%20tertarik%20dengan%20pertunjukan%20tari%20Bali%20Anda.%20Boleh%20saya%20tahu%20lebih%20lanjut%3F',
-    waMessageEn: 'Hello%20Bali%20Menari%2C%20I%20am%20interested%20in%20your%20Balinese%20dance%20performances.%20Could%20you%20tell%20me%20more%3F',
-    highlights: [
-      { titleId: 'Penari Profesional Bersertifikat', titleEn: 'Certified Professional Dancers', descId: 'Tim penari kami terdiri dari penari profesional bersertifikat yang terlatih dalam tradisi tari Bali autentik.', descEn: 'Our dance team consists of certified professional dancers trained in authentic Balinese dance traditions.' },
-      { titleId: 'Pertunjukan Autentik', titleEn: 'Authentic Performances', descId: 'Setiap pertunjukan menampilkan tari Bali yang autentik dengan kostum, musik, dan gerakan tradisional.', descEn: 'Every performance features authentic Balinese dance with traditional costumes, music, and movements.' },
-      { titleId: 'Fleksibel untuk Berbagai Acara', titleEn: 'Flexible for Various Events', descId: 'Kami melayani berbagai jenis acara mulai dari pernikahan, festival budaya, hingga acara korporat internasional.', descEn: 'We serve various types of events from weddings and cultural festivals to international corporate events.' },
-    ],
+    waMessageId: 'Halo%20Bali%20Menari%20Academy%2C%20saya%20tertarik%20dengan%20kelas%20tari%20Anda.%20Boleh%20saya%20tahu%20lebih%20lanjut%3F',
+    waMessageEn: 'Hello%20Bali%20Menari%20Academy%2C%20I%20am%20interested%20in%20your%20dance%20classes.%20Could%20you%20tell%20me%20more%3F',
+    highlights: [],
     services: [
-      { titleId: 'Pertunjukan Tari Bali', titleEn: 'Balinese Dance Performance', descId: 'Pertunjukan tari Bali tradisional seperti Kecak, Legong, Barong, dan Pendet untuk berbagai acara.', descEn: 'Traditional Balinese dance performances such as Kecak, Legong, Barong, and Pendet for various events.' },
       { titleId: 'Workshop Tari Bali', titleEn: 'Balinese Dance Workshop', descId: 'Program workshop tari Bali untuk wisatawan, pelajar, dan pecinta budaya yang ingin belajar tari tradisional.', descEn: 'Balinese dance workshop programs for tourists, students, and culture enthusiasts wanting to learn traditional dance.' },
-      { titleId: 'Pertunjukan Budaya Korporat', titleEn: 'Corporate Cultural Performance', descId: 'Paket pertunjukan seni budaya Bali eksklusif untuk acara korporat, MICE, dan incentive tour.', descEn: 'Exclusive Balinese cultural performance packages for corporate events, MICE, and incentive tours.' },
-      { titleId: 'Dokumentasi & Produksi', titleEn: 'Documentation & Production', descId: 'Layanan dokumentasi video dan foto profesional untuk pertunjukan tari dan acara budaya.', descEn: 'Professional video and photo documentation services for dance performances and cultural events.' },
     ],
   },
   'niaga-rasa-indonesia': {
     nameId: 'Niaga Rasa Indonesia',
     nameEn: 'Niaga Rasa Indonesia',
-    taglineId: 'Usaha kuliner autentik berbasis cita rasa dan kekayaan kuliner Nusantara.',
-    taglineEn: 'Authentic culinary business rooted in the rich flavors of the Nusantara archipelago.',
-    descId: 'Niaga Rasa Indonesia bergerak di bidang kuliner autentik yang mengangkat cita rasa dan kekayaan kuliner Nusantara. Kami menghadirkan pengalaman kuliner yang memadukan tradisi dengan sentuhan modern.',
-    descEn: 'Niaga Rasa Indonesia operates in the authentic culinary sector, elevating the flavors and richness of Nusantara cuisine. We present culinary experiences that combine tradition with a modern touch.',
+    taglineId: 'Perusahaan ekspor yang menghubungkan produk pertanian Indonesia dengan pasar domestik dan internasional.',
+    taglineEn: 'An export company connecting Indonesia\'s agricultural products with domestic and international markets.',
+    descId: 'Perusahaan ekspor yang menghubungkan produk pertanian Indonesia dengan pasar domestik dan internasional, mempromosikan rempah-rempah dan bahan alami berkualitas tinggi melalui perdagangan yang bertanggung jawab.',
+    descEn: 'Export company that connects Indonesia\'s agricultural products with domestic and international markets, promoting high-quality spices and natural ingredients through responsible trade.',
     wa: '6281239669880',
-    industry: 'Culinary',
-    waMessageId: 'Halo%20Niaga%20Rasa%20Indonesia%2C%20saya%20tertarik%20dengan%20produk%20kuliner%20Anda.%20Boleh%20saya%20tahu%20lebih%20lanjut%3F',
-    waMessageEn: 'Hello%20Niaga%20Rasa%20Indonesia%2C%20I%20am%20interested%20in%20your%20culinary%20products.%20Could%20you%20tell%20me%20more%3F',
-    highlights: [
-      { titleId: 'Resep Autentik Nusantara', titleEn: 'Authentic Nusantara Recipes', descId: 'Setiap hidangan menggunakan resep autentik yang terinspirasi dari kekayaan kuliner tradisional Nusantara.', descEn: 'Every dish uses authentic recipes inspired by the rich traditional cuisine of the Nusantara archipelago.' },
-      { titleId: 'Bahan Lokal Berkualitas', titleEn: 'Quality Local Ingredients', descId: 'Kami menggunakan bahan-bahan lokal pilihan yang segar dan berkualitas tinggi dari sumber terpercaya.', descEn: 'We use selected fresh and high-quality local ingredients from trusted sources.' },
-      { titleId: 'Tradisi Bertemu Modernitas', titleEn: 'Tradition Meets Modernity', descId: 'Kami memadukan cita rasa tradisional dengan teknik dan presentasi modern untuk pengalaman kuliner yang unik.', descEn: 'We blend traditional flavors with modern techniques and presentation for a unique culinary experience.' },
-    ],
-    services: [
-      { titleId: 'Katering Acara', titleEn: 'Event Catering', descId: 'Layanan katering untuk berbagai acara mulai dari pernikahan, korporat, hingga acara keluarga.', descEn: 'Catering services for various events from weddings and corporate to family gatherings.' },
-      { titleId: 'Produk Kuliner Kemasan', titleEn: 'Packaged Culinary Products', descId: 'Berbagai produk kuliner Nusantara dalam kemasan premium yang siap dijual dan diekspor.', descEn: 'Various Nusantara culinary products in premium packaging ready for sale and export.' },
-      { titleId: 'Konsultasi Kuliner', titleEn: 'Culinary Consultation', descId: 'Layanan konsultasi pengembangan menu dan konsep kuliner berbasis cita rasa Nusantara.', descEn: 'Menu development and culinary concept consultation services based on Nusantara flavors.' },
-      { titleId: 'Pelatihan Kuliner', titleEn: 'Culinary Training', descId: 'Program pelatihan memasak masakan Nusantara autentik untuk individu dan tim kuliner profesional.', descEn: 'Authentic Nusantara cooking training programs for individuals and professional culinary teams.' },
-    ],
+    industry: 'Agricultural Export',
+    waMessageId: 'Halo%20Niaga%20Rasa%20Indonesia%2C%20saya%20tertarik%20dengan%20produk%20pertanian%20Anda.%20Boleh%20saya%20tahu%20lebih%20lanjut%3F',
+    waMessageEn: 'Hello%20Niaga%20Rasa%20Indonesia%2C%20I%20am%20interested%20in%20your%20agricultural%20products.%20Could%20you%20tell%20me%20more%3F',
+    highlights: [],
+    services: [],
   },
 };
 
 interface Props {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const company = companies[slug];
+
+  if (!company) {
+    return { title: 'Perusahaan Tidak Ditemukan | Warma Heritage Group' };
+  }
+
+  return {
+    title: `${company.nameId} | Warma Heritage Group`,
+    description: company.taglineId,
+    openGraph: {
+      title: `${company.nameId} | Warma Heritage Group`,
+      description: company.taglineId,
+      images: [{ url: '/Logo_clear.png', width: 1200, height: 630 }],
+    },
+  };
 }
 
 export default async function CompanyDetailPage({ params }: Props) {

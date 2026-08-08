@@ -73,7 +73,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="id">
       <body className={`${inter.variable} ${sortMillGoudy.className}`}>
         <JsonLd />
         {children}

@@ -3,7 +3,12 @@ import { getBlogPosts } from './lib/notion';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://warma-heritage-group.vercel.app';
-  const posts = await getBlogPosts();
+  let posts: Awaited<ReturnType<typeof getBlogPosts>> = [];
+  try {
+    posts = await getBlogPosts();
+  } catch (e) {
+    console.warn('Sitemap: gagal memuat blog posts dari Notion', e);
+  }
 
   const blogUrls = posts.map((post) => ({
     url: `${baseUrl}/blog/${post.slug}`,
@@ -51,7 +56,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/companies/bali-menari`,
+      url: `${baseUrl}/companies/bali-menari-academy`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.8,

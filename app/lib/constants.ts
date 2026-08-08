@@ -1,10 +1,10 @@
 // ===== COMPANY INFO =====
 export const COMPANY_NAME = 'Warma Heritage Group';
-export const COMPANY_EMAIL = 'WarmaGroup@gmail.com';
+export const COMPANY_EMAIL = 'warmaheritagegroup@gmail.com';
 export const COMPANY_PHONE = '+62 812-3966-9880';
 export const COMPANY_WA = '6281239669880';
-export const COMPANY_ADDRESS = 'Jl. Tukad Yeh Aya IX No. 90, Denpasar, Bali 80226';
-export const COMPANY_ADDRESS_SHORT = 'Jl. Tukad Yeh Aya IX No. 90, Denpasar, Bali';
+export const COMPANY_ADDRESS = 'Jalan Sekar Tunjung XV No. 1A, Denpasar, Bali 80237';
+export const COMPANY_ADDRESS_SHORT = 'Jalan Sekar Tunjung XV No. 1A, Denpasar, Bali';
 export const COMPANY_CITY = 'Denpasar, Bali, Indonesia';
 export const COMPANY_SITE = 'https://warma-heritage-group.vercel.app';
 

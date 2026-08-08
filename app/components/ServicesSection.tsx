@@ -125,8 +125,8 @@ export default function ServicesSection({ lang }: ServicesSectionProps) {
         >
           {servicesList.map((service, index) => {
             const item = t.services.find(s => s.id === service.id)!;
-            const title = isId ? (item as any).titleId : (item as any).titleEn;
-            const desc = isId ? (item as any).descId : (item as any).descEn;
+            const title = isId ? (item as { titleId: string }).titleId : (item as { titleEn: string }).titleEn;
+            const desc = isId ? (item as { descId: string }).descId : (item as { descEn: string }).descEn;
 
             return (
               <div

@@ -2,8 +2,16 @@ import { Client } from '@notionhq/client';
 
 // ===== ENV =====
 const NOTION_TOKEN = process.env.NOTION_TOKEN;
-export const DATABASE_ID = process.env.NOTION_BLOG_DATABASE_ID!;
-export const SOCIAL_IMPACT_DATABASE_ID = process.env.NOTION_SOCIAL_IMPACT_DATABASE_ID!;
+export const DATABASE_ID = process.env.NOTION_BLOG_DATABASE_ID;
+export const SOCIAL_IMPACT_DATABASE_ID = process.env.NOTION_SOCIAL_IMPACT_DATABASE_ID;
+
+function requireEnv(name: string): string {
+  const val = process.env[name];
+  if (!val) {
+    throw new Error(`Missing environment variable: ${name}. Pastikan sudah diatur di .env.local`);
+  }
+  return val;
+}
 
 // ===== TYPES =====
 export interface BlogPost {
@@ -70,8 +78,9 @@ function mapToBlogPost(page: any): BlogPost {
 // ===== QUERIES =====
 export async function getBlogPosts(): Promise<BlogPost[]> {
   const notion = createClient();
+  const dbId = requireEnv('NOTION_BLOG_DATABASE_ID');
   const response = await notion.databases.query({
-    database_id: DATABASE_ID,
+    database_id: dbId,
     filter: { property: 'Status', select: { equals: 'Published' } },
     sorts: [{ property: 'Date', direction: 'descending' }],
   });
@@ -87,8 +96,9 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
 
 export async function getSocialImpacts(): Promise<SocialImpact[]> {
   const notion = createClient();
+  const dbId = requireEnv('NOTION_SOCIAL_IMPACT_DATABASE_ID');
   const response = await notion.databases.query({
-    database_id: SOCIAL_IMPACT_DATABASE_ID,
+    database_id: dbId,
     filter: { property: 'Status', select: { equals: 'Published' } },
     sorts: [{ property: 'Order', direction: 'ascending' }],
   });

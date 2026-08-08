@@ -8,10 +8,10 @@ export default function JsonLd() {
         description: 'Holding company yang membangun dan mengembangkan berbagai bisnis yang berakar pada budaya, kerajinan, dan semangat kewirausahaan Indonesia.',
         address: {
             '@type': 'PostalAddress',
-            streetAddress: 'Jalan Tukad Yeh Aya IX No. 90',
+            streetAddress: 'Jalan Sekar Tunjung XV No. 1A',
             addressLocality: 'Denpasar',
             addressRegion: 'Bali',
-            postalCode: '80226',
+            postalCode: '80237',
             addressCountry: 'ID',
         },
         contactPoint: {
@@ -26,7 +26,7 @@ export default function JsonLd() {
             { '@type': 'Organization', name: 'Rattan Export House Indonesia' },
             { '@type': 'Organization', name: 'Kriya Kayu Nusantara' },
             { '@type': 'Organization', name: 'Nada Upacara Bali' },
-            { '@type': 'Organization', name: 'Bali Menari' },
+            { '@type': 'Organization', name: 'Bali Menari Academy' },
             { '@type': 'Organization', name: 'Niaga Rasa Indonesia' },
         ],
     };
