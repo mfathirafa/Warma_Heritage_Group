@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
 type Lang = 'id' | 'en';
@@ -66,9 +67,15 @@ export default function AboutSection({ lang }: AboutSectionProps) {
         {/* Foto kanan */}
         <div
           ref={imageRef as React.RefObject<HTMLDivElement>}
-          className={`w-full aspect-square bg-gray-100 flex items-center justify-center reveal reveal-delay-1 ${imageVisible ? 'visible' : ''}`}
+          className={`w-full aspect-square bg-gray-100 relative overflow-hidden reveal reveal-delay-1 ${imageVisible ? 'visible' : ''}`}
         >
-          <p className="text-gray-400 text-sm">[ Foto Perusahaan ]</p>
+          <Image
+            src="/images/about.jpg"
+            alt="Warma Heritage Group"
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            style={{ objectFit: 'cover' }}
+          />
         </div>
 
       </div>

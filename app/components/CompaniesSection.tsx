@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
@@ -107,9 +108,15 @@ export default function CompaniesSection({ lang }: CompaniesSectionProps) {
             >
               <div
                 onClick={() => router.push(`/companies/${company.id}`)}
-                className="w-full aspect-square bg-gray-100 flex items-center justify-center cursor-pointer overflow-hidden transition-transform duration-300 group-hover:scale-[1.02]"
+                className="w-full aspect-square bg-gray-100 relative cursor-pointer overflow-hidden transition-transform duration-300 group-hover:scale-[1.02]"
               >
-                <p className="text-gray-400 text-xs">[ Foto ]</p>
+                <Image
+                  src={`/images/companies/${company.id}.png`}
+                  alt={isId ? company.nameId : company.nameEn}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  style={{ objectFit: 'contain' }}
+                />
               </div>
 
               <h3

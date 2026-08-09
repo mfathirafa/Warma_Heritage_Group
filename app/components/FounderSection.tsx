@@ -1,6 +1,13 @@
 'use client';
 
+import Image from 'next/image';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+
+const founderPhotos: Record<string, string> = {
+  mahotama: '/images/founders/mahotama.png',
+  warta: '/images/founders/warta.png',
+  masyuni: '/images/founders/masyuni.png',
+};
 
 type Lang = 'id' | 'en';
 
@@ -83,8 +90,14 @@ export default function FounderSection({ lang }: FounderSectionProps) {
               key={founder.id}
               className={`flex flex-col gap-5 reveal reveal-delay-${index + 1} ${gridVisible ? 'visible' : ''}`}
             >
-              <div className="w-full aspect-square bg-gray-200 flex items-center justify-center">
-                <p className="text-gray-400 text-xs">[ Foto ]</p>
+              <div className="w-full aspect-square bg-gray-200 relative overflow-hidden">
+                <Image
+                  src={founderPhotos[founder.id]}
+                  alt={founder.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  style={{ objectFit: 'cover' }}
+                />
               </div>
               <div className="flex flex-col gap-2">
                 <h3 className="text-lg font-bold text-gray-900 leading-snug">

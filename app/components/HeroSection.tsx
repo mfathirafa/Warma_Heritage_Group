@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 
 type Lang = 'id' | 'en';
@@ -60,12 +61,19 @@ export default function HeroSection({ lang }: HeroSectionProps) {
           </button>
         </div>
 
-        {/* Placeholder gambar kanan */}
+        {/* Gambar hero */}
         <div
           ref={imageRef as React.RefObject<HTMLDivElement>}
-          className={`w-full aspect-square bg-gray-200 flex items-center justify-center reveal reveal-delay-2 ${imageVisible ? 'visible' : ''}`}
+          className={`w-full aspect-square bg-gray-200 relative overflow-hidden reveal reveal-delay-2 ${imageVisible ? 'visible' : ''}`}
         >
-          <p className="text-gray-400 text-sm">[ Hero Image ]</p>
+          <Image
+            src="/images/hero.png"
+            alt="Warma Heritage Group"
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            style={{ objectFit: 'cover' }}
+            preload
+          />
         </div>
 
       </div>

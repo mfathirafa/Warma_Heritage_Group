@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { SocialImpact } from '../lib/notion';
 
@@ -9,6 +10,17 @@ interface SocialImpactSectionProps {
   lang: Lang;
   impacts: SocialImpact[];
 }
+
+// Fallback lokal jika Cover di Notion kosong (dipetakan berdasarkan judul program).
+const localCovers: Record<string, string> = {
+  'Pemberdayaan Pengrajin Lokal': '/images/social/pemberdayaan-pengrajin-lokal.jpg',
+  'Pelestarian Seni Bali': '/images/social/pelestarian-seni-bali.jpg',
+  'Pemberdayaan Seniman Muda': '/images/social/pemberdayaan-seniman-muda.jpg',
+  'Pelatihan Wirausaha bagi Komunitas Lokal': '/images/social/pelatihan-wirausaha-komunitas-lokal.jpg',
+  'Mentorship Mahasiswa Bali melalui Program Internship': '/images/social/mentorship-mahasiswa-internship.jpg',
+  'Berbagi Keceriaan di Panti Asuhan': '/images/social/berbagi-keceriaan-panti-asuhan.jpg',
+  'Pemeriksaan Kesehatan bagi Lansia di Panti Jompo': '/images/social/pemeriksaan-kesehatan-lansia.jpg',
+};
 
 const fallback: SocialImpact[] = [
   {
@@ -84,13 +96,21 @@ export default function SocialImpactSection({ lang, impacts }: SocialImpactSecti
                 className="flex flex-col gap-6 flex-shrink-0 snap-start"
                 style={{ width: 'calc(33.333% - 1.5rem)' }}
               >
-                <div className="w-full aspect-square overflow-hidden bg-gray-300">
+                <div className="w-full aspect-square relative overflow-hidden bg-gray-300">
                   {impact.cover ? (
                     <img
                       src={impact.cover}
                       alt={isId ? impact.titleId : impact.titleEn}
                       className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                    />
+                  ) : localCovers[impact.titleId] ? (
+                    <Image
+                      src={localCovers[impact.titleId]}
+                      alt={isId ? impact.titleId : impact.titleEn}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      style={{ objectFit: 'cover' }}
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">

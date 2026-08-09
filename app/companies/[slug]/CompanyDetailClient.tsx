@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
@@ -26,7 +27,7 @@ interface Props {
   slug: string;
 }
 
-export default function CompanyDetailClient({ company }: Props) {
+export default function CompanyDetailClient({ company, slug }: Props) {
   const { lang, setLang, isId } = useLang();
   const router = useRouter();
 
@@ -62,8 +63,14 @@ export default function CompanyDetailClient({ company }: Props) {
                 {isId ? 'Hubungi Kami' : 'Contact Us'}
               </a>
             </div>
-            <div className="w-full aspect-square bg-gray-200 flex items-center justify-center">
-              <p className="text-gray-400 text-sm">[ Foto Perusahaan ]</p>
+            <div className="w-full aspect-square bg-gray-200 relative overflow-hidden">
+              <Image
+                src={`/images/companies/${slug}.png`}
+                alt={isId ? company.nameId : company.nameEn}
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                style={{ objectFit: 'contain' }}
+              />
             </div>
           </div>
         </div>
@@ -84,8 +91,14 @@ export default function CompanyDetailClient({ company }: Props) {
               {isId ? company.descId : company.descEn}
             </p>
           </div>
-          <div className="w-full aspect-video bg-gray-100 flex items-center justify-center">
-            <p className="text-gray-400 text-sm">[ Foto Produk ]</p>
+          <div className="w-full aspect-video bg-gray-100 relative overflow-hidden">
+            <Image
+              src={`/images/companies/${slug}.png`}
+              alt={isId ? company.nameId : company.nameEn}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              style={{ objectFit: 'contain' }}
+            />
           </div>
         </div>
       </section>
