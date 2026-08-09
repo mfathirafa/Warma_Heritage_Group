@@ -81,7 +81,7 @@ const icons = {
   ),
   sustain: (
     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 22V12"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/><path d="M8 5.07A10 10 0 0 1 22 12"/><path d="M2 12a10 10 0 0 1 14-9.16"/>
+      <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
     </svg>
   ),
 };
