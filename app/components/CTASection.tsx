@@ -12,15 +12,15 @@ interface CTASectionProps {
 const content = {
   id: {
     label: 'Kontak',
-    headline: 'Tertarik Bermitra dengan Kami?',
-    sub: 'Isi formulir di bawah ini atau hubungi kami langsung melalui WhatsApp.',
+    headline: 'Tertarik Berkolaborasi dengan Kami?',
+    sub: 'Hubungi kami langsung melalui WhatsApp untuk konsultasi lebih lanjut.',
     cta: 'Hubungi via WhatsApp',
     waMessage: 'Halo%20Warma%20Heritage%20Group%2C%20saya%20tertarik%20untuk%20bermitra%20dengan%20perusahaan%20Anda.%20Boleh%20saya%20tahu%20lebih%20lanjut%3F',
   },
   en: {
     label: 'Contact',
-    headline: 'Interested in Partnering with Us?',
-    sub: 'Fill out the form below or contact us directly via WhatsApp.',
+    headline: 'Interested in Collaborating with Us?',
+    sub: 'Contact us directly via WhatsApp for further consultation.',
     cta: 'Contact via WhatsApp',
     waMessage: 'Hello%20Warma%20Heritage%20Group%2C%20I%20am%20interested%20in%20partnering%20with%20your%20company.%20Could%20you%20tell%20me%20more%3F',
   },

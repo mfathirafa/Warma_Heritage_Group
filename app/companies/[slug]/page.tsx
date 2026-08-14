@@ -10,6 +10,8 @@ export const companies: Record<string, {
   waMessageId: string; waMessageEn: string;
   highlights: { titleId: string; titleEn: string; descId: string; descEn: string; }[];
   services: { titleId: string; titleEn: string; descId: string; descEn: string; }[];
+  portofolioLabelId: string;
+  portofolioLabelEn: string;
 }> = {
   'karya-rotan-indonesia': {
     nameId: 'Karya Rotan Indonesia',
@@ -33,6 +35,8 @@ export const companies: Record<string, {
       { titleId: 'Bahan Baku Rotan', titleEn: 'Raw Rattan Materials', descId: 'Penyediaan bahan baku rotan pilihan untuk kebutuhan industri dan pengrajin.', descEn: 'Supply of selected raw rattan materials for industrial and artisan needs.' },
       { titleId: 'Ekspor Rotan', titleEn: 'Rattan Export', descId: 'Layanan ekspor produk rotan ke pasar internasional dengan pengurusan dokumen lengkap.', descEn: 'Rattan product export services to international markets with complete documentation.' },
     ],
+    portofolioLabelId: 'Produk',
+    portofolioLabelEn: 'Products'
   },
   'rattan-export-house-indonesia': {
     nameId: 'Rattan Export House Indonesia',
@@ -56,6 +60,8 @@ export const companies: Record<string, {
       { titleId: 'Konsultasi Ekspor', titleEn: 'Export Consultation', descId: 'Layanan konsultasi untuk pengrajin dan produsen rotan yang ingin memasuki pasar ekspor.', descEn: 'Consultation services for rattan artisans and producers looking to enter the export market.' },
       { titleId: 'Sourcing & Procurement', titleEn: 'Sourcing & Procurement', descId: 'Layanan pengadaan produk rotan sesuai spesifikasi dan kebutuhan pembeli internasional.', descEn: 'Rattan product procurement services according to international buyer specifications and needs.' },
     ],
+    portofolioLabelId: 'Produk',
+    portofolioLabelEn: 'Products',
   },
   'kriya-kayu-nusantara': {
     nameId: 'Kriya Kayu Nusantara',
@@ -79,6 +85,8 @@ export const companies: Record<string, {
       { titleId: 'Ukiran Kayu', titleEn: 'Wood Carving', descId: 'Ukiran kayu artistik untuk dekorasi, souvenir, dan koleksi seni.', descEn: 'Artistic wood carvings for decoration, souvenirs, and art collections.' },
       { titleId: 'Produk Kayu B2B', titleEn: 'B2B Wood Products', descId: 'Penyediaan produk kayu dalam jumlah besar untuk kebutuhan bisnis hotel, restoran, dan properti.', descEn: 'Supply of wood products in bulk for hotel, restaurant, and property business needs.' },
     ],
+    portofolioLabelId: 'Produk',
+    portofolioLabelEn: 'Products',
   },
   'nada-upacara-bali': {
     nameId: 'Nada Upacara Bali',
@@ -102,6 +110,8 @@ export const companies: Record<string, {
       { titleId: 'Konsultasi Upacara', titleEn: 'Ceremony Consultation', descId: 'Layanan konsultasi untuk membantu perencanaan dan pelaksanaan upacara adat sesuai tradisi.', descEn: 'Consultation services to help plan and execute traditional ceremonies according to tradition.' },
       { titleId: 'Perlengkapan Tari & Gamelan', titleEn: 'Dance & Gamelan Equipment', descId: 'Penyediaan perlengkapan tari tradisional Bali dan instrumen gamelan untuk keperluan upacara dan pertunjukan.', descEn: 'Supply of traditional Balinese dance equipment and gamelan instruments for ceremonies and performances.' },
     ],
+    portofolioLabelId: 'Pertunjukan',
+    portofolioLabelEn: 'Performances',
   },
   'bali-menari-academy': {
     nameId: 'Bali Menari Academy',
@@ -118,6 +128,8 @@ export const companies: Record<string, {
     services: [
       { titleId: 'Workshop Tari Bali', titleEn: 'Balinese Dance Workshop', descId: 'Program workshop tari Bali untuk wisatawan, pelajar, dan pecinta budaya yang ingin belajar tari tradisional.', descEn: 'Balinese dance workshop programs for tourists, students, and culture enthusiasts wanting to learn traditional dance.' },
     ],
+    portofolioLabelId: 'Dokumentasi',
+    portofolioLabelEn: 'Documentation',
   },
   'niaga-rasa-indonesia': {
     nameId: 'Niaga Rasa Indonesia',
@@ -127,11 +139,22 @@ export const companies: Record<string, {
     descId: 'Perusahaan ekspor yang menghubungkan produk pertanian Indonesia dengan pasar domestik dan internasional, mempromosikan rempah-rempah dan bahan alami berkualitas tinggi melalui perdagangan yang bertanggung jawab.',
     descEn: 'Export company that connects Indonesia\'s agricultural products with domestic and international markets, promoting high-quality spices and natural ingredients through responsible trade.',
     wa: '6281239669880',
-    industry: 'Agricultural Export',
-    waMessageId: 'Halo%20Niaga%20Rasa%20Indonesia%2C%20saya%20tertarik%20dengan%20produk%20pertanian%20Anda.%20Boleh%20saya%20tahu%20lebih%20lanjut%3F',
-    waMessageEn: 'Hello%20Niaga%20Rasa%20Indonesia%2C%20I%20am%20interested%20in%20your%20agricultural%20products.%20Could%20you%20tell%20me%20more%3F',
-    highlights: [],
-    services: [],
+    industry: 'Culinary',
+    waMessageId: 'Halo%20Niaga%20Rasa%20Indonesia%2C%20saya%20tertarik%20dengan%20produk%20kuliner%20Anda.%20Boleh%20saya%20tahu%20lebih%20lanjut%3F',
+    waMessageEn: 'Hello%20Niaga%20Rasa%20Indonesia%2C%20I%20am%20interested%20in%20your%20culinary%20products.%20Could%20you%20tell%20me%20more%3F',
+    highlights: [
+      { titleId: 'Resep Autentik Nusantara', titleEn: 'Authentic Nusantara Recipes', descId: 'Setiap hidangan menggunakan resep autentik yang terinspirasi dari kekayaan kuliner tradisional Nusantara.', descEn: 'Every dish uses authentic recipes inspired by the rich traditional cuisine of the Nusantara archipelago.' },
+      { titleId: 'Bahan Lokal Berkualitas', titleEn: 'Quality Local Ingredients', descId: 'Kami menggunakan bahan-bahan lokal pilihan yang segar dan berkualitas tinggi dari sumber terpercaya.', descEn: 'We use selected fresh and high-quality local ingredients from trusted sources.' },
+      { titleId: 'Tradisi Bertemu Modernitas', titleEn: 'Tradition Meets Modernity', descId: 'Kami memadukan cita rasa tradisional dengan teknik dan presentasi modern untuk pengalaman kuliner yang unik.', descEn: 'We blend traditional flavors with modern techniques and presentation for a unique culinary experience.' },
+    ],
+    services: [
+      { titleId: 'Katering Acara', titleEn: 'Event Catering', descId: 'Layanan katering untuk berbagai acara mulai dari pernikahan, korporat, hingga acara keluarga.', descEn: 'Catering services for various events from weddings and corporate to family gatherings.' },
+      { titleId: 'Produk Kuliner Kemasan', titleEn: 'Packaged Culinary Products', descId: 'Berbagai produk kuliner Nusantara dalam kemasan premium yang siap dijual dan diekspor.', descEn: 'Various Nusantara culinary products in premium packaging ready for sale and export.' },
+      { titleId: 'Konsultasi Kuliner', titleEn: 'Culinary Consultation', descId: 'Layanan konsultasi pengembangan menu dan konsep kuliner berbasis cita rasa Nusantara.', descEn: 'Menu development and culinary concept consultation services based on Nusantara flavors.' },
+      { titleId: 'Pelatihan Kuliner', titleEn: 'Culinary Training', descId: 'Program pelatihan memasak masakan Nusantara autentik untuk individu dan tim kuliner profesional.', descEn: 'Authentic Nusantara cooking training programs for individuals and professional culinary teams.' },
+    ],
+    portofolioLabelId: 'Produk',
+    portofolioLabelEn: 'Products',
   },
 };
 
