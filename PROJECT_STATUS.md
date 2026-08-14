@@ -221,6 +221,11 @@ Semua perubahan berikut sudah **committed** (commit `eede18c`, 2026-08-08 21:30 
 - `package.json` / `package-lock.json` — tambah `nodemailer@9.0.5`, `@types/nodemailer@8.0.1`
 - `.env.local` — tambah `SMTP_USER` (terisi) + `SMTP_PASS` (masih kosong, menunggu App Password)
 
+### Fase 3 — Icon fix + Rekomendasi Anak Perusahaan (selesai, belum commit)
+- `app/components/ServicesSection.tsx` — ganti ikon "Menciptakan Nilai yang Berkelanjutan" dari **matahari terbit** (terlihat "mereng"/aneh) → **ikon jam** (makna jangka panjang/berkelanjutan). Style stroke konsisten dengan ikon lain.
+- `REKOMENDASI_ANAK_PERUSAHAAN.md` **baru** — draft rekomendasi isi section detail untuk 6 anak perusahaan (highlights, services, galeri, versi ID+EN). 4 perusahaan lengkap; **Bali Menari Academy** & **Niaga Rasa Indonesia** belum lengkap. Siap dikirim ke GPT untuk digabung jadi satu susunan copywriting.
+- **Keputusan user (2026-08-09):** pengisian `SMTP_PASS` (App Password Google) **ditunda** — bukan prioritas saat ini, jangan ditawarkan lagi kecuali user minta. Route `/api/contact` tetap siap & terverifikasi.
+
 ---
 
 ## 5. Current Data / Content State
@@ -329,9 +334,10 @@ Checklist berdasarkan kondisi project aktual (urutan prioritas):
 - [ ] **Push commit ke origin/main** — `main` ahead of origin, belum di-push
 - [x] **Upload aset foto ke `public/images/`** ✅ — 18 foto dari `refs/` sudah dicopy ke `public/images/` (hero, about, 3 founder, 6 logo perusahaan, 7 foto social impact). Asli di `refs/` tidak dihapus.
 - [x] **Replace placeholder foto di landing page & detail pages** ✅ — Hero, About, Founders (3), Companies (6), CompanyDetail hero+about (6×2), SocialImpact (7) sudah pakai `next/image`. **Tersisa:** galeri `[ Foto 1-4 ]` di CompanyDetailClient (tidak ada aset produk).
-- [ ] **Isi `SMTP_PASS` (App Password Google) di `.env.local`** — route `/api/contact` sudah dibangun & terverifikasi; satu-satunya yang menghalangi pengiriman aktual adalah App Password. Cara: Google Account → Security → 2-Step Verification → App passwords. Setelah diisi, test kirim nyata.
+- [x] **Isi `SMTP_PASS` (App Password Google) di `.env.local`** ⏸️ **DITUNDA atas keputusan user (2026-08-09)** — route `/api/contact` sudah dibangun & terverifikasi; satu-satunya yang menghalangi pengiriman aktual adalah App Password. User memutuskan menunda pengisian — jangan ditawarkan lagi kecuali diminta. Cara: Google Account → Security → 2-Step Verification → App passwords.
 - [x] **Implement `/api/contact`** ✅ — route `app/api/contact/route.ts` dibuat (validasi strict + nodemailer Gmail SMTP), `nodemailer` + `@types/nodemailer` ditambahkan. tsc PASS, build PASS, semua response terverifikasi (405/400/500/guard). [detail Section 2 → API Routes](#api-routes)
-- [ ] **Lengkapi highlights/services untuk Bali Menari Academy & Niaga Rasa Indonesia** — kosong di company detail pages
+- [ ] **Lengkapi highlights/services untuk Bali Menari Academy & Niaga Rasa Indonesia** — kosong di company detail pages. **Rekomendasi konten sudah disiapkan di `REKOMENDASI_ANAK_PERUSAHAAN.md`** (highlights + services + galeri, versi ID/EN). Alur: kirim file ke GPT → gabung jadi satu susunan copywriting → tempel hasil ke `app/companies/[slug]/page.tsx`.
+- [ ] **Commit fase 3** — ikon jam (`ServicesSection.tsx`) + `REKOMENDASI_ANAK_PERUSAHAAN.md` + update `PROJECT_STATUS.md` belum di-commit.
 - [ ] **EN content blog** — Title EN kosong di kedua post Notion (artikel-pertama, artikel-kedua)
 - [ ] **Sinkronkan fallback SocialImpactSection** *(opsional, prioritas rendah)* — fallback punya "Program Lingkungan Berkelanjutan" yang bukan bagian dari 7 program PDF; hanya terlihat jika Notion dikosongkan
 - [ ] **Update README.md** — masih menyebut Next.js 15 (aktual 16.2.9), Playfair Display (aktual Sorts Mill Goudy), fase SDLC lama, status "In Development", struktur halaman belum termasuk blog detail & company detail
@@ -428,11 +434,11 @@ Perubahan **belum di-commit** (setelah `eede18c`, 2026-08-09):
 
 ## 11. Next Step
 
-**Isi `SMTP_PASS` (Google App Password) di `.env.local` lalu test kirim nyata.** Route `/api/contact` sudah dibangun & semua response terverifikasi (405/400/500/guard). Yang tersisa: user generate App Password dari Google Account → isi `SMTP_PASS` → test kirim via form. Petunjuk: Google Account → Security → 2-Step Verification → App passwords.
+**Fase 3 (sekarang):** kirim `REKOMENDASI_ANAK_PERUSAHAAN.md` ke GPT untuk digabung jadi satu susunan copywriting → tempel hasilnya ke `app/companies/[slug]/page.tsx` (lengkapi highlights/services **Bali Menari Academy** & **Niaga Rasa Indonesia**) → commit fase 3 (ikon jam + MD rekomendasi + PROJECT_STATUS update).
 
 **Setelah itu (prioritas berikutnya, lihat Section 7):**
 1. **Push commit ke origin/main** — `main` masih ahead, belum di-push
-2. **Lengkapi highlights/services** untuk Bali Menari Academy & Niaga Rasa Indonesia — kosong di company detail pages
+2. ~~Isi `SMTP_PASS`~~ ⏸️ **ditunda** (keputusan user, 2026-08-09) — `/api/contact` sudah siap & terverifikasi; test kirim nyata menyusul jika user melanjutkan
 3. **Aset galeri company detail** — `[ Foto 1-4 ]` masih placeholder; butuh foto produk dari client sebelum diisi
 4. **EN content blog** — Title EN kosong di kedua post Notion
 5. **Update README.md** — masih menyebut Next.js 15, Playfair Display, SDLC lama
