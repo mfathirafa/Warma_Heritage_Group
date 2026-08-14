@@ -11,6 +11,8 @@ interface Company {
   descId: string; descEn: string;
   wa: string; industry: string;
   waMessageId: string; waMessageEn: string;
+  portofolioLabelId: string;
+  portofolioLabelEn: string;
   highlights: {
     titleId: string; titleEn: string;
     descId: string; descEn: string;
@@ -152,10 +154,10 @@ export default function CompanyDetailClient({ company }: Props) {
         <div className="max-w-[1440px] mx-auto">
           <div className="mb-16">
             <p className="text-xs tracking-[0.2em] text-gray-400 uppercase mb-3">
-              {isId ? 'Galeri' : 'Gallery'}
+              {isId ? company.portofolioLabelId : company.portofolioLabelEn}
             </p>
             <h2 className="text-3xl font-bold text-gray-900">
-              {isId ? 'Portofolio Kami' : 'Our Portfolio'}
+              {isId ? `${company.portofolioLabelId} Kami` : `Our ${company.portofolioLabelEn}` }
             </h2>
           </div>
           {/* Horizontal scroll galeri */}
