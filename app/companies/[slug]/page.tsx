@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import CompanyDetailClient from './CompanyDetailClient';
 import type { Metadata } from 'next';
 
-export const companies: Record<string, {
+const companies: Record<string, {
   nameId: string; nameEn: string;
   taglineId: string; taglineEn: string;
   descId: string; descEn: string;
