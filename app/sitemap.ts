@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
 import { getBlogPosts } from './lib/notion';
+import { COMPANY_SITE } from './lib/constants';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://warma-heritage-group.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || COMPANY_SITE;
   let posts: Awaited<ReturnType<typeof getBlogPosts>> = [];
   try {
     posts = await getBlogPosts();
@@ -17,12 +18,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  const companySlugs = [
+    'karya-rotan-indonesia',
+    'rattan-export-house-indonesia',
+    'kriya-kayu-nusantara',
+    'nada-upacara-bali',
+    'bali-menari-academy',
+    'niaga-rasa-indonesia',
+  ];
+
+  const companyUrls = companySlugs.map((slug) => ({
+    url: `${baseUrl}/companies/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.8,
+  }));
+
   return [
     {
       url: baseUrl,
       lastModified: new Date(),
       changeFrequency: 'weekly',
-      priority: 1,
+      priority: 1.0,
     },
     {
       url: `${baseUrl}/blog`,
@@ -30,42 +47,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 0.9,
     },
+    ...companyUrls,
     ...blogUrls,
-    {
-      url: `${baseUrl}/companies/karya-rotan-indonesia`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/companies/rattan-export-house-indonesia`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/companies/kriya-kayu-nusantara`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/companies/nada-upacara-bali`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/companies/bali-menari-academy`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/companies/niaga-rasa-indonesia`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
   ];
 }

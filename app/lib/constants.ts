@@ -6,7 +6,7 @@ export const COMPANY_WA = '6281239669880';
 export const COMPANY_ADDRESS = 'Jalan Sekar Tunjung XV No. 1A, Denpasar, Bali 80237';
 export const COMPANY_ADDRESS_SHORT = 'Jalan Sekar Tunjung XV No. 1A, Denpasar, Bali';
 export const COMPANY_CITY = 'Denpasar, Bali, Indonesia';
-export const COMPANY_SITE = 'https://warma-heritage-group.vercel.app';
+export const COMPANY_SITE = 'https://warmaheritagegroup.com';
 
 // ===== WA MESSAGES =====
 export const WA_MESSAGES = {

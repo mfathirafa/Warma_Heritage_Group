@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import CompanyDetailClient from './CompanyDetailClient';
 import type { Metadata } from 'next';
+import { COMPANY_SITE } from '../../lib/constants';
 
 const companies: Record<string, {
   nameId: string; nameEn: string;
@@ -170,13 +171,32 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: 'Perusahaan Tidak Ditemukan | Warma Heritage Group' };
   }
 
+  const imageUrl = `/images/companies/${slug}.png`;
+
   return {
     title: `${company.nameId} | Warma Heritage Group`,
     description: company.taglineId,
+    alternates: {
+      canonical: `/companies/${slug}`,
+    },
     openGraph: {
       title: `${company.nameId} | Warma Heritage Group`,
       description: company.taglineId,
-      images: [{ url: '/Logo_clear.png', width: 1200, height: 630 }],
+      url: `/companies/${slug}`,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: company.nameId,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${company.nameId} | Warma Heritage Group`,
+      description: company.taglineId,
+      images: [imageUrl],
     },
   };
 }
@@ -185,5 +205,30 @@ export default async function CompanyDetailPage({ params }: Props) {
   const { slug } = await params;
   const company = companies[slug];
   if (!company) notFound();
-  return <CompanyDetailClient company={company} slug={slug} />;
-}
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || COMPANY_SITE;
+
+  const companySchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: company.nameId,
+    description: company.descId,
+    url: `${siteUrl}/companies/${slug}`,
+    image: `${siteUrl}/images/companies/${slug}.png`,
+    parentOrganization: {
+      '@type': 'Organization',
+      name: 'Warma Heritage Group',
+      url: siteUrl,
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(companySchema) }}
+      />
+      <CompanyDetailClient company={company} slug={slug} />
+    </>
+  );
+}
