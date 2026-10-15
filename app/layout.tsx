@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Sorts_Mill_Goudy } from "next/font/google";
 import "./globals.css";
 import JsonLd from './components/JsonLd';
+import GoogleAnalytics from './components/GoogleAnalytics';
 import BackToTop from './components/BackToTop';
 import { COMPANY_SITE } from './lib/constants';
 
@@ -100,6 +101,7 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body className={`${inter.variable} ${sortMillGoudy.className}`}>
+        <GoogleAnalytics />
         <JsonLd />
         {children}
         <BackToTop />
