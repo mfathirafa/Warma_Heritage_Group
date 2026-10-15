@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
+import { prisma } from '@/app/lib/prisma';
 
 interface ContactPayload {
   name: string;
@@ -53,42 +54,61 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: errors[0], errors }, { status: 400 });
   }
 
+  // 1. Selalu prioritaskan simpan pesan ke database MySQL Hostinger
+  let savedMessage;
+  try {
+    savedMessage = await prisma.contactMessage.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        company: data.company || null,
+        subject: data.subject,
+        message: data.message,
+      },
+    });
+  } catch (dbErr) {
+    console.error('[/api/contact] Gagal menyimpan ke database:', dbErr);
+    return NextResponse.json(
+      { error: 'Gagal menyimpan pesan ke database. Coba lagi nanti.' },
+      { status: 500 }
+    );
+  }
+
+  // 2. Kirim notifikasi email via SMTP (Background attempt)
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
 
-  if (!user || !pass) {
-    console.error('[/api/contact] SMTP_USER/SMTP_PASS belum dikonfigurasi.');
-    return NextResponse.json({ error: 'Email belum dikonfigurasi.' }, { status: 500 });
+  if (user && pass) {
+    try {
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false,
+        auth: { user, pass },
+      });
+
+      await transporter.sendMail({
+        from: `"Warma Heritage Group" <${user}>`,
+        to: user,
+        replyTo: data.email,
+        subject: `[WHG Contact #${savedMessage.id}] ${data.subject}`,
+        text: [
+          `Nama: ${data.name}`,
+          `Email: ${data.email}`,
+          data.company ? `Perusahaan: ${data.company}` : null,
+          `Subjek: ${data.subject}`,
+          '',
+          data.message,
+        ]
+          .filter((line): line is string => line !== null)
+          .join('\n'),
+      });
+    } catch (mailErr) {
+      console.warn('[/api/contact] sendMail gagal, tetapi pesan tetap tersimpan di database:', mailErr);
+    }
+  } else {
+    console.warn('[/api/contact] SMTP_USER/SMTP_PASS belum diatur, pesan disimpan ke database admin.');
   }
 
-  try {
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      auth: { user, pass },
-    });
-
-    await transporter.sendMail({
-      from: `"Warma Heritage Group" <${user}>`,
-      to: user,
-      replyTo: data.email,
-      subject: `[WHG Contact] ${data.subject}`,
-      text: [
-        `Nama: ${data.name}`,
-        `Email: ${data.email}`,
-        data.company ? `Perusahaan: ${data.company}` : null,
-        `Subjek: ${data.subject}`,
-        '',
-        data.message,
-      ]
-        .filter((line): line is string => line !== null)
-        .join('\n'),
-    });
-  } catch (err) {
-    console.error('[/api/contact] sendMail gagal:', err);
-    return NextResponse.json({ error: 'Gagal mengirim pesan. Coba lagi nanti.' }, { status: 500 });
-  }
-
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, id: savedMessage.id });
 }

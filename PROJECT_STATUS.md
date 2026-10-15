@@ -14,8 +14,8 @@
 | **Language** | TypeScript 5 |
 | **Styling** | Tailwind CSS v4 (custom @theme grey scale di globals.css) |
 | **Font** | Inter (sans/body) + Sorts Mill Goudy (serif/headings) |
-| **CMS** | Notion (@notionhq/client ^2.3.0) — blog posts + social impact |
-| **Deployment** | Vercel — `https://warma-heritage-group.vercel.app` (metadataBase sudah diatur, tapi local commit belum di-push) |
+| **Database & CMS** | MySQL Hostinger via Prisma ORM (^6.19.3) + Admin Panel Kustom (/admin) + Fallback Notion |
+| **Deployment** | Hostinger / Vercel (`https://warmaheritagegroup.com`) |
 | **Bahasa** | Indonesia (default) + English, toggle ID/EN via localStorage (`useLang` hook) |
 
 ---

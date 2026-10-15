@@ -77,43 +77,128 @@ function mapToBlogPost(page: any): BlogPost {
 
 // ===== QUERIES =====
 export async function getBlogPosts(): Promise<BlogPost[]> {
-  const notion = createClient();
-  const dbId = requireEnv('NOTION_BLOG_DATABASE_ID');
-  const response = await notion.databases.query({
-    database_id: dbId,
-    filter: { property: 'Status', select: { equals: 'Published' } },
-    sorts: [{ property: 'Date', direction: 'descending' }],
-  });
-  return response.results.map(mapToBlogPost);
+  try {
+    const { prisma } = await import('./prisma');
+    const posts = await prisma.post.findMany({
+      where: { published: true },
+      orderBy: { publishedAt: 'desc' },
+    });
+    if (posts.length > 0) {
+      return posts.map((p) => ({
+        id: String(p.id),
+        slug: p.slug,
+        titleId: p.titleId,
+        titleEn: p.titleEn || p.titleId,
+        excerptId: p.excerptId || '',
+        excerptEn: p.excerptEn || '',
+        contentId: p.contentId,
+        contentEn: p.contentEn || p.contentId,
+        category: p.category,
+        date: p.publishedAt.toISOString().split('T')[0],
+        status: p.published ? 'Published' : 'Draft',
+        cover: p.coverImage,
+      }));
+    }
+  } catch (dbErr) {
+    console.warn('Database query failed for posts, falling back to Notion:', dbErr);
+  }
+
+  // Fallback to Notion jika database belum ada data
+  try {
+    const notion = createClient();
+    const dbId = process.env.NOTION_BLOG_DATABASE_ID;
+    if (!dbId || !NOTION_TOKEN) return [];
+    const response = await notion.databases.query({
+      database_id: dbId,
+      filter: { property: 'Status', select: { equals: 'Published' } },
+      sorts: [{ property: 'Date', direction: 'descending' }],
+    });
+    return response.results.map(mapToBlogPost);
+  } catch (notionErr) {
+    console.warn('Failed to fetch from Notion:', notionErr);
+    return [];
+  }
 }
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
-  // Fetch semua published lalu filter di sini karena Notion SDK v2
-  // tidak support rich_text filter dengan cara yang reliable
+  try {
+    const { prisma } = await import('./prisma');
+    const post = await prisma.post.findUnique({
+      where: { slug },
+    });
+    if (post && post.published) {
+      return {
+        id: String(post.id),
+        slug: post.slug,
+        titleId: post.titleId,
+        titleEn: post.titleEn || post.titleId,
+        excerptId: post.excerptId || '',
+        excerptEn: post.excerptEn || '',
+        contentId: post.contentId,
+        contentEn: post.contentEn || post.contentId,
+        category: post.category,
+        date: post.publishedAt.toISOString().split('T')[0],
+        status: post.published ? 'Published' : 'Draft',
+        cover: post.coverImage,
+      };
+    }
+  } catch (dbErr) {
+    console.warn('Database query failed for post by slug:', dbErr);
+  }
+
   const posts = await getBlogPosts();
-  return posts.find(p => p.slug === slug) ?? null;
+  return posts.find((p) => p.slug === slug) ?? null;
 }
 
 export async function getSocialImpacts(): Promise<SocialImpact[]> {
-  const notion = createClient();
-  const dbId = requireEnv('NOTION_SOCIAL_IMPACT_DATABASE_ID');
-  const response = await notion.databases.query({
-    database_id: dbId,
-    filter: { property: 'Status', select: { equals: 'Published' } },
-    sorts: [{ property: 'Order', direction: 'ascending' }],
-  });
-  return response.results.map((page: any) => {
-    const props = page.properties;
-    return {
-      id: page.id,
-      titleId: props.Title?.title?.[0]?.plain_text ?? '',
-      titleEn: props['Title EN']?.rich_text?.[0]?.plain_text ?? props.Title?.title?.[0]?.plain_text ?? '',
-      descId: props['Description ID']?.rich_text?.[0]?.plain_text ?? '',
-      descEn: props['Description EN']?.rich_text?.[0]?.plain_text ?? '',
-      categoryId: props['Category ID']?.rich_text?.[0]?.plain_text ?? '',
-      categoryEn: props['Category EN']?.rich_text?.[0]?.plain_text ?? '',
-      cover: parseCoverUrl(props, page),
-      order: props.Order?.number ?? 0,
-    };
-  });
+  try {
+    const { prisma } = await import('./prisma');
+    const items = await prisma.socialImpact.findMany({
+      where: { published: true },
+      orderBy: { order: 'asc' },
+    });
+    if (items.length > 0) {
+      return items.map((item) => ({
+        id: String(item.id),
+        titleId: item.titleId,
+        titleEn: item.titleEn || item.titleId,
+        descId: item.descId,
+        descEn: item.descEn || '',
+        categoryId: item.categoryId || '',
+        categoryEn: item.categoryEn || '',
+        cover: item.coverImage,
+        order: item.order,
+      }));
+    }
+  } catch (dbErr) {
+    console.warn('Database query failed for social impacts, falling back to Notion:', dbErr);
+  }
+
+  try {
+    const notion = createClient();
+    const dbId = process.env.NOTION_SOCIAL_IMPACT_DATABASE_ID;
+    if (!dbId || !NOTION_TOKEN) return [];
+    const response = await notion.databases.query({
+      database_id: dbId,
+      filter: { property: 'Status', select: { equals: 'Published' } },
+      sorts: [{ property: 'Order', direction: 'ascending' }],
+    });
+    return response.results.map((page: any) => {
+      const props = page.properties;
+      return {
+        id: page.id,
+        titleId: props.Title?.title?.[0]?.plain_text ?? '',
+        titleEn: props['Title EN']?.rich_text?.[0]?.plain_text ?? props.Title?.title?.[0]?.plain_text ?? '',
+        descId: props['Description ID']?.rich_text?.[0]?.plain_text ?? '',
+        descEn: props['Description EN']?.rich_text?.[0]?.plain_text ?? '',
+        categoryId: props['Category ID']?.rich_text?.[0]?.plain_text ?? '',
+        categoryEn: props['Category EN']?.rich_text?.[0]?.plain_text ?? '',
+        cover: parseCoverUrl(props, page),
+        order: props.Order?.number ?? 0,
+      };
+    });
+  } catch (notionErr) {
+    console.warn('Failed to fetch social impacts from Notion:', notionErr);
+    return [];
+  }
 }

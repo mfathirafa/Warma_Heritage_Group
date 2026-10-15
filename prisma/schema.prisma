@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("ADMIN")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Post {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  titleId     String   @db.VarChar(255)
+  titleEn     String?  @db.VarChar(255)
+  excerptId   String?  @db.Text
+  excerptEn   String?  @db.Text
+  contentId   String   @db.LongText
+  contentEn   String?  @db.LongText
+  category    String   @default("Berita")
+  author      String   @default("Warma Heritage Group")
+  readTime    String?  @default("3 min")
+  coverImage  String?  @db.Text
+  published   Boolean  @default(true)
+  publishedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("posts")
+}
+
+model SocialImpact {
+  id          Int      @id @default(autoincrement())
+  titleId     String   @db.VarChar(255)
+  titleEn     String?  @db.VarChar(255)
+  descId      String   @db.Text
+  descEn      String?  @db.Text
+  categoryId  String?  @db.VarChar(100)
+  categoryEn  String?  @db.VarChar(100)
+  coverImage  String?  @db.Text
+  order       Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("social_impacts")
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  company   String?
+  subject   String
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("contact_messages")
+}
