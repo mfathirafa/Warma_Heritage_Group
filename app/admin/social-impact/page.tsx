@@ -1,24 +1,43 @@
 import { prisma } from '@/app/lib/prisma';
+import { connection } from 'next/server';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import SocialImpactTableClient from './components/SocialImpactTableClient';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = { title: 'Manajemen Dampak Sosial' };
 
 export default async function AdminSocialImpactPage() {
-  const items = await prisma.socialImpact.findMany({
-    orderBy: { order: 'asc' },
-    select: {
-      id: true,
-      titleId: true,
-      categoryId: true,
-      descId: true,
-      coverImage: true,
-      order: true,
-      published: true,
-      createdAt: true,
-    },
-  });
+  await connection();
+  let items: Array<{
+    id: number;
+    titleId: string;
+    categoryId: string | null;
+    descId: string;
+    coverImage: string | null;
+    order: number;
+    published: boolean;
+    createdAt: Date;
+  }> = [];
+
+  try {
+    items = await prisma.socialImpact.findMany({
+      orderBy: { order: 'asc' },
+      select: {
+        id: true,
+        titleId: true,
+        categoryId: true,
+        descId: true,
+        coverImage: true,
+        order: true,
+        published: true,
+        createdAt: true,
+      },
+    });
+  } catch (error) {
+    console.error('[AdminSocialImpactPage] Error fetching items:', error);
+  }
 
   const publishedCount = items.filter((i) => i.published).length;
 

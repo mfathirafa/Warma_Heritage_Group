@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
+import { connection } from 'next/server';
 import { prisma } from '@/app/lib/prisma';
 import AdminShell from './components/AdminShell';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: {
@@ -11,6 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  await connection();
   let unreadCount = 0;
   let postCount = 0;
 

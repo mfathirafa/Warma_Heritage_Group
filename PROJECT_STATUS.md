@@ -428,21 +428,32 @@ Perubahan **belum di-commit** (setelah `eede18c`, 2026-08-09):
 | `package.json` / `package-lock.json` | Tambah `nodemailer`, `@types/nodemailer` |
 | `.env.local` | Tambah `SMTP_USER`, `SMTP_PASS` (kosong) |
 | `public/images/` | **Baru** — 18 aset foto (hero, about, founders/3, companies/6, social/7) |
+| `proxy.ts` | **Baru** (Next.js 16) — Menggantikan `middleware.ts` untuk proteksi auth admin panel |
+| `app/admin/**` | Force-dynamic + `connection()` + try/catch pada seluruh halaman admin agar tidak prerender static di build runner Hostinger |
+| `app/lib/prisma.ts` | Fallback URL dummy saat proses build agar tidak melempar `Environment variable not found: DATABASE_URL` |
+| `.env.example` | Template variabel lingkungan (`DATABASE_URL`, `SESSION_SECRET`, dll) |
 | `PROJECT_STATUS.md` | Dokumen ini — update berkelanjutan |
 
 ---
 
-## 11. Next Step
+## 11. Hostinger Deployment Guide (Environment Variables)
 
-**Fase 3 (sekarang):** kirim `REKOMENDASI_ANAK_PERUSAHAAN.md` ke GPT untuk digabung jadi satu susunan copywriting → tempel hasilnya ke `app/companies/[slug]/page.tsx` (lengkapi highlights/services **Bali Menari Academy** & **Niaga Rasa Indonesia**) → commit fase 3 (ikon jam + MD rekomendasi + PROJECT_STATUS update).
+Untuk deployment di Hostinger (Git Deployment / Cloud Hosting), pastikan variabel lingkungan berikut telah ditambahkan di menu **Environment Variables** / **Pengaturan Lingkungan** Hostinger:
 
-**Setelah itu (prioritas berikutnya, lihat Section 7):**
-1. **Push commit ke origin/main** — `main` masih ahead, belum di-push
-2. ~~Isi `SMTP_PASS`~~ ⏸️ **ditunda** (keputusan user, 2026-08-09) — `/api/contact` sudah siap & terverifikasi; test kirim nyata menyusul jika user melanjutkan
-3. **Aset galeri company detail** — `[ Foto 1-4 ]` masih placeholder; butuh foto produk dari client sebelum diisi
-4. **EN content blog** — Title EN kosong di kedua post Notion
-5. **Update README.md** — masih menyebut Next.js 15, Playfair Display, SDLC lama
-6. **Final QA + Production deployment** — push, deploy ke Vercel, verifikasi domain
+1. **`DATABASE_URL`**:
+   `mysql://u419950057_warma_admin:<PASSWORD_DB>@srv1157.hstgr.io:3306/u419950057_warma_db`
+2. **`SESSION_SECRET`**:
+   String acak panjang untuk enkripsi token login admin, misalnya: `warma-heritage-secret-key-2024-hostinger-auth`
+3. **`NEXT_PUBLIC_GA_ID`**:
+   `G-1BM8DTB51T`
+
+---
+
+## 12. Next Step
+
+1. **Commit & Push fix ke `origin/main`** agar build Hostinger otomatis men-trigger build ulang yang sukses.
+2. Pastikan `DATABASE_URL` dan `SESSION_SECRET` sudah terisi di Hostinger Dashboard (Environment Variables).
+3. Verifikasi dashboard `/admin` di URL produksi setelah deploy selesai.
 
 ---
 

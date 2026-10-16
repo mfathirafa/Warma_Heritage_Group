@@ -1,4 +1,5 @@
 import { prisma } from '@/app/lib/prisma';
+import { connection } from 'next/server';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import BlogFormClient from '../../components/BlogFormClient';
@@ -7,11 +8,19 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = { title: 'Edit Artikel' };
 
 export default async function EditBlogPage({ params }: Props) {
+  await connection();
   const { id } = await params;
-  const post = await prisma.post.findUnique({ where: { id: Number(id) } });
+  let post = null;
+  try {
+    post = await prisma.post.findUnique({ where: { id: Number(id) } });
+  } catch (error) {
+    console.error('[EditBlogPage] Error fetching post:', error);
+  }
 
   if (!post) notFound();
 

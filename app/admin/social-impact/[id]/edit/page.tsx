@@ -1,4 +1,5 @@
 import { prisma } from '@/app/lib/prisma';
+import { connection } from 'next/server';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import SocialImpactFormClient from '../../components/SocialImpactFormClient';
@@ -7,11 +8,19 @@ interface Props {
   params: Promise<{ id: string }>;
 }
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = { title: 'Edit Program' };
 
 export default async function EditSocialImpactPage({ params }: Props) {
+  await connection();
   const { id } = await params;
-  const item = await prisma.socialImpact.findUnique({ where: { id: Number(id) } });
+  let item = null;
+  try {
+    item = await prisma.socialImpact.findUnique({ where: { id: Number(id) } });
+  } catch (error) {
+    console.error('[EditSocialImpactPage] Error fetching item:', error);
+  }
 
   if (!item) notFound();
 

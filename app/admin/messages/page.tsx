@@ -1,13 +1,32 @@
 import { prisma } from '@/app/lib/prisma';
+import { connection } from 'next/server';
 import type { Metadata } from 'next';
 import MessagesTableClient from './components/MessagesTableClient';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = { title: 'Inbox Pesan Masuk' };
 
 export default async function AdminMessagesPage() {
-  const messages = await prisma.contactMessage.findMany({
-    orderBy: { createdAt: 'desc' },
-  });
+  await connection();
+  let messages: Array<{
+    id: number;
+    name: string;
+    email: string;
+    company: string | null;
+    subject: string;
+    message: string;
+    isRead: boolean;
+    createdAt: Date;
+  }> = [];
+
+  try {
+    messages = await prisma.contactMessage.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+  } catch (error) {
+    console.error('[AdminMessagesPage] Error fetching messages:', error);
+  }
 
   const unreadCount = messages.filter((m) => !m.isRead).length;
 

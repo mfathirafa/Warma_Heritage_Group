@@ -1,24 +1,43 @@
 import { prisma } from '@/app/lib/prisma';
+import { connection } from 'next/server';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import BlogTableClient from './components/BlogTableClient';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = { title: 'Manajemen Blog' };
 
 export default async function AdminBlogPage() {
-  const posts = await prisma.post.findMany({
-    orderBy: { createdAt: 'desc' },
-    select: {
-      id: true,
-      titleId: true,
-      slug: true,
-      category: true,
-      published: true,
-      createdAt: true,
-      coverImage: true,
-      readTime: true,
-    },
-  });
+  await connection();
+  let posts: Array<{
+    id: number;
+    titleId: string;
+    slug: string;
+    category: string;
+    published: boolean;
+    createdAt: Date;
+    coverImage: string | null;
+    readTime: string | null;
+  }> = [];
+
+  try {
+    posts = await prisma.post.findMany({
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        titleId: true,
+        slug: true,
+        category: true,
+        published: true,
+        createdAt: true,
+        coverImage: true,
+        readTime: true,
+      },
+    });
+  } catch (error) {
+    console.error('[AdminBlogPage] Error fetching posts:', error);
+  }
 
   const publishedCount = posts.filter((p) => p.published).length;
   const draftCount = posts.filter((p) => !p.published).length;

@@ -1,50 +1,86 @@
 import { prisma } from '@/app/lib/prisma';
 import { getSession } from '@/app/lib/session';
+import { connection } from 'next/server';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = { title: 'Dashboard' };
 
 export default async function AdminDashboardPage() {
+  await connection();
   const session = await getSession();
 
-  const [postCount, publishedPostCount, socialImpactCount, messageCount, unreadCount] =
-    await Promise.all([
+  let postCount = 0;
+  let publishedPostCount = 0;
+  let socialImpactCount = 0;
+  let messageCount = 0;
+  let unreadCount = 0;
+  let recentPosts: Array<{
+    id: number;
+    titleId: string;
+    slug: string;
+    published: boolean;
+    createdAt: Date;
+    category: string;
+    coverImage: string | null;
+  }> = [];
+  let recentMessages: Array<{
+    id: number;
+    name: string;
+    email: string;
+    subject: string;
+    isRead: boolean;
+    createdAt: Date;
+    company: string | null;
+  }> = [];
+
+  try {
+    const [posts, pubPosts, impacts, messages, unread] = await Promise.all([
       prisma.post.count(),
       prisma.post.count({ where: { published: true } }),
       prisma.socialImpact.count(),
       prisma.contactMessage.count(),
       prisma.contactMessage.count({ where: { isRead: false } }),
     ]);
+    postCount = posts;
+    publishedPostCount = pubPosts;
+    socialImpactCount = impacts;
+    messageCount = messages;
+    unreadCount = unread;
 
-  const recentPosts = await prisma.post.findMany({
-    orderBy: { createdAt: 'desc' },
-    take: 5,
-    select: {
-      id: true,
-      titleId: true,
-      slug: true,
-      published: true,
-      createdAt: true,
-      category: true,
-      coverImage: true,
-    },
-  });
+    recentPosts = await prisma.post.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      select: {
+        id: true,
+        titleId: true,
+        slug: true,
+        published: true,
+        createdAt: true,
+        category: true,
+        coverImage: true,
+      },
+    });
 
-  const recentMessages = await prisma.contactMessage.findMany({
-    orderBy: { createdAt: 'desc' },
-    take: 5,
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      subject: true,
-      isRead: true,
-      createdAt: true,
-      company: true,
-    },
-  });
+    recentMessages = await prisma.contactMessage.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        subject: true,
+        isRead: true,
+        createdAt: true,
+        company: true,
+      },
+    });
+  } catch (error) {
+    console.error('[AdminDashboardPage] Error fetching dashboard data:', error);
+  }
 
   const stats = [
     {
