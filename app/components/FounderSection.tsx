@@ -20,19 +20,19 @@ const founders = {
     {
       id: 'mahotama',
       name: 'I Made Mahotama Warmasuta',
-      title: 'Founder & Group Managing Director',
+      title: 'Pendiri & Group Managing Director',
       bio: 'Mahotama mendirikan Warma Heritage Group dengan visi membangun bisnis berkelanjutan yang terinspirasi oleh warisan Indonesia. Sebagai Group Managing Director, ia memimpin arah strategis jangka panjang, pengembangan bisnis, dan berbagai inisiatif pertumbuhan grup, sekaligus mendorong kewirausahaan yang bertanggung jawab serta kemitraan yang bermakna.',
     },
     {
       id: 'warta',
       name: 'I Wayan Warta',
-      title: 'Founder & Commissioner',
+      title: 'Pendiri & Komisaris',
       bio: 'Berbekal pengalaman kepemimpinan selama puluhan tahun, khususnya di industri perhotelan, beliau menghadirkan pendekatan yang disiplin, konsisten, dan berorientasi pada tata kelola yang baik. Kepemimpinannya didasarkan pada integritas, akuntabilitas, dan komitmen terhadap keunggulan operasional.',
     },
     {
       id: 'masyuni',
       name: 'Ni Nyoman Sri Masyuni',
-      title: 'Founder & Commissioner',
+      title: 'Pendiri & Komisaris',
       bio: 'Dengan pengalaman bertahun-tahun dalam mengelola operasional dan membangun hubungan dengan berbagai pihak, beliau membawa perspektif yang berpusat pada manusia dalam setiap langkah perusahaan. Beliau meyakini bahwa bisnis yang bertahan lama dibangun di atas kepercayaan, kolaborasi, dan hubungan yang tulus.',
     },
   ],
@@ -64,13 +64,13 @@ export default function FounderSection({ lang }: FounderSectionProps) {
   const { ref: gridRef, isVisible: gridVisible } = useScrollReveal();
 
   return (
-    <section id="founder" className="w-full bg-gray-50 py-24 px-8">
+    <section id="founder" className="w-full bg-gray-50 py-20 sm:py-24 px-6 sm:px-8">
       <div className="max-w-[1440px] mx-auto">
 
         {/* Header */}
         <div
           ref={headerRef as React.RefObject<HTMLDivElement>}
-          className="mb-16"
+          className="mb-14 sm:mb-16"
         >
           <p className={`text-xs tracking-[0.2em] text-gray-400 uppercase mb-3 reveal ${headerVisible ? 'visible' : ''}`}>
             {lang === 'id' ? 'Pendiri' : 'Our Founders'}

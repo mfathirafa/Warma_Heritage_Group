@@ -87,16 +87,16 @@ export default function SocialImpactSection({ lang, impacts }: SocialImpactSecti
           className={`reveal ${scrollVisible ? 'visible' : ''}`}
         >
           <div
-            className="flex gap-8 overflow-x-auto pb-4 snap-x snap-mandatory"
+            id="impact-carousel"
+            className="flex gap-6 overflow-x-auto pb-6 pt-2 px-1 snap-x snap-mandatory scroll-smooth"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {displayImpacts.map((impact) => (
               <div
                 key={impact.id}
-                className="flex flex-col gap-6 flex-shrink-0 snap-start"
-                style={{ width: 'calc(33.333% - 1.5rem)' }}
+                className="flex flex-col gap-5 shrink-0 snap-start w-[85vw] sm:w-[340px] md:w-[calc(33.333%-1.25rem)] bg-white p-5 sm:p-6 border border-gray-200/80 shadow-xs hover:shadow-md transition-shadow duration-300"
               >
-                <div className="w-full aspect-square relative overflow-hidden bg-gray-300">
+                <div className="w-full aspect-[4/3] sm:aspect-square relative overflow-hidden bg-gray-100">
                   {impact.cover ? (
                     <img
                       src={impact.cover}
@@ -109,25 +109,26 @@ export default function SocialImpactSection({ lang, impacts }: SocialImpactSecti
                       src={localCovers[impact.titleId]}
                       alt={isId ? impact.titleId : impact.titleEn}
                       fill
-                      sizes="(max-width: 768px) 100vw, 33vw"
+                      sizes="(max-width: 768px) 85vw, (max-width: 1200px) 340px, 33vw"
                       style={{ objectFit: 'cover' }}
+                      className="transition-transform duration-500 hover:scale-105"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <p className="text-gray-500 text-xs">[ Foto Kegiatan ]</p>
+                    <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                      <p className="text-gray-500 text-xs font-mono">[ Foto Kegiatan ]</p>
                     </div>
                   )}
                 </div>
 
-                <div className="flex flex-col gap-3">
-                  <span className="text-xs text-gray-400 tracking-widest uppercase">
+                <div className="flex flex-col gap-2.5">
+                  <span className="text-[11px] font-semibold text-gray-500 tracking-[0.15em] uppercase">
                     {isId ? impact.categoryId : impact.categoryEn}
                   </span>
-                  <h3 className="text-base font-bold text-gray-900">
+                  <h3 className="text-lg font-serif font-bold text-gray-900 leading-snug">
                     {isId ? impact.titleId : impact.titleEn}
                   </h3>
-                  <div className="w-8 h-px bg-gray-300" />
-                  <p className="text-sm text-gray-500 leading-relaxed">
+                  <div className="w-8 h-px bg-gray-300 my-0.5" />
+                  <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
                     {isId ? impact.descId : impact.descEn}
                   </p>
                 </div>
@@ -135,11 +136,35 @@ export default function SocialImpactSection({ lang, impacts }: SocialImpactSecti
             ))}
           </div>
 
-          {displayImpacts.length > 3 && (
-            <p className="text-xs text-gray-400 text-right mt-4 tracking-wide">
-              {isId ? 'Geser untuk lihat lebih →' : 'Scroll to see more →'}
-            </p>
-          )}
+          <div className="flex items-center justify-between mt-4 px-1">
+            <span className="text-xs text-gray-500 font-medium">
+              {isId ? '← Geser untuk program lainnya →' : '← Swipe to view more initiatives →'}
+            </span>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById('impact-carousel');
+                  if (el) el.scrollBy({ left: -340, behavior: 'smooth' });
+                }}
+                className="w-9 h-9 border border-gray-300 bg-white hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-colors flex items-center justify-center cursor-pointer text-gray-700"
+                aria-label="Previous slide"
+              >
+                ←
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById('impact-carousel');
+                  if (el) el.scrollBy({ left: 340, behavior: 'smooth' });
+                }}
+                className="w-9 h-9 border border-gray-300 bg-white hover:bg-gray-900 hover:text-white hover:border-gray-900 transition-colors flex items-center justify-center cursor-pointer text-gray-700"
+                aria-label="Next slide"
+              >
+                →
+              </button>
+            </div>
+          </div>
         </div>
 
       </div>

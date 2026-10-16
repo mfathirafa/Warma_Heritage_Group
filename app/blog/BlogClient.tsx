@@ -55,8 +55,8 @@ export default function BlogClient({ posts }: BlogClientProps) {
       <section className="w-full bg-white py-16 px-8">
         <div className="max-w-[1440px] mx-auto">
 
-          {/* Filter */}
-          {categories.length > 1 && (
+          {/* Filter: Only show if there are 2 or more distinct categories */}
+          {categories.length > 2 && (
             <div className="flex gap-2 flex-wrap mb-12">
               {categories.map((cat) => (
                 <button
@@ -65,13 +65,13 @@ export default function BlogClient({ posts }: BlogClientProps) {
                   className={`text-[11px] tracking-[0.12em] uppercase px-4 py-2 transition-all duration-300 ${
                     activeCategory === cat
                       ? 'bg-gray-900 text-white'
-                      : 'bg-transparent text-gray-400 hover:text-gray-900 border border-gray-200 hover:border-gray-400'
+                      : 'bg-transparent text-gray-500 hover:text-gray-900 border border-gray-200 hover:border-gray-400'
                   }`}
                 >
                   {cat === 'all' ? (isId ? 'Semua' : 'All') : cat}
                 </button>
               ))}
-              <span className="ml-auto text-[11px] text-gray-400 self-center">
+              <span className="ml-auto text-[11px] text-gray-500 self-center">
                 {filteredPosts.length} {isId ? 'artikel' : 'articles'}
               </span>
             </div>
@@ -80,23 +80,24 @@ export default function BlogClient({ posts }: BlogClientProps) {
           {/* Empty state */}
           {filteredPosts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-32 gap-4">
-              <img src="/Logo_clear.png" alt="" className="w-12 opacity-10" />
-              <p className="text-sm text-gray-400">
+              <img src="/Logo_clear.png" alt="" className="w-12 opacity-20" />
+              <p className="text-sm text-gray-500">
                 {isId ? 'Belum ada artikel di kategori ini.' : 'No articles in this category yet.'}
               </p>
               <button
                 onClick={() => setActiveCategory('all')}
-                className="text-[11px] tracking-[0.12em] uppercase text-gray-400 hover:text-gray-900 transition-colors border-b border-gray-300 hover:border-gray-900 pb-0.5"
+                className="text-[11px] tracking-[0.12em] uppercase text-gray-500 hover:text-gray-900 transition-colors border-b border-gray-300 hover:border-gray-900 pb-0.5"
               >
                 {isId ? 'Lihat semua artikel' : 'View all articles'}
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
               {filteredPosts.map((post) => {
                 const title = isId ? post.titleId : post.titleEn;
                 const excerpt = isId ? post.excerptId : post.excerptEn;
                 const readTime = estimateReadTime((isId ? post.contentId : post.contentEn) || excerpt || '');
+                const coverImage = post.cover || '/images/hero.png';
 
                 return (
                   <article
@@ -106,18 +107,14 @@ export default function BlogClient({ posts }: BlogClientProps) {
                   >
                     {/* Cover */}
                     <div className="relative w-full aspect-[4/3] bg-gray-100 overflow-hidden mb-5">
-                      {post.cover ? (
-                        <img
-                          src={post.cover}
-                          alt={title}
-                          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                          onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gray-50">
-                          <img src="/Logo_clear.png" alt="" className="w-16 opacity-10" />
-                        </div>
-                      )}
+                      <img
+                        src={coverImage}
+                        alt={title}
+                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                        onError={(e) => {
+                          e.currentTarget.src = '/images/hero.png';
+                        }}
+                      />
                     </div>
 
                     {/* Meta */}

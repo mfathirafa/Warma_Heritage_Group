@@ -53,12 +53,23 @@ export default function HeroSection({ lang }: HeroSectionProps) {
           <p className={`text-lg text-gray-500 leading-relaxed max-w-md reveal reveal-delay-2 ${textVisible ? 'visible' : ''}`}>
             {t.subheadline}
           </p>
-          <button
-            onClick={scrollToCompanies}
-            className={`w-fit mt-2 px-8 py-4 bg-gray-900 text-white text-sm tracking-widest uppercase hover:bg-gray-700 transition-colors duration-300 reveal reveal-delay-3 ${textVisible ? 'visible' : ''}`}
-          >
-            {t.cta}
-          </button>
+          <div className={`flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 mt-2 reveal reveal-delay-3 ${textVisible ? 'visible' : ''}`}>
+            <button
+              onClick={scrollToCompanies}
+              className="px-8 py-4 bg-gray-950 hover:bg-black text-white text-xs font-medium tracking-widest uppercase transition-all duration-300 text-center cursor-pointer shadow-xs"
+            >
+              {t.cta}
+            </button>
+            <button
+              onClick={() => {
+                const el = document.getElementById('contact');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="px-8 py-4 border border-gray-900 text-gray-900 text-xs font-medium tracking-widest uppercase hover:bg-gray-900 hover:text-white transition-all duration-300 text-center cursor-pointer"
+            >
+              {lang === 'id' ? 'Hubungi Kami' : 'Contact Us'}
+            </button>
+          </div>
         </div>
 
         {/* Gambar hero */}

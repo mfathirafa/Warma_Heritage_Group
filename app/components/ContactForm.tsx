@@ -186,26 +186,41 @@
           </div>
 
           {status === 'success' && (
-            <div className="px-4 py-3 bg-green-50 border border-green-200 text-green-700 text-sm">
-              {lang === 'id'
-                ? '✓ Pesan berhasil dikirim! Kami akan segera merespon.'
-                : '✓ Message sent successfully! We will respond soon.'}
+            <div className="px-5 py-4 bg-emerald-50 border border-emerald-200 text-emerald-900 text-sm flex items-center gap-3 rounded-xs">
+              <span className="text-emerald-600 font-bold text-base">✓</span>
+              <span>
+                {lang === 'id'
+                  ? 'Pesan Anda berhasil terkirim. Tim holding kami akan segera merespons via email atau WhatsApp.'
+                  : 'Your message was sent successfully. Our team will get back to you shortly via email or WhatsApp.'}
+              </span>
             </div>
           )}
 
           {status === 'error' && (
-            <div className="px-4 py-3 bg-red-50 border border-red-200 text-red-700 text-sm">
-              ✗ {errorMsg}
+            <div className="px-5 py-4 bg-rose-50 border border-rose-200 text-rose-900 text-sm flex items-center gap-3 rounded-xs">
+              <span className="text-rose-600 font-bold text-base">✗</span>
+              <span>
+                {errorMsg || (lang === 'id' ? 'Gagal mengirim pesan. Silakan coba lagi atau hubungi via WhatsApp.' : 'Failed to send message. Please try again or reach out via WhatsApp.')}
+              </span>
             </div>
           )}
 
           <button
             type="submit"
             disabled={status === 'sending'}
-            className="w-fit px-10 py-4 bg-gray-900 text-white text-sm tracking-widest uppercase hover:bg-gray-700
-  transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:w-fit px-10 py-4 bg-gray-950 text-white text-xs font-semibold tracking-widest uppercase hover:bg-black transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-xs rounded-xs text-center cursor-pointer"
           >
-            {status === 'sending' ? t.sending : t.submit}
+            {status === 'sending' ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-4 w-4 text-white" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                </svg>
+                <span>{t.sending}</span>
+              </span>
+            ) : (
+              t.submit
+            )}
           </button>
         </form>
       </div>

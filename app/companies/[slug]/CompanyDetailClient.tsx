@@ -38,15 +38,15 @@ export default function CompanyDetailClient({ company, slug }: Props) {
       <Navbar lang={lang} setLang={setLang} />
 
       {/* 1. Hero */}
-      <section className="w-full bg-gray-50 pt-[72px] py-24 px-8">
+      <section className="w-full bg-gray-50 pt-28 sm:pt-36 pb-16 sm:pb-24 px-6 sm:px-8">
         <div className="max-w-[1440px] mx-auto">
           <button
             onClick={() => router.push('/#companies')}
-            className="text-sm text-gray-500 hover:text-gray-900 transition-colors mb-8 flex items-center gap-2"
+            className="text-sm font-medium text-gray-600 hover:text-gray-950 transition-colors mb-8 flex items-center gap-2 cursor-pointer w-fit py-1.5 px-3 rounded-full bg-white/80 border border-gray-200 hover:border-gray-400"
           >
             ← {isId ? 'Kembali ke Perusahaan Kami' : 'Back to Our Companies'}
           </button>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 sm:gap-16 items-center">
             <div className="flex flex-col gap-6">
               <p className="text-xs tracking-[0.2em] text-gray-400 uppercase">{company.industry}</p>
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
