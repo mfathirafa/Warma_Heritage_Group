@@ -29,6 +29,7 @@ export default async function EditBlogPage({ params }: Props) {
       mode="edit"
       postId={post.id}
       defaultValues={{
+        slug: post.slug,
         titleId: post.titleId,
         titleEn: post.titleEn ?? '',
         excerptId: post.excerptId ?? '',
@@ -37,7 +38,7 @@ export default async function EditBlogPage({ params }: Props) {
         contentEn: post.contentEn ?? '',
         category: post.category,
         author: post.author,
-        readTime: post.readTime ?? '3 min',
+        readTime: post.readTime ?? '3 menit',
         coverImage: post.coverImage ?? '',
         published: post.published,
       }}

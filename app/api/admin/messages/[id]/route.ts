@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/prisma';
+import { getSession } from '@/app/lib/session';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -7,6 +8,11 @@ interface Props {
 
 export async function GET(_req: Request, { params }: Props) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Akses ditolak: Anda belum terautentikasi' }, { status: 401 });
+    }
+
     const { id } = await params;
     const message = await prisma.contactMessage.findUnique({
       where: { id: Number(id) },
@@ -25,6 +31,11 @@ export async function GET(_req: Request, { params }: Props) {
 
 export async function PUT(request: Request, { params }: Props) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Akses ditolak: Anda belum terautentikasi' }, { status: 401 });
+    }
+
     const { id } = await params;
     const body = await request.json();
     const { isRead } = body;
@@ -45,6 +56,11 @@ export async function PUT(request: Request, { params }: Props) {
 
 export async function DELETE(_req: Request, { params }: Props) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Akses ditolak: Anda belum terautentikasi' }, { status: 401 });
+    }
+
     const { id } = await params;
     await prisma.contactMessage.delete({
       where: { id: Number(id) },

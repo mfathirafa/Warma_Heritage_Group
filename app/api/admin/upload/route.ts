@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
+import { getSession } from '@/app/lib/session';
 
 export async function POST(request: Request) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Akses ditolak: Anda belum terautentikasi' }, { status: 401 });
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
 
@@ -11,8 +17,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Tidak ada file yang diunggah.' }, { status: 400 });
     }
 
-    // Validate mime type
-    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
+    // Validate mime type (strict: no SVG to prevent stored XSS attacks)
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!validTypes.includes(file.type)) {
       return NextResponse.json(
         { error: 'Format file tidak didukung. Gunakan JPG, PNG, WebP, atau GIF.' },

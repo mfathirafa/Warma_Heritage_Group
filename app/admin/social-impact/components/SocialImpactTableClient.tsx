@@ -148,19 +148,19 @@ export default function SocialImpactTableClient({ items }: { items: SocialImpact
                 )}
 
                 {/* Priority order badge */}
-                <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-md text-white text-[10px] font-mono px-2 py-0.5 rounded-md">
+                <div className="absolute top-3 left-3 bg-black/75 backdrop-blur-md text-white text-[10px] font-medium lining-nums px-2.5 py-0.5 rounded-full shadow-sm">
                   Urutan #{item.order}
                 </div>
 
                 {/* Status badge */}
                 <div className="absolute top-3 right-3">
                   {item.published ? (
-                    <span className="inline-flex items-center gap-1 bg-emerald-500 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-xs">
-                      Aktif
+                    <span className="inline-flex items-center gap-1 bg-emerald-600/90 backdrop-blur-md text-white text-[10px] font-medium px-2 py-0.5 rounded-full shadow-xs">
+                      Terbit
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 bg-gray-800 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-xs">
-                      Draft
+                    <span className="inline-flex items-center gap-1 bg-amber-600/90 backdrop-blur-md text-white text-[10px] font-medium px-2 py-0.5 rounded-full shadow-xs">
+                      Draf
                     </span>
                   )}
                 </div>
@@ -169,14 +169,14 @@ export default function SocialImpactTableClient({ items }: { items: SocialImpact
               {/* Card Body */}
               <div className="p-5 flex-1 flex flex-col justify-between">
                 <div>
-                  <span className="text-[10px] font-semibold tracking-wider uppercase text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md">
+                  <span className="text-[10px] font-semibold tracking-wider uppercase text-amber-800 bg-amber-50 border border-amber-200/60 px-2.5 py-0.5 rounded-full">
                     {item.categoryId || 'Inisiatif Sosial'}
                   </span>
-                  <h3 className="text-base font-serif font-medium text-gray-900 mt-2 line-clamp-2">
+                  <h3 className="text-base font-serif font-medium text-gray-950 mt-2.5 line-clamp-2 leading-snug">
                     {item.titleId}
                   </h3>
                   {item.descId && (
-                    <p className="text-xs text-gray-500 line-clamp-2 mt-1.5 leading-relaxed">
+                    <p className="text-xs text-gray-600 line-clamp-2 mt-2 leading-relaxed">
                       {item.descId}
                     </p>
                   )}
@@ -184,8 +184,14 @@ export default function SocialImpactTableClient({ items }: { items: SocialImpact
 
                 {/* Card Actions */}
                 <div className="mt-5 pt-4 border-t border-gray-100 flex items-center justify-between">
-                  <span className="text-[11px] text-gray-400">
-                    ID: #{item.id}
+                  <span className="text-[11px] text-gray-400 lining-nums">
+                    {item.createdAt
+                      ? new Date(item.createdAt).toLocaleDateString('id-ID', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })
+                      : `Urutan #${item.order}`}
                   </span>
 
                   <div className="flex items-center gap-2">
@@ -233,71 +239,88 @@ export default function SocialImpactTableClient({ items }: { items: SocialImpact
         /* Table View */
         <div className="bg-white rounded-xl border border-gray-200/80 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
+            <table className="w-full text-left text-xs border-collapse table-fixed">
+              <colgroup>
+                <col className="w-[80px]" />
+                <col />
+                <col className="w-[180px]" />
+                <col className="w-[110px]" />
+                <col className="w-[160px]" />
+              </colgroup>
               <thead>
                 <tr className="border-b border-gray-100 bg-[#FAF9F7] text-gray-400 font-semibold tracking-wider uppercase text-[10px]">
-                  <th className="py-3.5 px-6">Urutan</th>
+                  <th className="py-3.5 px-4 text-center">Urutan</th>
                   <th className="py-3.5 px-4">Nama Program</th>
                   <th className="py-3.5 px-4">Kategori</th>
                   <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-6 text-right">Opsi</th>
+                  <th className="py-3.5 px-4 text-right">Opsi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 font-sans">
                 {filteredItems.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50/70 transition-colors">
-                    <td className="py-4 px-6 font-mono text-gray-400">#{item.order}</td>
-                    <td className="py-4 px-4 font-medium text-gray-900 max-w-sm truncate">
-                      {item.titleId}
+                    <td className="py-4 px-4 text-center font-mono text-gray-500 lining-nums">
+                      #{item.order}
+                    </td>
+                    <td className="py-4 px-4">
+                      <p className="font-medium text-gray-900 truncate" title={item.titleId}>
+                        {item.titleId}
+                      </p>
                     </td>
                     <td className="py-4 px-4 text-gray-500">
-                      {item.categoryId || '—'}
+                      <span className="inline-block truncate max-w-[170px]" title={item.categoryId || ''}>
+                        {item.categoryId || '—'}
+                      </span>
                     </td>
                     <td className="py-4 px-4">
                       {item.published ? (
-                        <span className="inline-flex items-center gap-1 text-emerald-700 font-semibold text-[11px]">
+                        <span className="inline-flex items-center gap-1.5 text-emerald-700 font-medium text-[11px]">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                          Aktif
+                          Terbit
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-gray-500 font-semibold text-[11px]">
+                        <span className="inline-flex items-center gap-1.5 text-gray-500 font-medium text-[11px]">
                           <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-                          Draft
+                          Draf
                         </span>
                       )}
                     </td>
-                    <td className="py-4 px-6 text-right">
-                      <div className="inline-flex items-center gap-2">
-                        <Link
-                          href={`/admin/social-impact/${item.id}/edit`}
-                          className="px-2.5 py-1 text-xs font-medium text-gray-700 hover:text-gray-950 bg-gray-50 hover:bg-gray-100 rounded-md border border-gray-200"
-                        >
-                          Edit
-                        </Link>
+                    <td className="py-4 px-4 text-right">
+                      <div className="inline-flex items-center justify-end gap-1.5 w-[150px]">
                         {confirmId === item.id ? (
                           <div className="inline-flex items-center gap-1">
                             <button
                               onClick={() => handleDelete(item.id)}
-                              className="px-2 py-1 text-xs text-white bg-red-600 rounded"
+                              disabled={deletingId === item.id}
+                              className="px-2.5 py-1 text-xs text-white bg-red-600 hover:bg-red-700 rounded transition-colors disabled:opacity-50"
                             >
-                              Hapus
+                              {deletingId === item.id ? '...' : 'Hapus'}
                             </button>
                             <button
                               onClick={() => setConfirmId(null)}
-                              className="px-2 py-1 text-xs text-gray-500"
+                              className="px-2 py-1 text-xs text-gray-600 hover:text-gray-900 bg-gray-100 rounded transition-colors"
                             >
                               Batal
                             </button>
                           </div>
                         ) : (
-                          <button
-                            onClick={() => setConfirmId(item.id)}
-                            className="p-1.5 text-gray-400 hover:text-red-600 rounded"
-                          >
-                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                              <path d="M2.5 4h11M5.5 4V2.5a1 1 0 011-1h3a1 1 0 011 1V4M6.5 7v5M9.5 7v5M4 4l.8 9.5a1 1 0 001 .5h4.4a1 1 0 001-.5L12 4" stroke="currentColor" strokeWidth="1.3" />
-                            </svg>
-                          </button>
+                          <>
+                            <Link
+                              href={`/admin/social-impact/${item.id}/edit`}
+                              className="px-2.5 py-1 text-xs font-medium text-gray-700 hover:text-gray-950 bg-gray-50 hover:bg-gray-100 rounded-md border border-gray-200 transition-colors"
+                            >
+                              Edit
+                            </Link>
+                            <button
+                              onClick={() => setConfirmId(item.id)}
+                              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                              title="Hapus Program"
+                            >
+                              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                <path d="M2.5 4h11M5.5 4V2.5a1 1 0 011-1h3a1 1 0 011 1V4M6.5 7v5M9.5 7v5M4 4l.8 9.5a1 1 0 001 .5h4.4a1 1 0 001-.5L12 4" stroke="currentColor" strokeWidth="1.3" />
+                              </svg>
+                            </button>
+                          </>
                         )}
                       </div>
                     </td>

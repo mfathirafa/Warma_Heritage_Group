@@ -113,9 +113,13 @@ export default async function AdminDashboardPage() {
     {
       label: 'Pesan Masuk',
       value: messageCount,
-      sub: unreadCount > 0 ? `${unreadCount} belum dibaca` : 'Semua terbaca',
+      sub: messageCount === 0
+        ? 'Belum ada pesan masuk'
+        : unreadCount > 0
+        ? `${unreadCount} belum dibaca`
+        : 'Semua sudah dibaca',
       href: '/admin/messages',
-      action: 'Buka Inbox →',
+      action: 'Buka Kotak Masuk →',
       badge: unreadCount > 0 ? `${unreadCount} baru` : null,
       icon: (
         <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
@@ -131,27 +135,27 @@ export default async function AdminDashboardPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-gray-200">
         <div>
-          <p className="text-[10px] tracking-[0.2em] uppercase text-gray-400 mb-1">
-            Overview
+          <p className="text-[10px] tracking-[0.2em] uppercase text-gray-500 font-medium mb-1">
+            Ikhtisar
           </p>
           <h1 className="text-3xl font-serif text-gray-900">
-            Selamat datang, {session?.name?.split(' ')[0] ?? 'Admin'}
+            Selamat datang, {session?.name || 'Administrator'}
           </h1>
-          <p className="text-gray-400 text-sm mt-1">
-            Ringkasan konten holding, inisiatif sosial, dan inquiry pesan masuk.
+          <p className="text-gray-500 text-sm mt-1">
+            Ringkasan narasi holding, program dampak sosial CSR, dan inquiry kemitraan.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
           <Link
             href="/admin/blog/new"
-            className="inline-flex items-center gap-2 bg-[#141414] hover:opacity-85 text-white text-xs font-medium px-4 py-2.5 rounded transition-opacity"
+            className="inline-flex items-center gap-2 bg-[#141414] hover:bg-black text-white text-xs font-medium px-4 py-2.5 rounded-lg shadow-xs hover:shadow-md transition-all cursor-pointer"
           >
             <span>+ Tulis Artikel</span>
           </Link>
           <Link
             href="/admin/social-impact/new"
-            className="inline-flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 text-xs font-medium px-4 py-2.5 rounded transition-colors"
+            className="inline-flex items-center gap-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 text-xs font-medium px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
           >
             <span>+ Program Sosial</span>
           </Link>
@@ -164,22 +168,22 @@ export default async function AdminDashboardPage() {
           <Link
             key={stat.label}
             href={stat.href}
-            className="bg-white border border-gray-200 p-6 rounded hover:border-gray-300 hover:shadow-xs transition-all block group"
+            className="bg-white border border-gray-200/90 p-6 rounded-xl hover:border-gray-300 hover:shadow-md transition-all block group"
           >
             <div className="flex items-start justify-between mb-4">
-              <div className="text-gray-400 group-hover:text-gray-900 transition-colors">
+              <div className="text-gray-500 group-hover:text-gray-900 transition-colors">
                 {stat.icon}
               </div>
               {stat.badge && (
-                <span className="bg-[#141414] text-white text-[10px] tracking-wide px-2 py-0.5 rounded font-medium">
+                <span className="bg-[#141414] text-white text-[10px] tracking-wide px-2.5 py-0.5 rounded-full font-medium lining-nums">
                   {stat.badge}
                 </span>
               )}
             </div>
-            <div className="text-3xl font-serif text-gray-900 mb-1">{stat.value}</div>
-            <div className="text-[10px] tracking-[0.15em] uppercase text-gray-400">{stat.label}</div>
-            <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
-              <span>{stat.sub}</span>
+            <div className="text-3xl font-serif text-gray-900 mb-1 lining-nums font-semibold">{stat.value}</div>
+            <div className="text-[10px] tracking-[0.15em] uppercase text-gray-500 font-medium">{stat.label}</div>
+            <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+              <span className="lining-nums">{stat.sub}</span>
               <span className="text-gray-900 group-hover:underline font-medium">{stat.action}</span>
             </div>
           </Link>
@@ -189,15 +193,15 @@ export default async function AdminDashboardPage() {
       {/* Split Grid: Recent Articles & Recent Messages */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column: Recent Articles (7 cols) */}
-        <div className="lg:col-span-7 bg-white border border-gray-200 rounded flex flex-col">
-          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+        <div className="lg:col-span-7 bg-white border border-gray-200/90 rounded-xl flex flex-col overflow-hidden shadow-xs">
+          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
             <div>
-              <p className="text-[10px] tracking-[0.15em] uppercase text-gray-400">Artikel Blog</p>
+              <p className="text-[10px] tracking-[0.15em] uppercase text-gray-500 font-medium">Artikel Blog</p>
               <h2 className="text-base font-serif text-gray-900">Publikasi Terbaru</h2>
             </div>
             <Link
               href="/admin/blog"
-              className="text-xs text-gray-400 hover:text-gray-900 transition-colors"
+              className="text-xs text-gray-500 hover:text-gray-900 transition-colors"
             >
               Lihat semua →
             </Link>
@@ -205,8 +209,15 @@ export default async function AdminDashboardPage() {
 
           <div className="divide-y divide-gray-100 flex-1">
             {recentPosts.length === 0 ? (
-              <div className="p-8 text-center text-gray-400 text-sm">
-                Belum ada artikel.
+              <div className="p-10 text-center text-gray-500">
+                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-2 text-gray-400">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+                    <rect x="1.5" y="1.5" width="13" height="13" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+                    <line x1="4.5" y1="5.5" x2="11.5" y2="5.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                  </svg>
+                </div>
+                <p className="text-xs font-medium text-gray-700">Belum ada artikel</p>
+                <p className="text-[11px] text-gray-400 mt-0.5">Artikel yang Anda tulis akan muncul di sini.</p>
               </div>
             ) : (
               recentPosts.map((post) => (
@@ -216,7 +227,7 @@ export default async function AdminDashboardPage() {
                   className="px-6 py-4 flex items-center justify-between gap-4 hover:bg-gray-50/70 transition-colors group block"
                 >
                   <div className="flex items-center gap-3.5 min-w-0">
-                    <div className="w-10 h-10 rounded bg-gray-100 border border-gray-200 overflow-hidden shrink-0 relative">
+                    <div className="w-10 h-10 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden shrink-0 relative">
                       {post.coverImage ? (
                         <Image
                           src={post.coverImage}
@@ -236,10 +247,10 @@ export default async function AdminDashboardPage() {
                       <p className="text-sm font-medium text-gray-900 truncate group-hover:underline">
                         {post.titleId}
                       </p>
-                      <div className="flex items-center gap-2 mt-0.5 text-[11px] text-gray-400">
+                      <div className="flex items-center gap-2 mt-0.5 text-[11px] text-gray-500">
                         <span>{post.category}</span>
                         <span>•</span>
-                        <span>
+                        <span className="lining-nums">
                           {new Date(post.createdAt).toLocaleDateString('id-ID', {
                             day: 'numeric',
                             month: 'short',
@@ -250,23 +261,23 @@ export default async function AdminDashboardPage() {
                   </div>
 
                   <span
-                    className={`text-[10px] px-2 py-0.5 rounded shrink-0 ${
+                    className={`text-[10px] px-2.5 py-0.5 rounded-full shrink-0 font-medium ${
                       post.published
-                        ? 'bg-gray-100 text-gray-800'
-                        : 'bg-gray-50 text-gray-400 border border-gray-200'
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/80'
+                        : 'bg-gray-100 text-gray-600 border border-gray-200'
                     }`}
                   >
-                    {post.published ? 'Published' : 'Draft'}
+                    {post.published ? 'Terbit' : 'Draf'}
                   </span>
                 </Link>
               ))
             )}
           </div>
 
-          <div className="px-6 py-3 border-t border-gray-100 text-xs">
+          <div className="px-6 py-3 border-t border-gray-100 text-xs bg-gray-50/30">
             <Link
               href="/admin/blog/new"
-              className="text-gray-500 hover:text-gray-900 transition-colors inline-flex items-center gap-1.5"
+              className="text-gray-600 hover:text-gray-900 transition-colors inline-flex items-center gap-1.5 font-medium"
             >
               <span>+ Tulis artikel baru</span>
             </Link>
@@ -274,15 +285,15 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* Right Column: Recent Messages (5 cols) */}
-        <div className="lg:col-span-5 bg-white border border-gray-200 rounded flex flex-col">
-          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+        <div className="lg:col-span-5 bg-white border border-gray-200/90 rounded-xl flex flex-col overflow-hidden shadow-xs">
+          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
             <div>
-              <p className="text-[10px] tracking-[0.15em] uppercase text-gray-400">Pesan Masuk</p>
+              <p className="text-[10px] tracking-[0.15em] uppercase text-gray-500 font-medium">Pesan Masuk</p>
               <h2 className="text-base font-serif text-gray-900">Inquiry Terbaru</h2>
             </div>
             <Link
               href="/admin/messages"
-              className="text-xs text-gray-400 hover:text-gray-900 transition-colors"
+              className="text-xs text-gray-500 hover:text-gray-900 transition-colors"
             >
               Lihat semua →
             </Link>
@@ -290,8 +301,15 @@ export default async function AdminDashboardPage() {
 
           <div className="divide-y divide-gray-100 flex-1">
             {recentMessages.length === 0 ? (
-              <div className="p-8 text-center text-gray-400 text-sm">
-                Belum ada pesan masuk.
+              <div className="p-10 text-center text-gray-500">
+                <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-2 text-gray-400">
+                  <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+                    <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+                    <path d="M2 4.5l6 4.5 6-4.5" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+                  </svg>
+                </div>
+                <p className="text-xs font-medium text-gray-700">Belum ada pesan masuk</p>
+                <p className="text-[11px] text-gray-400 mt-0.5">Pesan dari form kontak website akan tampil di sini.</p>
               </div>
             ) : (
               recentMessages.map((msg) => (
@@ -303,17 +321,17 @@ export default async function AdminDashboardPage() {
                   <div className="w-1.5 h-1.5 rounded-full mt-2 shrink-0 bg-transparent" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between mb-0.5">
-                      <p className={`text-xs truncate ${!msg.isRead ? 'font-medium text-gray-900' : 'text-gray-500'}`}>
+                      <p className={`text-xs truncate ${!msg.isRead ? 'font-bold text-gray-950' : 'text-gray-600'}`}>
                         {msg.name}
                       </p>
-                      <span className="text-[10px] text-gray-400 shrink-0 ml-2">
+                      <span className="text-[10px] text-gray-400 shrink-0 ml-2 lining-nums">
                         {new Date(msg.createdAt).toLocaleDateString('id-ID', {
                           day: 'numeric',
                           month: 'short',
                         })}
                       </span>
                     </div>
-                    <p className={`text-xs truncate ${!msg.isRead ? 'text-gray-900 font-medium' : 'text-gray-400'}`}>
+                    <p className={`text-xs truncate ${!msg.isRead ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
                       {msg.subject}
                     </p>
                     <p className="text-[11px] text-gray-400 truncate mt-0.5">
@@ -321,17 +339,17 @@ export default async function AdminDashboardPage() {
                     </p>
                   </div>
                   {!msg.isRead && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#141414] mt-2 shrink-0" />
+                    <span className="w-2 h-2 rounded-full bg-amber-500 mt-2 shrink-0 animate-pulse" />
                   )}
                 </Link>
               ))
             )}
           </div>
 
-          <div className="px-6 py-3 border-t border-gray-100 text-xs">
+          <div className="px-6 py-3 border-t border-gray-100 text-xs bg-gray-50/30">
             <Link
               href="/admin/messages"
-              className="text-gray-500 hover:text-gray-900 transition-colors"
+              className="text-gray-600 hover:text-gray-900 transition-colors font-medium"
             >
               Buka semua inbox pesan →
             </Link>

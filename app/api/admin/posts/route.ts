@@ -11,22 +11,36 @@ function slugify(text: string): string {
     .slice(0, 200);
 }
 
+import { revalidatePath } from 'next/cache';
+import { getSession } from '@/app/lib/session';
+
 export async function GET() {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Akses ditolak: Anda belum terautentikasi' }, { status: 401 });
+  }
+
   const posts = await prisma.post.findMany({ orderBy: { createdAt: 'desc' } });
   return NextResponse.json(posts);
 }
 
 export async function POST(request: Request) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Akses ditolak: Anda belum terautentikasi' }, { status: 401 });
+    }
+
     const body = await request.json();
-    const { titleId, titleEn, excerptId, excerptEn, contentId, contentEn, category, author, readTime, coverImage, published } = body;
+    const { titleId, titleEn, slug: customSlug, excerptId, excerptEn, contentId, contentEn, category, author, readTime, coverImage, published } = body;
 
     if (!titleId || !contentId) {
       return NextResponse.json({ error: 'Judul dan konten (ID) wajib diisi.' }, { status: 400 });
     }
 
-    // Generate unique slug
-    let slug = slugify(titleId);
+    // Generate or use unique slug
+    let slug = slugify(customSlug || titleId);
+    if (!slug) slug = `artikel-${Date.now()}`;
     const existing = await prisma.post.findUnique({ where: { slug } });
     if (existing) slug = `${slug}-${Date.now()}`;
 
@@ -39,13 +53,17 @@ export async function POST(request: Request) {
         excerptEn: excerptEn || null,
         contentId,
         contentEn: contentEn || null,
-        category: category || 'Berita',
+        category: category || 'Wawasan',
         author: author || 'Warma Heritage Group',
-        readTime: readTime || '3 min',
+        readTime: readTime || '3 menit',
         coverImage: coverImage || null,
         published: Boolean(published),
       },
     });
+
+    revalidatePath('/blog');
+    revalidatePath(`/blog/${slug}`);
+    revalidatePath('/');
 
     return NextResponse.json(post, { status: 201 });
   } catch (error) {

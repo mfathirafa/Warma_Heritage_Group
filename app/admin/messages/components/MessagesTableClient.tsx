@@ -29,6 +29,7 @@ export default function MessagesTableClient({
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [confirmId, setConfirmId] = useState<number | null>(null);
   const [markingAll, setMarkingAll] = useState(false);
+  const [isMobileDetailOpen, setIsMobileDetailOpen] = useState(false);
 
   // Filter messages
   const filteredMessages = useMemo(() => {
@@ -37,7 +38,8 @@ export default function MessagesTableClient({
         m.name.toLowerCase().includes(search.toLowerCase()) ||
         m.email.toLowerCase().includes(search.toLowerCase()) ||
         m.subject.toLowerCase().includes(search.toLowerCase()) ||
-        (m.company && m.company.toLowerCase().includes(search.toLowerCase()));
+        (m.company && m.company.toLowerCase().includes(search.toLowerCase())) ||
+        m.message.toLowerCase().includes(search.toLowerCase());
 
       const matchStatus =
         statusFilter === 'all' ||
@@ -98,6 +100,7 @@ export default function MessagesTableClient({
       setMessages(nextMessages);
       if (selectedMsg?.id === id) {
         setSelectedMsg(nextMessages.length > 0 ? nextMessages[0] : null);
+        setIsMobileDetailOpen(false);
       }
       router.refresh();
     } finally {
@@ -108,6 +111,7 @@ export default function MessagesTableClient({
 
   function handleSelectMessage(msg: Message) {
     setSelectedMsg(msg);
+    setIsMobileDetailOpen(true);
     if (!msg.isRead) {
       handleToggleRead(msg.id, false);
     }
@@ -122,6 +126,19 @@ export default function MessagesTableClient({
       .toUpperCase();
   };
 
+  const detectedPhone = useMemo(() => {
+    if (!selectedMsg) return null;
+    const match = selectedMsg.message.match(/(?:\+?62|08)[0-9\s-]{8,14}/);
+    if (!match) return null;
+    let clean = match[0].replace(/[\s-]/g, '');
+    if (clean.startsWith('0')) {
+      clean = '62' + clean.slice(1);
+    } else if (clean.startsWith('+')) {
+      clean = clean.slice(1);
+    }
+    return clean.length >= 10 && clean.length <= 15 ? clean : null;
+  }, [selectedMsg]);
+
   return (
     <div className="space-y-4">
       {/* Top Filter Bar */}
@@ -130,7 +147,7 @@ export default function MessagesTableClient({
         <div className="flex items-center gap-1 bg-[#F5F5F4] p-1 rounded-lg">
           <button
             onClick={() => setStatusFilter('all')}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all lining-nums ${
               statusFilter === 'all'
                 ? 'bg-white text-gray-900 shadow-xs'
                 : 'text-gray-500 hover:text-gray-900'
@@ -140,7 +157,7 @@ export default function MessagesTableClient({
           </button>
           <button
             onClick={() => setStatusFilter('unread')}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 lining-nums ${
               statusFilter === 'unread'
                 ? 'bg-white text-gray-900 shadow-xs'
                 : 'text-gray-500 hover:text-gray-900'
@@ -151,7 +168,7 @@ export default function MessagesTableClient({
           </button>
           <button
             onClick={() => setStatusFilter('read')}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all lining-nums ${
               statusFilter === 'read'
                 ? 'bg-white text-gray-900 shadow-xs'
                 : 'text-gray-500 hover:text-gray-900'
@@ -209,12 +226,16 @@ export default function MessagesTableClient({
         style={{ minHeight: '620px' }}
       >
         {/* Left Column: Message Feed (5 cols) */}
-        <div className="lg:col-span-5 border-r border-gray-100 flex flex-col bg-[#FDFDFC]">
+        <div
+          className={`lg:col-span-5 border-r border-gray-100 flex flex-col bg-[#FDFDFC] ${
+            isMobileDetailOpen ? 'hidden lg:flex' : 'flex'
+          }`}
+        >
           <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
             <span className="text-[11px] tracking-wider uppercase font-semibold text-gray-400">
               Daftar Pesan Masuk
             </span>
-            <span className="text-xs text-gray-400 font-mono">
+            <span className="text-xs text-gray-400 font-mono lining-nums">
               {filteredMessages.length} pesan
             </span>
           </div>
@@ -222,7 +243,30 @@ export default function MessagesTableClient({
           <div className="flex-1 overflow-y-auto divide-y divide-gray-100 max-h-[640px]">
             {filteredMessages.length === 0 ? (
               <div className="p-12 text-center text-gray-400 text-xs">
-                Tidak ada pesan yang sesuai dengan filter.
+                {messages.length === 0 ? (
+                  <div className="space-y-2">
+                    <p className="font-medium text-gray-800 text-sm">Kotak Pesan Masih Kosong</p>
+                    <p className="text-gray-400 max-w-xs mx-auto">
+                      Belum ada pesan yang masuk dari formulir kontak website.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <p className="font-medium text-gray-800 text-sm">Tidak Ada Pesan yang Sesuai</p>
+                    <p className="text-gray-400">
+                      Coba ubah filter atau kata kunci pencarian Anda.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setSearch('');
+                        setStatusFilter('all');
+                      }}
+                      className="px-3 py-1.5 text-xs text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                    >
+                      Reset Filter
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               filteredMessages.map((msg) => {
@@ -253,7 +297,7 @@ export default function MessagesTableClient({
                         <span className={`text-xs truncate ${!msg.isRead ? 'font-bold text-gray-950' : 'font-medium text-gray-700'}`}>
                           {msg.name}
                         </span>
-                        <span className="text-[10px] text-gray-400 shrink-0 ml-2">
+                        <span className="text-[10px] text-gray-400 shrink-0 ml-2 lining-nums">
                           {new Date(msg.createdAt).toLocaleDateString('id-ID', {
                             day: 'numeric',
                             month: 'short',
@@ -290,11 +334,28 @@ export default function MessagesTableClient({
         </div>
 
         {/* Right Column: Reading Detail Panel (7 cols) */}
-        <div className="lg:col-span-7 flex flex-col bg-white">
+        <div
+          className={`lg:col-span-7 flex flex-col bg-white ${
+            !isMobileDetailOpen ? 'hidden lg:flex' : 'flex'
+          }`}
+        >
           {selectedMsg ? (
             <div className="flex-1 flex flex-col">
               {/* Message Header */}
               <div className="p-6 border-b border-gray-100 bg-[#FAF9F7]">
+                {/* Mobile Back Button */}
+                <div className="mb-3 lg:hidden">
+                  <button
+                    onClick={() => setIsMobileDetailOpen(false)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-700 bg-white hover:bg-gray-100 rounded-lg border border-gray-200 shadow-xs transition-colors"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                      <path d="M10 12L6 8l4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <span>Kembali ke Daftar Pesan</span>
+                  </button>
+                </div>
+
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div>
                     <span className="text-[10px] tracking-[0.2em] uppercase font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded">
@@ -364,7 +425,7 @@ export default function MessagesTableClient({
                     </div>
                   </div>
 
-                  <span className="text-[11px] text-gray-400 font-mono">
+                  <span className="text-[11px] text-gray-400 font-mono lining-nums">
                     {new Date(selectedMsg.createdAt).toLocaleDateString('id-ID', {
                       weekday: 'long',
                       year: 'numeric',
@@ -385,27 +446,45 @@ export default function MessagesTableClient({
               </div>
 
               {/* Bottom Quick Reply Action Bar */}
-              <div className="p-4 bg-gray-50/70 border-t border-gray-100 flex items-center justify-between">
+              <div className="p-4 bg-gray-50/70 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <p className="text-[11px] text-gray-400">
-                  Balas langsung melalui email resmi Warma Heritage Group
+                  Tanggapi melalui email resmi atau WhatsApp langsung
                 </p>
 
-                <a
-                  href={`mailto:${selectedMsg.email}?subject=Re: ${encodeURIComponent(
-                    selectedMsg.subject
-                  )}&body=${encodeURIComponent(
-                    `\n\n---\nPada ${new Date(selectedMsg.createdAt).toLocaleString(
-                      'id-ID'
-                    )}, ${selectedMsg.name} menulis:\n> ${selectedMsg.message}`
-                  )}`}
-                  className="inline-flex items-center gap-2 bg-[#141414] hover:bg-black text-white text-xs font-medium px-4 py-2 rounded-lg shadow-xs hover:shadow-md transition-all cursor-pointer"
-                >
-                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
-                    <path d="M1.5 3.5h13v9h-13v-9z" stroke="currentColor" strokeWidth="1.3" />
-                    <path d="M1.5 4.5l6.5 5 6.5-5" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
-                  </svg>
-                  <span>Balas via Email Klien</span>
-                </a>
+                <div className="flex items-center gap-2 flex-wrap">
+                  {detectedPhone && (
+                    <a
+                      href={`https://wa.me/${detectedPhone}?text=${encodeURIComponent(
+                        `Halo ${selectedMsg.name}, terima kasih telah menghubungi Warma Heritage Group mengenai "${selectedMsg.subject}".`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium px-3.5 py-2 rounded-lg shadow-xs transition-colors cursor-pointer lining-nums"
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.54 1.771.821 2.791.821 3.181 0 5.767-2.587 5.768-5.766.001-3.182-2.585-5.767-5.768-5.767zm7.57 5.766c-.002 4.165-3.391 7.553-7.569 7.553-1.282 0-2.518-.328-3.606-.949l-4.426 1.16 1.182-4.316c-.689-1.127-1.054-2.434-1.054-3.798.002-4.166 3.391-7.554 7.569-7.554 4.178.001 7.568 3.39 7.569 7.554z"/>
+                      </svg>
+                      <span>WhatsApp Pengirim</span>
+                    </a>
+                  )}
+
+                  <a
+                    href={`mailto:${selectedMsg.email}?subject=Re: ${encodeURIComponent(
+                      selectedMsg.subject
+                    )}&body=${encodeURIComponent(
+                      `\n\n---\nPada ${new Date(selectedMsg.createdAt).toLocaleString(
+                        'id-ID'
+                      )}, ${selectedMsg.name} menulis:\n> ${selectedMsg.message}`
+                    )}`}
+                    className="inline-flex items-center gap-2 bg-[#141414] hover:bg-black text-white text-xs font-medium px-4 py-2 rounded-lg shadow-xs hover:shadow-md transition-all cursor-pointer"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                      <path d="M1.5 3.5h13v9h-13v-9z" stroke="currentColor" strokeWidth="1.3" />
+                      <path d="M1.5 4.5l6.5 5 6.5-5" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+                    </svg>
+                    <span>Balas via Email</span>
+                  </a>
+                </div>
               </div>
             </div>
           ) : (

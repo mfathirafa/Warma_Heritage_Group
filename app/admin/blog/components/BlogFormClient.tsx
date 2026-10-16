@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useToast } from '../../components/ToastProvider';
+import { BLOG_CATEGORIES } from '@/app/lib/constants';
 
 interface PostFormData {
+  slug?: string;
   titleId: string;
   titleEn: string;
   excerptId: string;
@@ -29,19 +31,12 @@ const INITIAL: PostFormData = {
   contentEn: '',
   category: 'Wawasan',
   author: 'Warma Heritage Group',
-  readTime: '3 min',
+  readTime: '3 menit',
   coverImage: '',
-  published: true,
+  published: false, // Default: draft — jangan langsung terbit
 };
 
-const CATEGORIES = [
-  'Wawasan',
-  'Berita Holding',
-  'Ekspor & Kriya',
-  'Pelestarian Budaya',
-  'Dampak Berkelanjutan',
-  'Pengumuman',
-];
+const CATEGORIES = BLOG_CATEGORIES;
 
 const PRESET_IMAGES = [
   { label: 'Karya Rotan Indonesia', url: '/images/companies/karya-rotan-indonesia.png' },
@@ -63,10 +58,24 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [form, setForm] = useState<PostFormData>({ ...INITIAL, ...defaultValues });
+  const [customSlug, setCustomSlug] = useState<string>(defaultValues?.slug || '');
+  const [isDirty, setIsDirty] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState<'id' | 'en'>('id');
+
+  // Warn on unsaved changes when leaving page
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [isDirty]);
 
   // Compute live word count & reading time
   const wordCount = useMemo(() => {
@@ -74,6 +83,13 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
     if (!text) return 0;
     return text.trim().split(/\s+/).filter(Boolean).length;
   }, [form.contentId, form.contentEn, activeTab]);
+
+  // Auto-update readTime from Indonesian content word count (200 wpm)
+  const autoReadTime = useMemo(() => {
+    const words = form.contentId.trim().split(/\s+/).filter(Boolean).length;
+    const minutes = Math.max(1, Math.round(words / 200));
+    return `${minutes} menit`;
+  }, [form.contentId]);
 
   // Compute live slug
   const previewSlug = useMemo(() => {
@@ -90,6 +106,7 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) {
     const { name, value, type } = e.target;
+    setIsDirty(true);
     // Clear validation error when user types
     if (fieldErrors[name]) {
       setFieldErrors((prev) => {
@@ -126,6 +143,7 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
       }
 
       setForm((prev) => ({ ...prev, coverImage: data.url }));
+      setIsDirty(true);
       toast('Gambar sampul berhasil diunggah langsung!', 'success');
     } catch (err: any) {
       toast(err.message || 'Gagal mengunggah gambar', 'error');
@@ -160,9 +178,10 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
       ...prev,
       [activeTab === 'id' ? 'contentId' : 'contentEn']: nextContent,
     }));
+    setIsDirty(true);
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent, forcePublish?: boolean) {
     e.preventDefault();
 
     // Client-side visual validation
@@ -183,6 +202,10 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
 
     setLoading(true);
 
+    // Determine publish state
+    const publishedState = forcePublish !== undefined ? forcePublish : form.published;
+    const finalSlug = (customSlug || previewSlug || `artikel-${Date.now()}`).trim();
+
     try {
       const url = mode === 'edit' ? `/api/admin/posts/${postId}` : '/api/admin/posts';
       const method = mode === 'edit' ? 'PUT' : 'POST';
@@ -190,7 +213,12 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          slug: finalSlug,
+          published: publishedState,
+          readTime: autoReadTime, // Always use auto-calculated value
+        }),
       });
 
       const data = await res.json();
@@ -199,10 +227,16 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
         throw new Error(data.error || 'Gagal menyimpan artikel.');
       }
 
+      setIsDirty(false);
+
       toast(
-        mode === 'create'
-          ? 'Artikel baru berhasil dipublikasikan!'
-          : 'Perubahan artikel berhasil diperbarui!',
+        publishedState
+          ? mode === 'create'
+            ? 'Artikel berhasil diterbitkan!'
+            : 'Artikel berhasil diperbarui dan diterbitkan!'
+          : mode === 'create'
+          ? 'Artikel disimpan sebagai draf.'
+          : 'Artikel disimpan sebagai draf.',
         'success'
       );
 
@@ -235,22 +269,42 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
             <h1 className="text-base font-serif font-medium text-gray-900">
               {mode === 'create' ? 'Tulis Artikel Baru' : 'Edit Artikel'}
             </h1>
-            <p className="text-[11px] text-gray-400">
-              {form.published ? 'Mode Publikasi Langsung' : 'Mode Draf'}
+            <p className="text-[11px] text-gray-400 flex items-center gap-1.5">
+              {form.published ? (
+                <><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />Artikel Aktif</>
+              ) : (
+                <><span className="w-1.5 h-1.5 rounded-full bg-gray-400 inline-block" />Draf</>
+              )}
+              {previewSlug && (
+                <span className="text-gray-300 font-mono ml-1">/blog/{previewSlug}</span>
+              )}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           <Link
             href="/admin/blog"
             className="px-3.5 py-2 text-xs font-medium text-gray-600 hover:text-gray-950 hover:bg-gray-100 rounded-lg transition-all border border-gray-200"
           >
             Batal
           </Link>
+          {/* Save as Draft — secondary button */}
+          {(!form.published || mode === 'create') && (
+            <button
+              type="button"
+              disabled={loading}
+              onClick={(e) => handleSubmit(e as any, false)}
+              className="px-3.5 py-2 text-xs font-medium text-gray-700 hover:text-gray-950 hover:bg-gray-50 rounded-lg transition-all border border-gray-200 disabled:opacity-50"
+            >
+              Simpan Draf
+            </button>
+          )}
+          {/* Publish — primary button */}
           <button
-            type="submit"
+            type="button"
             disabled={loading}
+            onClick={(e) => handleSubmit(e as any, true)}
             className="inline-flex items-center gap-2 bg-[#141414] hover:bg-black text-white text-xs font-medium px-5 py-2 rounded-lg shadow-xs hover:shadow-md disabled:opacity-50 transition-all cursor-pointer"
           >
             {loading ? (
@@ -262,7 +316,9 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
                 <span>Menyimpan...</span>
               </>
             ) : (
-              <span>{mode === 'create' ? 'Simpan & Terbitkan' : 'Perbarui Artikel'}</span>
+              <span>
+                {form.published && mode === 'edit' ? 'Perbarui Artikel' : 'Terbitkan'}
+              </span>
             )}
           </button>
         </div>
@@ -293,16 +349,20 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
               <button
                 type="button"
                 onClick={() => setActiveTab('en')}
-                className={`flex-1 py-3 px-4 text-xs font-medium flex items-center justify-center gap-2 border-b-2 transition-all ${
+                className={`flex-1 py-3 px-4 text-xs font-medium flex items-center justify-center gap-2 border-b-2 transition-all cursor-pointer ${
                   activeTab === 'en'
                     ? 'border-gray-900 text-gray-900 bg-white'
                     : 'border-transparent text-gray-500 hover:text-gray-900'
                 }`}
               >
-                <span>🇬🇧 English Version</span>
-                {form.titleEn && (
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60">
-                    Tersedia
+                <span>🇬🇧 Versi Bahasa Inggris</span>
+                {form.titleEn ? (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 font-semibold">
+                    ✓ Lengkap
+                  </span>
+                ) : (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200/60 font-semibold">
+                    Belum Diisi
                   </span>
                 )}
               </button>
@@ -333,25 +393,61 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
                         <span>⚠</span> {fieldErrors.titleId}
                       </p>
                     )}
-                    {previewSlug && (
-                      <p className="text-[11px] text-gray-400 font-mono mt-1.5 flex items-center gap-1">
-                        <span>Slug URL:</span>
-                        <span className="text-gray-700 font-medium">/blog/{previewSlug}</span>
+
+                    {/* Slug Customization */}
+                    <div className="mt-3 p-3 bg-gray-50 border border-gray-200/80 rounded-lg space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] tracking-wider uppercase font-semibold text-gray-500">
+                          Slug URL Publik
+                        </label>
+                        {customSlug && customSlug !== previewSlug && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCustomSlug('');
+                              setIsDirty(true);
+                            }}
+                            className="text-[10px] text-amber-800 hover:underline cursor-pointer"
+                          >
+                            Reset ke Otomatis
+                          </button>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs font-mono text-gray-500">
+                        <span className="text-gray-400">/blog/</span>
+                        <input
+                          type="text"
+                          value={customSlug !== '' ? customSlug : previewSlug}
+                          onChange={(e) => {
+                            setCustomSlug(e.target.value.toLowerCase().replace(/[^\w-]/g, ''));
+                            setIsDirty(true);
+                          }}
+                          placeholder="slug-artikel"
+                          className="flex-1 bg-white border border-gray-200 rounded px-2.5 py-1 text-xs font-mono text-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+                        />
+                      </div>
+                      <p className="text-[10px] text-gray-400">
+                        URL ini digunakan pengunjung publik untuk membaca artikel ini.
                       </p>
-                    )}
+                    </div>
                   </div>
 
-                  {/* Excerpt ID */}
+                  {/* Excerpt ID with Character Counter */}
                   <div>
-                    <label className="block text-[11px] tracking-[0.15em] uppercase font-semibold text-gray-500 mb-2">
-                      Ringkasan Singkat (Lead / Excerpt)
-                    </label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-[11px] tracking-[0.15em] uppercase font-semibold text-gray-500">
+                        Ringkasan Singkat (Lead / Excerpt & Meta SEO)
+                      </label>
+                      <span className={`text-[11px] font-mono ${form.excerptId.length > 160 ? 'text-amber-600 font-semibold' : 'text-gray-400'}`}>
+                        <span className="lining-nums">{form.excerptId.length}</span> / 160 karakter
+                      </span>
+                    </div>
                     <textarea
                       name="excerptId"
                       value={form.excerptId}
                       onChange={handleChange}
                       rows={2}
-                      placeholder="Tulis ringkasan satu hingga dua kalimat yang menarik pembaca..."
+                      placeholder="Tulis ringkasan satu hingga dua kalimat yang menarik pembaca (rekomendasi: 120-160 karakter untuk pratinjau Google & WhatsApp)..."
                       className="w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3.5 py-2.5 text-xs text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900 transition-all resize-none"
                     />
                   </div>
@@ -568,16 +664,23 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-1.5">
-                Estimasi Waktu Baca
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-medium text-gray-700">
+                  Estimasi Waktu Baca
+                </label>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-gray-100 text-gray-600 font-mono">
+                  Otomatis
+                </span>
+              </div>
               <input
                 name="readTime"
-                value={form.readTime}
-                onChange={handleChange}
-                placeholder="3 min"
-                className="w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900 transition-all"
+                value={autoReadTime}
+                readOnly
+                className="w-full bg-gray-100/70 border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-700 font-medium cursor-not-allowed lining-nums"
               />
+              <p className="text-[10px] text-gray-400 mt-1">
+                Dihitung otomatis (~200 kata/menit) dari panjang naskah artikel.
+              </p>
             </div>
           </div>
 
@@ -590,8 +693,11 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
               {form.coverImage && (
                 <button
                   type="button"
-                  onClick={() => setForm((p) => ({ ...p, coverImage: '' }))}
-                  className="text-[11px] text-red-500 hover:underline"
+                  onClick={() => {
+                    setForm((p) => ({ ...p, coverImage: '' }));
+                    setIsDirty(true);
+                  }}
+                  className="text-[11px] text-red-500 hover:underline cursor-pointer"
                 >
                   Hapus
                 </button>
@@ -632,6 +738,10 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
               )}
             </button>
 
+            <p className="text-[10px] text-gray-400 leading-relaxed">
+              Disarankan rasio 16:9 (1200×675 px), maks. 5MB, format JPG, PNG, atau WebP. (SVG tidak diizinkan demi keamanan).
+            </p>
+
             {/* Or URL input */}
             <div>
               <label className="block text-[10px] text-gray-400 mb-1 uppercase tracking-wider">
@@ -656,8 +766,11 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
                   <button
                     key={preset.url}
                     type="button"
-                    onClick={() => setForm((p) => ({ ...p, coverImage: preset.url }))}
-                    className="text-[10px] px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+                    onClick={() => {
+                      setForm((p) => ({ ...p, coverImage: preset.url }));
+                      setIsDirty(true);
+                    }}
+                    className="text-[10px] px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors cursor-pointer"
                   >
                     {preset.label}
                   </button>
@@ -687,6 +800,42 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
               </div>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Bottom Secondary Action Bar for long-form comfort */}
+      <div className="flex items-center justify-between pt-5 border-t border-gray-200 bg-white/50 p-4 rounded-xl">
+        <Link
+          href="/admin/blog"
+          className="px-4 py-2 text-xs font-medium text-gray-600 hover:text-gray-950 hover:bg-gray-100 rounded-lg transition-all border border-gray-200"
+        >
+          Batal
+        </Link>
+        <div className="flex items-center gap-2">
+          {(!form.published || mode === 'create') && (
+            <button
+              type="button"
+              disabled={loading}
+              onClick={(e) => handleSubmit(e as any, false)}
+              className="px-4 py-2 text-xs font-medium text-gray-700 hover:text-gray-950 hover:bg-gray-50 rounded-lg transition-all border border-gray-200 disabled:opacity-50 cursor-pointer"
+            >
+              Simpan Draf
+            </button>
+          )}
+          <button
+            type="button"
+            disabled={loading}
+            onClick={(e) => handleSubmit(e as any, true)}
+            className="inline-flex items-center gap-2 bg-[#141414] hover:bg-black text-white text-xs font-medium px-5 py-2 rounded-lg shadow-xs hover:shadow-md disabled:opacity-50 transition-all cursor-pointer"
+          >
+            {loading ? (
+              'Menyimpan...'
+            ) : form.published && mode === 'edit' ? (
+              'Perbarui Artikel'
+            ) : (
+              'Terbitkan'
+            )}
+          </button>
         </div>
       </div>
     </form>

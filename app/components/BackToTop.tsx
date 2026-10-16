@@ -1,15 +1,23 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function BackToTop() {
   const [visible, setVisible] = useState(false);
+  const pathname = usePathname();
+
+  // Hide completely on admin pages
+  const isAdmin = pathname?.startsWith('/admin');
 
   useEffect(() => {
+    if (isAdmin) return;
     const handleScroll = () => setVisible(window.scrollY > 600);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isAdmin]);
+
+  if (isAdmin) return null;
 
   return (
     <button

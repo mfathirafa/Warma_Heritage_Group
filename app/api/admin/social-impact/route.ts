@@ -1,13 +1,25 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/prisma';
+import { revalidatePath } from 'next/cache';
+import { getSession } from '@/app/lib/session';
 
 export async function GET() {
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Akses ditolak: Anda belum terautentikasi' }, { status: 401 });
+  }
+
   const items = await prisma.socialImpact.findMany({ orderBy: { order: 'asc' } });
   return NextResponse.json(items);
 }
 
 export async function POST(request: Request) {
   try {
+    const session = await getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Akses ditolak: Anda belum terautentikasi' }, { status: 401 });
+    }
+
     const body = await request.json();
     const { titleId, titleEn, descId, descEn, categoryId, categoryEn, coverImage, order, published } = body;
 
@@ -28,6 +40,8 @@ export async function POST(request: Request) {
         published: Boolean(published),
       },
     });
+
+    revalidatePath('/');
 
     return NextResponse.json(item, { status: 201 });
   } catch (error) {

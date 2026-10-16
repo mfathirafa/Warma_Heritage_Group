@@ -69,33 +69,33 @@ export default function BlogTableClient({ posts }: { posts: Post[] }) {
         <div className="flex items-center gap-1 bg-[#F5F5F4] p-1 rounded-lg">
           <button
             onClick={() => setStatusFilter('all')}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
               statusFilter === 'all'
                 ? 'bg-white text-gray-900 shadow-xs'
                 : 'text-gray-500 hover:text-gray-900'
             }`}
           >
-            Semua ({posts.length})
+            Semua (<span className="lining-nums">{posts.length}</span>)
           </button>
           <button
             onClick={() => setStatusFilter('published')}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
               statusFilter === 'published'
                 ? 'bg-white text-gray-900 shadow-xs'
                 : 'text-gray-500 hover:text-gray-900'
             }`}
           >
-            Published ({publishedCount})
+            Terbit (<span className="lining-nums">{publishedCount}</span>)
           </button>
           <button
             onClick={() => setStatusFilter('draft')}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer ${
               statusFilter === 'draft'
                 ? 'bg-white text-gray-900 shadow-xs'
                 : 'text-gray-500 hover:text-gray-900'
             }`}
           >
-            Draft ({draftCount})
+            Draf (<span className="lining-nums">{draftCount}</span>)
           </button>
         </div>
 
@@ -122,7 +122,8 @@ export default function BlogTableClient({ posts }: { posts: Post[] }) {
             {search && (
               <button
                 onClick={() => setSearch('')}
-                className="absolute right-2.5 top-2 text-xs text-gray-400 hover:text-gray-600"
+                className="absolute right-2.5 top-2 text-xs text-gray-400 hover:text-gray-600 cursor-pointer"
+                aria-label="Hapus kata kunci pencarian"
               >
                 ✕
               </button>
@@ -133,7 +134,7 @@ export default function BlogTableClient({ posts }: { posts: Post[] }) {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-700 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900 transition-all shrink-0"
+              className="bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-700 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900 transition-all shrink-0 cursor-pointer"
             >
               <option value="all">Semua Kategori</option>
               {categories.map((cat) => (
@@ -157,7 +158,7 @@ export default function BlogTableClient({ posts }: { posts: Post[] }) {
               </svg>
             </div>
             <p className="text-sm font-medium text-gray-900">Tidak ada artikel yang cocok</p>
-            <p className="text-xs text-gray-400 mt-1 max-w-sm mx-auto">
+            <p className="text-xs text-gray-500 mt-1 max-w-sm mx-auto">
               {search || statusFilter !== 'all' || selectedCategory !== 'all'
                 ? 'Coba atur ulang kata kunci pencarian atau filter status Anda.'
                 : 'Belum ada artikel di database. Mulai publikasikan narasi baru sekarang.'}
@@ -169,7 +170,7 @@ export default function BlogTableClient({ posts }: { posts: Post[] }) {
                   setStatusFilter('all');
                   setSelectedCategory('all');
                 }}
-                className="mt-4 text-xs font-medium text-amber-800 hover:underline"
+                className="mt-4 text-xs font-medium text-amber-800 hover:underline cursor-pointer"
               >
                 Reset Semua Filter
               </button>
@@ -177,15 +178,16 @@ export default function BlogTableClient({ posts }: { posts: Post[] }) {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
+            {/* table-fixed ensures column widths stay 100% rigid and never jump during inline action */}
+            <table className="w-full text-left text-xs border-collapse table-fixed min-w-[760px]">
               <thead>
-                <tr className="border-b border-gray-100 bg-[#FAF9F7] text-gray-400 font-semibold tracking-wider uppercase text-[10px]">
-                  <th className="py-3.5 px-6">Artikel & Narasi</th>
-                  <th className="py-3.5 px-4 hidden sm:table-cell">Kategori</th>
-                  <th className="py-3.5 px-4 hidden md:table-cell">Waktu Baca</th>
-                  <th className="py-3.5 px-4 hidden lg:table-cell">Tanggal Buat</th>
-                  <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-6 text-right">Opsi</th>
+                <tr className="border-b border-gray-100 bg-[#FAF9F7] text-gray-500 font-semibold tracking-wider uppercase text-[10px]">
+                  <th className="py-3.5 px-6 w-[38%]">Artikel & Narasi</th>
+                  <th className="py-3.5 px-4 hidden sm:table-cell w-[16%]">Kategori</th>
+                  <th className="py-3.5 px-4 hidden md:table-cell w-[12%]">Waktu Baca</th>
+                  <th className="py-3.5 px-4 hidden lg:table-cell w-[14%]">Tanggal Terbit</th>
+                  <th className="py-3.5 px-4 w-[10%]">Status</th>
+                  <th className="py-3.5 px-6 text-right w-[160px]">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 font-sans">
@@ -195,15 +197,15 @@ export default function BlogTableClient({ posts }: { posts: Post[] }) {
                     className="hover:bg-gray-50/70 transition-colors group"
                   >
                     {/* Title & Cover */}
-                    <td className="py-4 px-6">
-                      <div className="flex items-center gap-3.5 max-w-md">
-                        <div className="w-12 h-12 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden shrink-0 relative">
+                    <td className="py-4 px-6 overflow-hidden">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-11 h-11 rounded-lg bg-gray-100 border border-gray-200 overflow-hidden shrink-0 relative">
                           {post.coverImage ? (
                             <Image
                               src={post.coverImage}
                               alt={post.titleId}
                               fill
-                              sizes="48px"
+                              sizes="44px"
                               className="object-cover"
                             />
                           ) : (
@@ -212,14 +214,18 @@ export default function BlogTableClient({ posts }: { posts: Post[] }) {
                             </div>
                           )}
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <Link
                             href={`/admin/blog/${post.id}/edit`}
+                            title={post.titleId}
                             className="font-medium text-gray-900 group-hover:text-amber-800 transition-colors text-sm line-clamp-1"
                           >
                             {post.titleId}
                           </Link>
-                          <p className="text-[11px] text-gray-400 font-mono truncate mt-0.5">
+                          <p
+                            title={`/blog/${post.slug}`}
+                            className="text-[11px] text-gray-400 font-mono truncate mt-0.5"
+                          >
                             /blog/{post.slug}
                           </p>
                         </div>
@@ -227,19 +233,19 @@ export default function BlogTableClient({ posts }: { posts: Post[] }) {
                     </td>
 
                     {/* Category */}
-                    <td className="py-4 px-4 hidden sm:table-cell">
-                      <span className="inline-block px-2.5 py-1 rounded-md bg-gray-100 text-gray-700 font-medium text-[11px]">
+                    <td className="py-4 px-4 hidden sm:table-cell overflow-hidden">
+                      <span className="inline-block px-2.5 py-1 rounded-md bg-gray-100 text-gray-700 font-medium text-[11px] truncate max-w-full">
                         {post.category}
                       </span>
                     </td>
 
                     {/* Read Time */}
-                    <td className="py-4 px-4 text-gray-500 hidden md:table-cell">
-                      {post.readTime || '3 min'}
+                    <td className="py-4 px-4 text-gray-500 hidden md:table-cell lining-nums">
+                      {post.readTime || '3 menit'}
                     </td>
 
                     {/* Date */}
-                    <td className="py-4 px-4 text-gray-500 hidden lg:table-cell">
+                    <td className="py-4 px-4 text-gray-500 hidden lg:table-cell lining-nums">
                       {new Date(post.createdAt).toLocaleDateString('id-ID', {
                         day: 'numeric',
                         month: 'short',
@@ -252,67 +258,73 @@ export default function BlogTableClient({ posts }: { posts: Post[] }) {
                       {post.published ? (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                          Published
+                          Terbit
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold bg-gray-100 text-gray-600 border border-gray-200">
                           <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />
-                          Draft
+                          Draf
                         </span>
                       )}
                     </td>
 
-                    {/* Actions */}
-                    <td className="py-4 px-6 text-right">
-                      <div className="inline-flex items-center gap-2">
-                        {/* Preview on public site */}
-                        <Link
-                          href={`/blog/${post.slug}`}
-                          target="_blank"
-                          className="p-1.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-all"
-                          title="Pratinjau Halaman Publik"
-                        >
-                          <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                            <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.3" />
-                            <circle cx="8" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.3" />
-                          </svg>
-                        </Link>
-
-                        {/* Edit */}
-                        <Link
-                          href={`/admin/blog/${post.id}/edit`}
-                          className="px-2.5 py-1 text-xs font-medium text-gray-700 hover:text-gray-950 hover:bg-gray-100 rounded-md transition-all border border-gray-200/80"
-                        >
-                          Edit
-                        </Link>
-
-                        {/* Inline Delete Confirmation */}
+                    {/* Actions — strictly fixed width cell */}
+                    <td className="py-4 px-6 text-right whitespace-nowrap">
+                      <div className="inline-flex items-center justify-end gap-1.5 w-full">
                         {confirmId === post.id ? (
                           <div className="inline-flex items-center gap-1">
                             <button
                               onClick={() => handleDelete(post.id)}
                               disabled={deletingId === post.id}
-                              className="px-2 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-all disabled:opacity-50"
+                              className="px-2.5 py-1 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-all disabled:opacity-50 cursor-pointer"
+                              aria-label="Konfirmasi hapus artikel ini"
                             >
                               {deletingId === post.id ? '...' : 'Hapus'}
                             </button>
                             <button
                               onClick={() => setConfirmId(null)}
-                              className="px-2 py-1 text-xs text-gray-500 hover:text-gray-700 rounded-md"
+                              className="px-2 py-1 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors cursor-pointer"
+                              aria-label="Batal hapus artikel"
                             >
                               Batal
                             </button>
                           </div>
                         ) : (
-                          <button
-                            onClick={() => setConfirmId(post.id)}
-                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-all"
-                            title="Hapus Artikel"
-                          >
-                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                              <path d="M2.5 4h11M5.5 4V2.5a1 1 0 011-1h3a1 1 0 011 1V4M6.5 7v5M9.5 7v5M4 4l.8 9.5a1 1 0 001 .5h4.4a1 1 0 001-.5L12 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                          </button>
+                          <>
+                            {/* Preview on public site */}
+                            <Link
+                              href={`/blog/${post.slug}`}
+                              target="_blank"
+                              className="p-1.5 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-all"
+                              title="Pratinjau Halaman Publik"
+                              aria-label={`Pratinjau artikel ${post.titleId} di website publik`}
+                            >
+                              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" stroke="currentColor" strokeWidth="1.3" />
+                                <circle cx="8" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.3" />
+                              </svg>
+                            </Link>
+
+                            {/* Edit */}
+                            <Link
+                              href={`/admin/blog/${post.id}/edit`}
+                              className="px-2.5 py-1 text-xs font-medium text-gray-700 hover:text-gray-950 hover:bg-gray-100 rounded-md transition-all border border-gray-200/80"
+                              aria-label={`Edit artikel ${post.titleId}`}
+                            >
+                              Edit
+                            </Link>
+
+                            <button
+                              onClick={() => setConfirmId(post.id)}
+                              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-all cursor-pointer"
+                              title="Hapus Artikel"
+                              aria-label={`Hapus artikel ${post.titleId}`}
+                            >
+                              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                                <path d="M2.5 4h11M5.5 4V2.5a1 1 0 011-1h3a1 1 0 011 1V4M6.5 7v5M9.5 7v5M4 4l.8 9.5a1 1 0 001 .5h4.4a1 1 0 001-.5L12 4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
+                            </button>
+                          </>
                         )}
                       </div>
                     </td>

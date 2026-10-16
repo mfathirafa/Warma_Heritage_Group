@@ -27,16 +27,22 @@ export default function AdminShell({
 
   return (
     <ToastProvider>
-      <div className="min-h-screen bg-[#F9F9F8] text-[#141414] antialiased flex flex-col font-sans">
-        {/* Desktop Sidebar */}
-        <div className="hidden lg:block">
+      {/*
+        h-screen + overflow-hidden on root = page itself never scrolls.
+        Only the <main> inner div scrolls.
+        This fixes: blank first screen, sidebar disappearing on scroll.
+      */}
+      <div className="h-screen bg-[#F9F9F8] text-[#141414] antialiased flex overflow-hidden font-sans">
+
+        {/* Desktop Sidebar — fixed height column, no scroll */}
+        <div className="hidden lg:flex shrink-0">
           <AdminSidebar unreadCount={unreadCount} postCount={postCount} />
         </div>
 
-        {/* Mobile Slide-over Drawer Backdrop */}
+        {/* Mobile Slide-over Backdrop */}
         {mobileMenuOpen && (
           <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 lg:hidden transition-opacity"
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 lg:hidden"
             onClick={() => setMobileMenuOpen(false)}
           />
         )}
@@ -54,14 +60,16 @@ export default function AdminShell({
           />
         </div>
 
-        {/* Main Content Viewport */}
-        <div className="lg:pl-[260px] min-h-screen flex flex-col transition-all">
+        {/* Main Area — flex-1, only this scrolls */}
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           <AdminHeader
             unreadCount={unreadCount}
             onToggleMobileMenu={() => setMobileMenuOpen((prev) => !prev)}
           />
-          <main className="flex-1 p-4 sm:p-6 md:p-8 lg:p-10 max-w-[1440px] w-full mx-auto">
-            {children}
+          <main className="flex-1 overflow-y-auto">
+            <div className="p-4 sm:p-6 md:p-8 lg:p-10 max-w-[1440px] w-full mx-auto">
+              {children}
+            </div>
           </main>
         </div>
       </div>

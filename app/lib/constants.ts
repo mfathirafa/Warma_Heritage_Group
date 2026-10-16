@@ -34,3 +34,23 @@ export const NAV_LINKS = [
 // ===== TYPES =====
 export type Lang = 'id' | 'en';
 export type NavLinkId = typeof NAV_LINKS[number]['id'];
+
+// ===== STANDARDIZED CATEGORIES =====
+export const BLOG_CATEGORIES = [
+  'Wawasan',
+  'Berita Holding',
+  'Ekspor & Kriya',
+  'Pelestarian Budaya',
+  'Dampak Berkelanjutan',
+  'Pengumuman',
+] as const;
+
+export const SOCIAL_IMPACT_CATEGORIES = [
+  { id: 'Pemberdayaan Komunitas', en: 'Community Empowerment' },
+  { id: 'Budaya & Warisan', en: 'Culture & Heritage' },
+  { id: 'Pendidikan & Keterampilan', en: 'Education & Skills' },
+  { id: 'Ekonomi Kreatif', en: 'Creative Economy' },
+  { id: 'Kesehatan & Lansia', en: 'Health & Wellbeing' },
+  { id: 'Sosial & Kemanusiaan', en: 'Social & Charity' },
+  { id: 'Lingkungan Berkelanjutan', en: 'Sustainable Environment' },
+] as const;
