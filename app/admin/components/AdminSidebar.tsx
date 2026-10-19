@@ -81,6 +81,19 @@ export default function AdminSidebar({
       ),
     },
     {
+      label: 'Galeri & Produk',
+      href: '/admin/gallery',
+      exact: false,
+      badge: null as string | null,
+      icon: (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="1.5" y="2" width="13" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+          <circle cx="5.5" cy="5.5" r="1.5" stroke="currentColor" strokeWidth="1.3" />
+          <path d="M2 12l4-4 2.5 2.5 3.5-4 2 3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      ),
+    },
+    {
       label: 'Pesan Masuk',
       href: '/admin/messages',
       exact: false,

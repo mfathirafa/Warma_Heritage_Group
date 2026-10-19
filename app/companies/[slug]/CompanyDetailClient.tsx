@@ -24,12 +24,20 @@ interface Company {
   }[];
 }
 
+export interface CompanyPhotoProp {
+  id: number;
+  imageUrl: string;
+  titleId?: string | null;
+  titleEn?: string | null;
+}
+
 interface Props {
   company: Company;
   slug: string;
+  photos?: CompanyPhotoProp[];
 }
 
-export default function CompanyDetailClient({ company, slug }: Props) {
+export default function CompanyDetailClient({ company, slug, photos = [] }: Props) {
   const { lang, setLang, isId } = useLang();
   const router = useRouter();
 
@@ -178,14 +186,45 @@ export default function CompanyDetailClient({ company, slug }: Props) {
             className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="flex-shrink-0 snap-start w-72 aspect-square bg-gray-200 flex items-center justify-center"
-              >
-                <p className="text-gray-400 text-xs">[ Foto {i} ]</p>
-              </div>
-            ))}
+            {photos && photos.length > 0 ? (
+              photos.map((photo, i) => (
+                <div
+                  key={photo.id}
+                  className="flex-shrink-0 snap-start w-72 sm:w-80 aspect-square bg-gray-200 relative overflow-hidden rounded-xs group shadow-xs hover:shadow-md transition-shadow"
+                >
+                  <Image
+                    src={photo.imageUrl}
+                    alt={(isId ? photo.titleId : photo.titleEn) || `${company.nameId} Photo ${i + 1}`}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 640px) 288px, 320px"
+                  />
+                  {((isId && photo.titleId) || (!isId && photo.titleEn)) && (
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 pt-10 text-white">
+                      <p className="text-xs font-medium tracking-wide">
+                        {isId ? photo.titleId : (photo.titleEn || photo.titleId)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              [1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="flex-shrink-0 snap-start w-72 aspect-square bg-gray-200/80 border border-dashed border-gray-300 flex flex-col items-center justify-center p-4 text-center"
+                >
+                  <svg className="w-8 h-8 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="1.5" />
+                    <circle cx="8.5" cy="8.5" r="1.5" strokeWidth="1.5" />
+                    <path d="M21 15l-5-5L5 21" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <p className="text-gray-400 text-xs font-medium">
+                    {isId ? `Koleksi ${company.portofolioLabelId} ${i}` : `${company.portofolioLabelEn} Collection ${i}`}
+                  </p>
+                </div>
+              ))
+            )}
           </div>
           <p className="text-xs text-gray-400 text-right mt-4 tracking-wide">
             {isId ? 'Geser untuk lihat lebih →' : 'Scroll to see more →'}
