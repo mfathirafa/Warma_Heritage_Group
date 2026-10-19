@@ -139,7 +139,7 @@ export default function SocialImpactTableClient({ items }: { items: SocialImpact
                     alt={item.titleId}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    unoptimized={item.coverImage.startsWith('http')}
+                    unoptimized
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-300 font-serif">

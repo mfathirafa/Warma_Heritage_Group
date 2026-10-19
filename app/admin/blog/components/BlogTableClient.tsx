@@ -205,6 +205,7 @@ export default function BlogTableClient({ posts }: { posts: Post[] }) {
                               src={post.coverImage}
                               alt={post.titleId}
                               fill
+                              unoptimized
                               sizes="44px"
                               className="object-cover"
                             />

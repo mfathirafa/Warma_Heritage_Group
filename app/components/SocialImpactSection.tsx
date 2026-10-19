@@ -102,7 +102,9 @@ export default function SocialImpactSection({ lang, impacts }: SocialImpactSecti
                       src={impact.cover}
                       alt={isId ? impact.titleId : impact.titleEn}
                       className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
                     />
                   ) : localCovers[impact.titleId] ? (
                     <Image

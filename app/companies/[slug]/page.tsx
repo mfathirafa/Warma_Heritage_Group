@@ -210,6 +210,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function CompanyDetailPage({ params }: Props) {
   const { slug } = await params;
   const company = companies[slug];

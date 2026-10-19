@@ -26,6 +26,24 @@ const COMPANIES = [
   { slug: 'niaga-rasa-indonesia', name: 'Niaga Rasa Indonesia', label: 'Produk Komoditas' },
 ];
 
+export function normalizeImageUrl(url: string): string {
+  if (!url) return '';
+  const trimmed = url.trim();
+
+  // Convert Google Drive view/share links to direct high-res image thumbnails
+  const match1 = trimmed.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (match1 && match1[1]) {
+    return `https://drive.google.com/thumbnail?id=${match1[1]}&sz=w1600`;
+  }
+
+  const match2 = trimmed.match(/drive\.google\.com\/(?:open|uc)\?id=([a-zA-Z0-9_-]+)/);
+  if (match2 && match2[1]) {
+    return `https://drive.google.com/thumbnail?id=${match2[1]}&sz=w1600`;
+  }
+
+  return trimmed;
+}
+
 export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoItem[] }) {
   const router = useRouter();
   const { toast } = useToast();
@@ -33,6 +51,9 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
   const [photos, setPhotos] = useState<PhotoItem[]>(initialPhotos);
   const [selectedCompany, setSelectedCompany] = useState<string>('all');
   const [search, setSearch] = useState('');
+  const [localPreview, setLocalPreview] = useState<string>('');
+  const [failedImages, setFailedImages] = useState<Record<number, boolean>>({});
+  const [importingUrl, setImportingUrl] = useState(false);
 
   // Modal Add / Edit
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -73,6 +94,8 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
   }
 
   function openAddModal() {
+    if (localPreview) URL.revokeObjectURL(localPreview);
+    setLocalPreview('');
     setEditingPhoto(null);
     const targetSlug = selectedCompany !== 'all' ? selectedCompany : 'karya-rotan-indonesia';
     const companyPhotos = photos.filter((p) => p.companySlug === targetSlug);
@@ -90,6 +113,8 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
   }
 
   function openEditModal(photo: PhotoItem) {
+    if (localPreview) URL.revokeObjectURL(localPreview);
+    setLocalPreview('');
     setEditingPhoto(photo);
     setFormData({
       companySlug: photo.companySlug,
@@ -106,10 +131,21 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check size < 5MB
-    if (file.size > 5 * 1024 * 1024) {
-      toast('Ukuran file maksimal 5MB.', 'error');
+    // Check size < 8MB
+    if (file.size > 8 * 1024 * 1024) {
+      toast('Ukuran file maksimal 8MB.', 'error');
       return;
+    }
+
+    // Instant local preview
+    if (localPreview) URL.revokeObjectURL(localPreview);
+    const objUrl = URL.createObjectURL(file);
+    setLocalPreview(objUrl);
+
+    // Auto-fill title if empty
+    if (!formData.titleId.trim()) {
+      const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+      setFormData((prev) => ({ ...prev, titleId: cleanName }));
     }
 
     setUploading(true);
@@ -128,7 +164,7 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
       }
 
       setFormData((prev) => ({ ...prev, imageUrl: data.url }));
-      toast('Foto berhasil diunggah!', 'success');
+      toast('Foto berhasil diunggah ke server!', 'success');
     } catch (err: any) {
       toast(err.message || 'Gagal mengunggah foto.', 'error');
     } finally {
@@ -137,22 +173,80 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
     }
   }
 
+  async function handleImportUrl() {
+    const trimmed = formData.imageUrl.trim();
+    if (!trimmed) {
+      toast('Masukkan URL gambar terlebih dahulu.', 'error');
+      return;
+    }
+
+    setImportingUrl(true);
+    try {
+      const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: trimmed }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Gagal memproses gambar dari URL.');
+      }
+
+      if (localPreview) {
+        URL.revokeObjectURL(localPreview);
+        setLocalPreview('');
+      }
+      setFormData((prev) => ({ ...prev, imageUrl: data.url }));
+      toast('Gambar berhasil diunduh dan disimpan ke server!', 'success');
+    } catch (err: any) {
+      toast(err.message || 'Gagal memproses gambar.', 'error');
+    } finally {
+      setImportingUrl(false);
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!formData.imageUrl.trim()) {
+    let finalImageUrl = normalizeImageUrl(formData.imageUrl);
+    if (!finalImageUrl && !localPreview) {
       toast('Foto belum diunggah atau URL belum diisi.', 'error');
       return;
     }
 
     setSubmitting(true);
     try {
+      // If it's a Google Drive link, auto-download to server so it never breaks
+      if (finalImageUrl.includes('drive.google.com')) {
+        try {
+          const importRes = await fetch('/api/admin/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: finalImageUrl }),
+          });
+          if (importRes.ok) {
+            const importData = await importRes.json();
+            if (importData.url) {
+              finalImageUrl = importData.url;
+            }
+          }
+        } catch {
+          // fallback to normalized URL
+        }
+      }
+
+      const payload = {
+        ...formData,
+        imageUrl: finalImageUrl,
+      };
+
       if (editingPhoto) {
         // UPDATE
         const res = await fetch(`/api/admin/company-photos/${editingPhoto.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         });
 
         const updated = await res.json();
@@ -167,7 +261,7 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
         const res = await fetch('/api/admin/company-photos', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         });
 
         const created = await res.json();
@@ -177,6 +271,8 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
         toast('Foto berhasil ditambahkan ke galeri!', 'success');
       }
 
+      if (localPreview) URL.revokeObjectURL(localPreview);
+      setLocalPreview('');
       setIsModalOpen(false);
       router.refresh();
     } catch (err: any) {
@@ -387,13 +483,26 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
             >
               {/* Image Preview Container */}
               <div className="relative aspect-4/3 bg-gray-100 overflow-hidden">
-                <Image
-                  src={photo.imageUrl}
-                  alt={photo.titleId || 'Foto Perusahaan'}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                />
+                {failedImages[photo.id] ? (
+                  <div className="w-full h-full flex flex-col items-center justify-center p-3 text-center bg-gray-50 text-gray-400">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mb-1 text-gray-300">
+                      <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="1.5" />
+                      <circle cx="8.5" cy="8.5" r="1.5" strokeWidth="1.5" />
+                      <path d="M21 15l-5-5L5 21" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <span className="text-[10px] text-gray-400">Gambar tidak dapat dimuat</span>
+                  </div>
+                ) : (
+                  <Image
+                    src={photo.imageUrl}
+                    alt={photo.titleId || 'Foto Perusahaan'}
+                    fill
+                    unoptimized
+                    onError={() => setFailedImages((prev) => ({ ...prev, [photo.id]: true }))}
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  />
+                )}
 
                 {/* Status Badge */}
                 <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
@@ -548,24 +657,37 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
 
                 {/* Upload Button Box */}
                 <div className="border border-dashed border-gray-300 rounded-xl p-4 bg-gray-50/50 hover:bg-gray-50 text-center transition-all">
-                  {formData.imageUrl ? (
+                  {(localPreview || formData.imageUrl) ? (
                     <div className="flex flex-col items-center gap-3">
-                      <div className="relative w-36 h-36 rounded-lg overflow-hidden border border-gray-200 bg-gray-100 shadow-xs">
-                        <Image
-                          src={formData.imageUrl}
-                          alt="Preview"
-                          fill
-                          className="object-cover"
+                      <div className="relative w-40 h-40 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 shadow-xs">
+                        <img
+                          src={localPreview || formData.imageUrl}
+                          alt="Pratinjau Foto"
+                          className="w-full h-full object-cover"
                         />
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={uploading}
-                        className="text-xs text-amber-700 hover:text-amber-800 font-medium cursor-pointer underline"
-                      >
-                        {uploading ? 'Mengunggah...' : 'Ganti Foto'}
-                      </button>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={uploading}
+                          className="text-xs text-amber-700 hover:text-amber-800 font-medium cursor-pointer underline"
+                        >
+                          {uploading ? 'Mengunggah...' : 'Ganti Foto'}
+                        </button>
+                        <span className="text-gray-300">|</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (localPreview) URL.revokeObjectURL(localPreview);
+                            setLocalPreview('');
+                            setFormData((p) => ({ ...p, imageUrl: '' }));
+                          }}
+                          className="text-xs text-red-600 hover:text-red-700 font-medium cursor-pointer"
+                        >
+                          Hapus
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center py-4">
@@ -591,7 +713,7 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
                         {uploading ? 'Mengunggah...' : 'Pilih File dari Komputer'}
                       </button>
                       <p className="text-[11px] text-gray-400 mt-2">
-                        Format JPG, PNG, WebP (maks. 5MB)
+                        Format JPG, PNG, WebP (maks. 8MB)
                       </p>
                     </div>
                   )}
@@ -607,14 +729,33 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
 
                 {/* Direct URL input fallback */}
                 <div className="mt-2">
-                  <span className="text-[11px] text-gray-400">Atau masukkan URL gambar jika sudah ada:</span>
-                  <input
-                    type="text"
-                    value={formData.imageUrl}
-                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                    placeholder="https://... atau /uploads/..."
-                    className="mt-1 w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900"
-                  />
+                  <span className="text-[11px] text-gray-400">Atau masukkan URL gambar / link Google Drive:</span>
+                  <div className="flex items-center gap-2 mt-1">
+                    <input
+                      type="text"
+                      value={formData.imageUrl}
+                      onChange={(e) => {
+                        if (localPreview) {
+                          URL.revokeObjectURL(localPreview);
+                          setLocalPreview('');
+                        }
+                        setFormData({ ...formData, imageUrl: normalizeImageUrl(e.target.value) });
+                      }}
+                      placeholder="https://... atau link Google Drive atau /uploads/..."
+                      className="w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900"
+                    />
+                    {formData.imageUrl.startsWith('http') && (
+                      <button
+                        type="button"
+                        onClick={handleImportUrl}
+                        disabled={importingUrl}
+                        className="shrink-0 px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg text-[11px] font-medium transition-all cursor-pointer disabled:opacity-50"
+                        title="Simpan gambar dari link ke server"
+                      >
+                        {importingUrl ? 'Memproses...' : 'Import URL'}
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
 

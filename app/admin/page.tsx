@@ -233,6 +233,7 @@ export default async function AdminDashboardPage() {
                           src={post.coverImage}
                           alt={post.titleId}
                           fill
+                          unoptimized
                           sizes="40px"
                           className="object-cover"
                         />

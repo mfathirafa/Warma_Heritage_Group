@@ -76,6 +76,15 @@ Untuk mengakomodasi foto-foto produk dan kegiatan dari Google Drive klien:
 
 ---
 
+### D. Optimasi SEO & 301 Permanent Redirect Migrasi Domain
+- **File**: `next.config.ts`
+- **Tujuan**: Mempercepat penggantian domain lama (`warma-heritage-group.vercel.app`) menjadi domain resmi (`warmaheritagegroup.com`) di Google Search Console & hasil pencarian Google.
+- **Implementasi**:
+  - Menambahkan aturan `redirects()` otomatis dengan status **HTTP 301 (Permanent Redirect)** dari host `warma-heritage-group.vercel.app` dan `www.warmaheritagegroup.com` ke `https://warmaheritagegroup.com/:path*`.
+  - Mencegah isu duplikasi konten (*duplicate content penalty*) serta mentransfer 100% skor reputasi/ranking domain lama ke domain utama baru.
+
+---
+
 ## 3. Cara Mengunggah Foto dari Google Drive
 
 Admin web dapat mengisi portofolio tanpa mengubah kode sedikitpun:
@@ -92,7 +101,7 @@ Admin web dapat mengisi portofolio tanpa mengubah kode sedikitpun:
 
 ---
 
-## 5. Hasil Verifikasi Sistem
+## 4. Hasil Verifikasi Sistem
 
 | Pengujian | Status | Hasil |
 |---|---|---|
@@ -102,8 +111,9 @@ Admin web dapat mengisi portofolio tanpa mengubah kode sedikitpun:
 
 ---
 
-## 6. Daftar File Berubah & File Baru
+## 5. Daftar File Berubah & File Baru
 
+- `next.config.ts` *(Modified: Ditambahkan 301 Redirect Domain)*
 - `app/components/AboutSection.tsx` *(Modified)*
 - `app/components/CompaniesSection.tsx` *(Modified)*
 - `app/components/CTASection.tsx` *(Modified)*

@@ -196,6 +196,7 @@ export default function CompanyDetailClient({ company, slug, photos = [] }: Prop
                     src={photo.imageUrl}
                     alt={(isId ? photo.titleId : photo.titleEn) || `${company.nameId} Photo ${i + 1}`}
                     fill
+                    unoptimized
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                     sizes="(max-width: 640px) 288px, 320px"
                   />

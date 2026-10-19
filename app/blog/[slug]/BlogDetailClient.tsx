@@ -148,11 +148,12 @@ export default function BlogDetailClient({ post }: BlogDetailClientProps) {
             src={post.cover}
             alt={title}
             fill
+            unoptimized
             sizes="(max-width: 768px) 100vw, 1200px"
             className="object-cover object-center"
             priority
             onError={(e) => {
-              e.currentTarget.parentElement!.style.display = 'none';
+              if (e.currentTarget.parentElement) e.currentTarget.parentElement.style.display = 'none';
             }}
           />
         </div>
