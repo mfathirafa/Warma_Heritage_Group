@@ -131,9 +131,9 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check size < 8MB
-    if (file.size > 8 * 1024 * 1024) {
-      toast('Ukuran file maksimal 8MB.', 'error');
+    // Check size < 15MB
+    if (file.size > 15 * 1024 * 1024) {
+      toast('Ukuran file maksimal 15MB.', 'error');
       return;
     }
 
@@ -713,7 +713,7 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
                         {uploading ? 'Mengunggah...' : 'Pilih File dari Komputer'}
                       </button>
                       <p className="text-[11px] text-gray-400 mt-2">
-                        Format JPG, PNG, WebP (maks. 8MB)
+                        Format JPG, PNG, WebP (maks. 15MB)
                       </p>
                     </div>
                   )}

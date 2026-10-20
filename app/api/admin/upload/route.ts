@@ -130,10 +130,10 @@ export async function POST(request: Request) {
       }
     }
 
-    // Limit to 8MB
-    if (buffer.length > 8 * 1024 * 1024) {
+    // Limit to 15MB
+    if (buffer.length > 15 * 1024 * 1024) {
       return NextResponse.json(
-        { error: 'Ukuran file terlalu besar. Maksimal 8MB.' },
+        { error: 'Ukuran file terlalu besar. Maksimal 15MB.' },
         { status: 400 }
       );
     }

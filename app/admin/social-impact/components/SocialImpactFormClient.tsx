@@ -98,6 +98,12 @@ export default function SocialImpactFormClient({ defaultValues, itemId, mode }: 
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Check size < 15MB
+    if (file.size > 15 * 1024 * 1024) {
+      toast('Ukuran file maksimal 15MB.', 'error');
+      return;
+    }
+
     setUploadingImage(true);
     const formData = new FormData();
     formData.append('file', file);
@@ -519,7 +525,7 @@ export default function SocialImpactFormClient({ defaultValues, itemId, mode }: 
                   className="w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900 transition-all font-mono text-[11px]"
                 />
                 <p className="text-[10px] text-gray-400 mt-1">
-                  Format: JPG, PNG, WebP (maks. 5MB). SVG dinonaktifkan demi keamanan.
+                  Format: JPG, PNG, WebP (maks. 15MB). SVG dinonaktifkan demi keamanan.
                 </p>
               </div>
 

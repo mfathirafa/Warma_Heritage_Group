@@ -127,6 +127,12 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Check size < 15MB
+    if (file.size > 15 * 1024 * 1024) {
+      toast('Ukuran file maksimal 15MB.', 'error');
+      return;
+    }
+
     setUploadingImage(true);
     const formData = new FormData();
     formData.append('file', file);
@@ -739,7 +745,7 @@ export default function BlogFormClient({ defaultValues, postId, mode }: Props) {
             </button>
 
             <p className="text-[10px] text-gray-400 leading-relaxed">
-              Disarankan rasio 16:9 (1200×675 px), maks. 5MB, format JPG, PNG, atau WebP. (SVG tidak diizinkan demi keamanan).
+              Disarankan rasio 16:9 (1200×675 px), maks. 15MB, format JPG, PNG, atau WebP. (SVG tidak diizinkan demi keamanan).
             </p>
 
             {/* Or URL input */}
