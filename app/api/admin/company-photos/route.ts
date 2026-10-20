@@ -11,8 +11,12 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const companySlug = searchParams.get('companySlug');
+  const category = searchParams.get('category');
 
-  const where = companySlug ? { companySlug } : {};
+  const where: Record<string, unknown> = {};
+  if (companySlug) where.companySlug = companySlug;
+  if (category && category !== 'all') where.category = category;
+
   const photos = await prisma.companyPhoto.findMany({
     where,
     orderBy: [
@@ -32,7 +36,7 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { companySlug, titleId, titleEn, imageUrl, order, published } = body;
+    const { companySlug, titleId, titleEn, imageUrl, category, order, published } = body;
 
     if (!companySlug || !imageUrl) {
       return NextResponse.json({ error: 'Perusahaan dan URL foto wajib diisi.' }, { status: 400 });
@@ -55,6 +59,7 @@ export async function POST(request: Request) {
         titleId: titleId?.trim() || null,
         titleEn: titleEn?.trim() || null,
         imageUrl,
+        category: category?.trim() || 'general',
         order: calculatedOrder,
         published: published !== undefined ? Boolean(published) : true,
       },

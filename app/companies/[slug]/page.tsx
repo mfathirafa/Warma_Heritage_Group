@@ -222,6 +222,7 @@ export default async function CompanyDetailPage({ params }: Props) {
     imageUrl: string;
     titleId: string | null;
     titleEn: string | null;
+    category?: string | null;
   }> = [];
 
   try {
@@ -239,6 +240,7 @@ export default async function CompanyDetailPage({ params }: Props) {
         imageUrl: true,
         titleId: true,
         titleEn: true,
+        category: true,
       },
     });
   } catch (error) {
@@ -270,4 +272,4 @@ export default async function CompanyDetailPage({ params }: Props) {
       <CompanyDetailClient company={company} slug={slug} photos={photos} />
     </>
   );
-}
+}

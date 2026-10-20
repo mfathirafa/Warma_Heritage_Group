@@ -12,6 +12,7 @@ export interface PhotoItem {
   titleId: string | null;
   titleEn: string | null;
   imageUrl: string;
+  category?: string | null;
   order: number;
   published: boolean;
   createdAt: string;
@@ -21,7 +22,7 @@ const COMPANIES = [
   { slug: 'karya-rotan-indonesia', name: 'Karya Rotan Indonesia', label: 'Produk Rotan' },
   { slug: 'rattan-export-house-indonesia', name: 'Rattan Export House (REHI)', label: 'Ekspor Rotan' },
   { slug: 'kriya-kayu-nusantara', name: 'Kriya Kayu Nusantara', label: 'Produk Kayu' },
-  { slug: 'nada-upacara-bali', name: 'Nada Upacara Bali', label: 'Portofolio Acara' },
+  { slug: 'nada-upacara-bali', name: 'Nada Upacara Bali', label: 'Poster & Dokumentasi' },
   { slug: 'bali-menari-academy', name: 'Bali Menari Academy', label: 'Kegiatan Kelas' },
   { slug: 'niaga-rasa-indonesia', name: 'Niaga Rasa Indonesia', label: 'Produk Komoditas' },
 ];
@@ -50,6 +51,7 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
 
   const [photos, setPhotos] = useState<PhotoItem[]>(initialPhotos);
   const [selectedCompany, setSelectedCompany] = useState<string>('all');
+  const [nubCategoryFilter, setNubCategoryFilter] = useState<'all' | 'poster' | 'documentation'>('all');
   const [search, setSearch] = useState('');
   const [localPreview, setLocalPreview] = useState<string>('');
   const [failedImages, setFailedImages] = useState<Record<number, boolean>>({});
@@ -65,6 +67,7 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
     titleId: '',
     titleEn: '',
     imageUrl: '',
+    category: 'general',
     order: 1,
     published: true,
   });
@@ -79,14 +82,19 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
   const filteredPhotos = useMemo(() => {
     return photos.filter((p) => {
       const matchCompany = selectedCompany === 'all' || p.companySlug === selectedCompany;
+      const matchNubCategory =
+        selectedCompany !== 'nada-upacara-bali' ||
+        nubCategoryFilter === 'all' ||
+        (nubCategoryFilter === 'poster' && p.category === 'poster') ||
+        (nubCategoryFilter === 'documentation' && p.category === 'documentation');
       const matchSearch =
         search.trim() === '' ||
         (p.titleId && p.titleId.toLowerCase().includes(search.toLowerCase())) ||
         (p.titleEn && p.titleEn.toLowerCase().includes(search.toLowerCase())) ||
         p.companySlug.toLowerCase().includes(search.toLowerCase());
-      return matchCompany && matchSearch;
+      return matchCompany && matchNubCategory && matchSearch;
     });
-  }, [photos, selectedCompany, search]);
+  }, [photos, selectedCompany, nubCategoryFilter, search]);
 
   function getCompanyName(slug: string) {
     const found = COMPANIES.find((c) => c.slug === slug);
@@ -101,11 +109,19 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
     const companyPhotos = photos.filter((p) => p.companySlug === targetSlug);
     const nextOrder = companyPhotos.length > 0 ? Math.max(...companyPhotos.map((p) => p.order)) + 1 : 1;
 
+    const defaultCategory =
+      targetSlug === 'nada-upacara-bali'
+        ? nubCategoryFilter !== 'all'
+          ? nubCategoryFilter
+          : 'poster'
+        : 'general';
+
     setFormData({
       companySlug: targetSlug,
       titleId: '',
       titleEn: '',
       imageUrl: '',
+      category: defaultCategory,
       order: nextOrder,
       published: true,
     });
@@ -121,6 +137,7 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
       titleId: photo.titleId || '',
       titleEn: photo.titleEn || '',
       imageUrl: photo.imageUrl,
+      category: photo.category || (photo.companySlug === 'nada-upacara-bali' ? 'poster' : 'general'),
       order: photo.order,
       published: photo.published,
     });
@@ -352,8 +369,7 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
           <p className="font-semibold mb-0.5">Panduan Pengunggahan Foto:</p>
           <p>
             Unduh foto dari Google Drive Anda ke laptop/komputer, lalu unggah foto tersebut di bawah ini
-            sesuai anak perusahaannya. Foto yang berstatus <strong>Tayang</strong> akan otomatis muncul
-            langsung di bagian <em>Galeri / Portofolio</em> pada halaman anak perusahaan di web publik.
+            sesuai anak perusahaannya. Khusus <strong>Nada Upacara Bali</strong>, foto dapat dikategorikan menjadi <strong>Poster Pertunjukan</strong> (tampil vertikal/portrait) atau <strong>Dokumentasi Acara</strong> (tampil landscape).
           </p>
         </div>
       </div>
@@ -408,7 +424,54 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
         </div>
       </div>
 
-      {/* Search & Sub-Filter Bar */}
+      {/* Sub-Filter Khusus Nada Upacara Bali */}
+      {selectedCompany === 'nada-upacara-bali' && (
+        <div className="bg-amber-50/70 border border-amber-200/80 p-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 animate-in fade-in duration-200">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-amber-950">Kategori Khusus NUB:</span>
+            <div className="inline-flex rounded-lg bg-white border border-amber-200 p-0.5 text-xs shadow-2xs">
+              <button
+                type="button"
+                onClick={() => setNubCategoryFilter('all')}
+                className={`px-3 py-1 rounded-md font-medium transition-all cursor-pointer ${
+                  nubCategoryFilter === 'all'
+                    ? 'bg-gray-900 text-white'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Semua ({photos.filter((p) => p.companySlug === 'nada-upacara-bali').length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setNubCategoryFilter('poster')}
+                className={`px-3 py-1 rounded-md font-medium transition-all cursor-pointer ${
+                  nubCategoryFilter === 'poster'
+                    ? 'bg-amber-600 text-white'
+                    : 'text-amber-800 hover:text-amber-950'
+                }`}
+              >
+                🎭 Poster ({photos.filter((p) => p.companySlug === 'nada-upacara-bali' && p.category === 'poster').length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setNubCategoryFilter('documentation')}
+                className={`px-3 py-1 rounded-md font-medium transition-all cursor-pointer ${
+                  nubCategoryFilter === 'documentation'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-blue-800 hover:text-blue-950'
+                }`}
+              >
+                📸 Dokumentasi ({photos.filter((p) => p.companySlug === 'nada-upacara-bali' && p.category === 'documentation').length})
+              </button>
+            </div>
+          </div>
+          <span className="text-[11px] text-amber-800/80">
+            🎭 Poster tampil portrait, 📸 Dokumentasi tampil landscape editorial di website.
+          </span>
+        </div>
+      )}
+
+      {/* Search & Counter Bar */}
       <div className="bg-white p-3.5 rounded-xl border border-gray-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="relative flex-1 max-w-sm">
           <input
@@ -482,7 +545,7 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
               className="group bg-white rounded-xl border border-gray-200/90 shadow-2xs hover:shadow-md transition-all overflow-hidden flex flex-col"
             >
               {/* Image Preview Container */}
-              <div className="relative aspect-4/3 bg-gray-100 overflow-hidden">
+              <div className={`relative bg-gray-100 overflow-hidden ${photo.category === 'poster' ? 'aspect-[3/4]' : 'aspect-4/3'}`}>
                 {failedImages[photo.id] ? (
                   <div className="w-full h-full flex flex-col items-center justify-center p-3 text-center bg-gray-50 text-gray-400">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mb-1 text-gray-300">
@@ -505,7 +568,7 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
                 )}
 
                 {/* Status Badge */}
-                <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 flex-wrap">
                   <span
                     className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full backdrop-blur-md shadow-xs ${
                       photo.published
@@ -546,66 +609,73 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
               {/* Card Body */}
               <div className="p-3.5 flex flex-col flex-1 justify-between gap-2.5">
                 <div>
-                  <div className="text-[10px] uppercase tracking-wider font-semibold text-amber-800 line-clamp-1 mb-1">
-                    {getCompanyName(photo.companySlug)}
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="text-[10px] uppercase tracking-wider font-semibold text-amber-800 line-clamp-1">
+                      {getCompanyName(photo.companySlug)}
+                    </span>
+                    {photo.companySlug === 'nada-upacara-bali' && (
+                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                        photo.category === 'poster'
+                          ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                          : 'bg-blue-100 text-blue-800 border border-blue-300'
+                      }`}>
+                        {photo.category === 'poster' ? '🎭 Poster' : '📸 Dokumentasi'}
+                      </span>
+                    )}
                   </div>
-                  <h3 className="text-xs font-semibold text-gray-900 line-clamp-1">
-                    {photo.titleId || <span className="text-gray-400 italic">Tanpa judul</span>}
+
+                  <h3 className="text-xs font-semibold text-gray-900 line-clamp-2">
+                    {photo.titleId || 'Tanpa keterangan'}
                   </h3>
                   {photo.titleEn && (
-                    <p className="text-[11px] text-gray-400 italic line-clamp-1">
+                    <p className="text-[11px] text-gray-400 italic line-clamp-1 mt-0.5">
                       {photo.titleEn}
                     </p>
                   )}
                 </div>
 
-                {/* Actions Footer */}
-                <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
+                <div className="pt-2 border-t border-gray-100 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1 text-[11px] text-gray-400">
+                    <span>Urutan: #{photo.order}</span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
                     <button
                       type="button"
                       onClick={() => openEditModal(photo)}
-                      className="text-[11px] font-medium text-gray-600 hover:text-gray-900 cursor-pointer"
+                      className="px-2.5 py-1 text-xs font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors cursor-pointer"
                     >
                       Edit
                     </button>
-                    <span className="text-gray-200">•</span>
-                    <button
-                      type="button"
-                      onClick={() => handleTogglePublish(photo)}
-                      className="text-[11px] font-medium text-gray-600 hover:text-gray-900 cursor-pointer"
-                    >
-                      {photo.published ? 'Sembunyikan' : 'Tayangkan'}
-                    </button>
-                  </div>
 
-                  {confirmDeleteId === photo.id ? (
-                    <div className="flex items-center gap-1.5">
+                    {confirmDeleteId === photo.id ? (
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(photo.id)}
+                          disabled={deletingId === photo.id}
+                          className="px-2 py-1 text-[11px] font-bold text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors cursor-pointer"
+                        >
+                          {deletingId === photo.id ? '...' : 'Ya'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setConfirmDeleteId(null)}
+                          className="px-2 py-1 text-[11px] text-gray-600 hover:bg-gray-100 rounded-md cursor-pointer"
+                        >
+                          Batal
+                        </button>
+                      </div>
+                    ) : (
                       <button
                         type="button"
-                        onClick={() => handleDelete(photo.id)}
-                        disabled={deletingId === photo.id}
-                        className="text-[10px] bg-red-600 hover:bg-red-700 text-white px-2 py-0.5 rounded font-medium cursor-pointer"
+                        onClick={() => setConfirmDeleteId(photo.id)}
+                        className="px-2.5 py-1 text-xs font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors cursor-pointer"
                       >
-                        {deletingId === photo.id ? '...' : 'Hapus'}
+                        Hapus
                       </button>
-                      <button
-                        type="button"
-                        onClick={() => setConfirmDeleteId(null)}
-                        className="text-[10px] text-gray-500 hover:text-gray-700 cursor-pointer px-1"
-                      >
-                        Batal
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setConfirmDeleteId(photo.id)}
-                      className="text-[11px] font-medium text-red-600 hover:text-red-700 cursor-pointer"
-                    >
-                      Hapus
-                    </button>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -613,18 +683,24 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
         </div>
       )}
 
-      {/* Modal Add / Edit */}
+      {/* ======================================================== */}
+      {/* MODAL TAMBAH / EDIT FOTO                                 */}
+      {/* ======================================================== */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-gray-200 overflow-y-auto max-h-[90vh]">
-            <div className="flex items-center justify-between pb-4 border-b border-gray-100">
-              <h2 className="text-base font-semibold text-gray-900">
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200"
+        >
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+              <h3 className="text-base font-bold text-gray-900">
                 {editingPhoto ? 'Edit Informasi Foto' : 'Tambah Foto ke Galeri'}
-              </h2>
+              </h3>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 cursor-pointer text-sm p-1"
+                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg cursor-pointer"
               >
                 ✕
               </button>
@@ -638,7 +714,11 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
                 </label>
                 <select
                   value={formData.companySlug}
-                  onChange={(e) => setFormData({ ...formData, companySlug: e.target.value })}
+                  onChange={(e) => {
+                    const slug = e.target.value;
+                    const cat = slug === 'nada-upacara-bali' ? 'poster' : 'general';
+                    setFormData({ ...formData, companySlug: slug, category: cat });
+                  }}
                   className="w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-2 text-xs text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900"
                 >
                   {COMPANIES.map((c) => (
@@ -648,6 +728,41 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
                   ))}
                 </select>
               </div>
+
+              {/* Kategori Khusus Nada Upacara Bali */}
+              {formData.companySlug === 'nada-upacara-bali' && (
+                <div className="p-3 rounded-xl bg-amber-50/60 border border-amber-200/80 space-y-2">
+                  <label className="block text-xs font-semibold text-amber-950">
+                    Kategori Nada Upacara Bali <span className="text-red-500">*</span>
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev, category: 'poster' }))}
+                      className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
+                        formData.category === 'poster'
+                          ? 'border-amber-600 bg-amber-100 text-amber-950 font-semibold shadow-2xs'
+                          : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      <span className="block text-xs font-bold mb-0.5">🎭 Poster Pertunjukan</span>
+                      <span className="text-[10px] text-gray-500 block">Tampil portrait untuk playbill & flyer acara</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev, category: 'documentation' }))}
+                      className={`p-2.5 rounded-lg border text-left transition-all cursor-pointer ${
+                        formData.category === 'documentation'
+                          ? 'border-blue-600 bg-blue-100 text-blue-950 font-semibold shadow-2xs'
+                          : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      <span className="block text-xs font-bold mb-0.5">📸 Dokumentasi Acara</span>
+                      <span className="text-[10px] text-gray-500 block">Tampil landscape untuk aksi panggung & upacara</span>
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Photo Upload / URL */}
               <div>
@@ -659,7 +774,7 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
                 <div className="border border-dashed border-gray-300 rounded-xl p-4 bg-gray-50/50 hover:bg-gray-50 text-center transition-all">
                   {(localPreview || formData.imageUrl) ? (
                     <div className="flex flex-col items-center gap-3">
-                      <div className="relative w-40 h-40 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 shadow-xs">
+                      <div className={`relative rounded-xl overflow-hidden border border-gray-200 bg-gray-100 shadow-xs ${formData.category === 'poster' ? 'w-32 h-44' : 'w-44 h-32'}`}>
                         <img
                           src={localPreview || formData.imageUrl}
                           alt="Pratinjau Foto"
@@ -741,7 +856,7 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
                         }
                         setFormData({ ...formData, imageUrl: normalizeImageUrl(e.target.value) });
                       }}
-                      placeholder="https://... atau link Google Drive atau /uploads/..."
+                      placeholder="https://... atau link Google Drive atau /images/..."
                       className="w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900"
                     />
                     {formData.imageUrl.startsWith('http') && (
@@ -769,7 +884,7 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
                     type="text"
                     value={formData.titleId}
                     onChange={(e) => setFormData({ ...formData, titleId: e.target.value })}
-                    placeholder="Contoh: Kursi Rotan Teras"
+                    placeholder="Contoh: Repertoar Tari Legong Sakral"
                     className="w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900"
                   />
                 </div>
@@ -781,7 +896,7 @@ export default function GalleryClient({ initialPhotos }: { initialPhotos: PhotoI
                     type="text"
                     value={formData.titleEn}
                     onChange={(e) => setFormData({ ...formData, titleEn: e.target.value })}
-                    placeholder="Contoh: Patio Rattan Chair"
+                    placeholder="Contoh: Sacred Legong Dance Repertoire"
                     className="w-full bg-[#FAFAFA] border border-gray-200 rounded-lg px-3 py-1.5 text-xs text-gray-900 focus:bg-white focus:outline-none focus:ring-1 focus:ring-gray-900"
                   />
                 </div>

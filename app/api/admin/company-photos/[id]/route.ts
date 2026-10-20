@@ -28,7 +28,7 @@ export async function PUT(request: Request, { params }: Props) {
 
     const { id } = await params;
     const body = await request.json();
-    const { companySlug, titleId, titleEn, imageUrl, order, published } = body;
+    const { companySlug, titleId, titleEn, imageUrl, category, order, published } = body;
 
     const existing = await prisma.companyPhoto.findUnique({ where: { id: Number(id) } });
     if (!existing) {
@@ -42,6 +42,7 @@ export async function PUT(request: Request, { params }: Props) {
         titleId: titleId !== undefined ? (titleId?.trim() || null) : existing.titleId,
         titleEn: titleEn !== undefined ? (titleEn?.trim() || null) : existing.titleEn,
         imageUrl: imageUrl || existing.imageUrl,
+        category: category !== undefined ? (category?.trim() || 'general') : existing.category,
         order: order !== undefined ? Number(order) : existing.order,
         published: published !== undefined ? Boolean(published) : existing.published,
       },

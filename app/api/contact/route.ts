@@ -80,11 +80,12 @@ export async function POST(request: Request) {
 
   if (user && pass) {
     try {
+      const cleanPass = pass.replace(/\s+/g, '');
       const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
         port: 587,
         secure: false,
-        auth: { user, pass },
+        auth: { user, pass: cleanPass },
       });
 
       await transporter.sendMail({
