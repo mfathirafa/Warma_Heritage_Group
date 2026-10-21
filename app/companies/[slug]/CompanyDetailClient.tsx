@@ -39,6 +39,30 @@ interface Props {
   photos?: CompanyPhotoProp[];
 }
 
+// Split a company description into an opening sentence plus short paragraphs
+const NON_TERMINAL = /\b(PT|CV|Co|Ltd|Inc|Tbk|No|Jl|Dr|Ir|St)\.$/;
+
+function splitDescription(text: string): { lead: string; paragraphs: string[] } {
+  const parts = (text || '').trim().match(/[^.!?]+[.!?]+(?:\s+|$)|[^.!?]+$/g) ?? [];
+  const sentences: string[] = [];
+  for (const part of parts) {
+    const sentence = part.trim();
+    if (!sentence) continue;
+    const last = sentences[sentences.length - 1];
+    // Do not break after abbreviations ("PT.") or decimals ("3.5")
+    if (last && (NON_TERMINAL.test(last) || (/\d\.$/.test(last) && /^\d/.test(sentence)))) {
+      sentences[sentences.length - 1] = `${last} ${sentence}`;
+    } else {
+      sentences.push(sentence);
+    }
+  }
+  const [lead = '', ...rest] = sentences;
+  if (rest.length === 0) return { lead, paragraphs: [] };
+  if (rest.length <= 2) return { lead, paragraphs: [rest.join(' ')] };
+  const cut = Math.ceil(rest.length / 2);
+  return { lead, paragraphs: [rest.slice(0, cut).join(' '), rest.slice(cut).join(' ')] };
+}
+
 export default function CompanyDetailClient({ company, slug, photos = [] }: Props) {
   const { lang, setLang, isId } = useLang();
   const router = useRouter();
@@ -57,6 +81,7 @@ export default function CompanyDetailClient({ company, slug, photos = [] }: Prop
 
   // Separate NUB photos into Posters and Documentation
   const isNUB = slug === 'nada-upacara-bali';
+  const { lead: aboutLead, paragraphs: aboutParagraphs } = splitDescription(isId ? company.descId : company.descEn);
   const posters = isNUB ? photos.filter((p) => p.category === 'poster') : [];
   const docs = isNUB ? photos.filter((p) => p.category !== 'poster') : photos;
 
@@ -127,28 +152,44 @@ export default function CompanyDetailClient({ company, slug, photos = [] }: Prop
       </section>
 
       {/* 2. Tentang Perusahaan */}
-      <section className="w-full bg-white py-24 px-8">
-        <div className="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-16">
-          <div className="flex flex-col gap-6">
-            <p className="text-xs tracking-[0.2em] text-gray-400 uppercase">
-              {isId ? 'Tentang Perusahaan' : 'About'}
+      <section className="w-full bg-white py-24 sm:py-32 px-6 sm:px-8">
+        <div className="max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-x-20 gap-y-14 items-start">
+          <div className="lg:col-span-6">
+            <p className="flex items-center gap-5 text-xs tracking-[0.2em] text-gray-500 uppercase">
+              <span>{isId ? 'Tentang Perusahaan' : 'About'}</span>
+              <span className="h-px w-16 bg-gray-300" aria-hidden="true" />
             </p>
-            <h2 className="text-3xl font-bold text-gray-900">
+            <h2 className="mt-7 text-4xl lg:text-[44px] font-bold tracking-tight leading-[1.1] text-gray-900">
               {isId ? company.nameId : company.nameEn}
             </h2>
-            <div className="w-12 h-px bg-gray-300" />
-            <p className="text-base text-gray-500 leading-relaxed">
-              {isId ? company.descId : company.descEn}
-            </p>
+            {aboutLead && (
+              <p className="mt-7 max-w-[560px] text-xl sm:text-[22px] leading-[1.55] text-gray-900">
+                {aboutLead}
+              </p>
+            )}
+            {aboutParagraphs.map((paragraph, i) => (
+              <p
+                key={i}
+                className={`${i === 0 ? 'mt-8' : 'mt-5'} max-w-[560px] text-lg leading-[1.85] text-gray-700`}
+              >
+                {paragraph}
+              </p>
+            ))}
+            <div className="mt-14 max-w-[560px] border-t border-gray-200 pt-5 flex items-baseline justify-between">
+              <span className="text-xs tracking-[0.2em] text-gray-500 uppercase">{isId ? 'Bagian dari' : 'Part of'}</span>
+              <span className="text-[17px] text-gray-900">Warma Heritage Group</span>
+            </div>
           </div>
-          <div className="w-full aspect-video bg-gray-200 relative overflow-hidden">
-            <Image
-              src={`/images/companies/${slug}.png`}
-              alt={isId ? company.nameId : company.nameEn}
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              style={{ objectFit: 'contain' }}
-            />
+          <div className="w-full max-w-lg lg:max-w-none lg:col-start-8 lg:col-span-5 lg:pt-16">
+            <div className="relative w-full aspect-[4/5] bg-gray-200 overflow-hidden">
+              <Image
+                src={`/images/companies/${slug}.png`}
+                alt={isId ? company.nameId : company.nameEn}
+                fill
+                sizes="(max-width: 1024px) 100vw, 40vw"
+                className="object-cover"
+              />
+            </div>
           </div>
         </div>
       </section>
