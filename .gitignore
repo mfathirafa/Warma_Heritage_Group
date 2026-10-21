@@ -20,6 +20,10 @@
 # production
 /build
 
+# uploads
+/public/uploads/*
+!/public/uploads/.gitkeep
+
 # misc
 .DS_Store
 *.pem
@@ -36,7 +40,6 @@ yarn-error.log*
 .env.local
 .env*
 !.env.example
-
 
 # vercel
 .vercel
