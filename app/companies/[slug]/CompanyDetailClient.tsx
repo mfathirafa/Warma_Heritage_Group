@@ -60,10 +60,26 @@ export default function CompanyDetailClient({ company, slug, photos = [] }: Prop
   const posters = isNUB ? photos.filter((p) => p.category === 'poster') : [];
   const docs = isNUB ? photos.filter((p) => p.category !== 'poster') : photos;
 
-  // Split documentation into featured (first 5 for editorial grid) and remaining for slider
-  const featuredDoc = docs[0];
-  const gridDocs = docs.slice(1, 5);
-  const remainingDocs = docs.slice(5);
+  // Pagination for Posters (4 per page, matching Main.dc.html grid)
+  const [posterPageIndex, setPosterPageIndex] = useState(0);
+  const POSTERS_PER_PAGE = 4;
+  const totalPosterPages = Math.max(1, Math.ceil(posters.length / POSTERS_PER_PAGE));
+  const currentPosters = posters.slice(
+    posterPageIndex * POSTERS_PER_PAGE,
+    (posterPageIndex + 1) * POSTERS_PER_PAGE
+  );
+
+  // Pagination for Documentation (3 per page: 1 main 4/5 + 2 stacked offset 4/3, matching Main.dc.html)
+  const [docPageIndex, setDocPageIndex] = useState(0);
+  const DOCS_PER_PAGE = 3;
+  const totalDocPages = Math.max(1, Math.ceil(docs.length / DOCS_PER_PAGE));
+  const currentDocs = docs.slice(
+    docPageIndex * DOCS_PER_PAGE,
+    (docPageIndex + 1) * DOCS_PER_PAGE
+  );
+  const docItem1 = currentDocs[0];
+  const docItem2 = currentDocs[1];
+  const docItem3 = currentDocs[2];
 
   return (
     <main>
@@ -200,193 +216,265 @@ export default function CompanyDetailClient({ company, slug, photos = [] }: Prop
       {/* ======================================================== */}
       {isNUB ? (
         <>
-          {/* 5A. SECTION POSTER PAGELARAN & REPERTOAR SENI */}
-          <section className="w-full bg-[#18181b] text-white py-24 px-6 sm:px-8 relative overflow-hidden">
-            {/* Subtle decorative glow */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="max-w-[1440px] mx-auto relative z-10">
-              <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 sm:mb-16 gap-4">
-                <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs tracking-[0.2em] uppercase font-semibold mb-3">
-                    <span>🎭</span>
-                    <span>{isId ? 'Katalog Repertoar & Publikasi' : 'Repertoire Catalog & Playbills'}</span>
+          {/* 5A. SECTION POSTER PAGELARAN & REPERTOAR SENI (DARK EDITORIAL) */}
+          <section className="w-full bg-[#141414] text-[#FAFAFA] py-24 sm:py-32 px-6 sm:px-12 lg:px-16">
+            <div className="max-w-[1320px] mx-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-end">
+                <div className="lg:col-span-7">
+                  <div className="flex items-center gap-5 text-[#9E9E9E]">
+                    <span className="font-sans text-[12px] tracking-[0.2em] uppercase">
+                      {isId ? '01 — Katalog Repertoar' : '01 — Repertoire Catalog'}
+                    </span>
+                    <span className="w-16 h-px bg-[#353535]" />
                   </div>
-                  <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-                    {isId ? 'Poster Pagelaran Nada Upacara Bali' : 'Performance & Event Posters'}
+                  <h2 className="mt-7 font-serif font-normal text-4xl sm:text-5xl lg:text-[60px] leading-[1.08] text-[#FAFAFA]">
+                    {isId ? 'Poster Pagelaran' : 'Performance Playbills'}
+                    <br />
+                    <span className="text-[#9E9E9E]">Nada Upacara Bali</span>
                   </h2>
-                  <p className="text-sm text-gray-400 mt-2 max-w-xl leading-relaxed">
+                </div>
+                <div className="lg:col-span-5 flex lg:justify-end">
+                  <p className="text-[15px] sm:text-base leading-[1.7] text-[#9E9E9E] max-w-[380px]">
                     {isId
-                      ? 'Arsip visual poster karya seni pertunjukan gamelan, kolaborasi tari, dan festival budaya yang telah kami pentaskan. Klik poster untuk melihat tampilan penuh.'
-                      : 'Visual archive of Balinese gamelan performances, dance collaborations, and cultural festivals we have staged. Click any poster to view in full resolution.'}
+                      ? 'Arsip visual karya seni pertunjukan gamelan, kolaborasi tari, dan festival budaya yang telah kami pentaskan.'
+                      : 'Visual archive of Balinese gamelan performances, dance collaborations, and cultural festivals we have staged.'}
                   </p>
                 </div>
-                <div className="text-xs text-gray-400 flex items-center gap-2 shrink-0">
-                  <span className="hidden sm:inline">{isId ? 'Geser ke samping untuk menjelajah' : 'Scroll horizontally to explore'}</span>
-                  <span className="text-amber-400">→</span>
-                </div>
               </div>
 
-              {/* Horizontal Scroll of Vertical Posters (Aspect 3:4) */}
-              <div
-                className="flex gap-6 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory"
-                style={{ scrollbarWidth: 'thin', scrollbarColor: '#3f3f46 transparent' }}
-              >
-                {posters && posters.length > 0 ? (
-                  posters.map((poster, i) => (
-                    <div
-                      key={poster.id}
-                      onClick={() => setLightboxPhoto(poster)}
-                      className="group flex-shrink-0 snap-start w-56 sm:w-64 aspect-[3/4] bg-zinc-900 border border-zinc-800 rounded-xl relative overflow-hidden shadow-lg hover:shadow-2xl hover:border-amber-500/50 transition-all duration-300 cursor-pointer flex flex-col justify-end"
-                    >
-                      <Image
-                        src={poster.imageUrl}
-                        alt={(isId ? poster.titleId : poster.titleEn) || `NUB Poster ${i + 1}`}
-                        fill
-                        unoptimized
-                        className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                        sizes="(max-width: 640px) 224px, 256px"
+              {/* 4-Column Poster Grid */}
+              {posters && posters.length > 0 ? (
+                <>
+                  <div className="mt-16 sm:mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {currentPosters.map((poster, idx) => {
+                      const itemNum = posterPageIndex * POSTERS_PER_PAGE + idx + 1;
+                      const title = isId ? poster.titleId : (poster.titleEn || poster.titleId);
+                      return (
+                        <article
+                          key={poster.id}
+                          onClick={() => setLightboxPhoto(poster)}
+                          className="group cursor-pointer flex flex-col"
+                        >
+                          <div className="aspect-[3/4] bg-[#1F1F1F] relative overflow-hidden">
+                            <Image
+                              src={poster.imageUrl}
+                              alt={title || `Poster ${itemNum}`}
+                              fill
+                              unoptimized
+                              className="object-cover transition-transform duration-500 group-hover:scale-105"
+                              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                            />
+                          </div>
+                          <div className="mt-5 border-t border-[#1F1F1F] pt-4 flex flex-col">
+                            <span className="font-sans text-[12px] tracking-[0.2em] uppercase text-[#9E9E9E]">
+                              No. {String(itemNum).padStart(2, '0')}
+                            </span>
+                            <h3 className="mt-2 font-serif font-normal text-[20px] leading-[1.35] text-[#FAFAFA] line-clamp-2 group-hover:text-amber-200/90 transition-colors">
+                              {title}
+                            </h3>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+
+                  {/* Slider & Pagination Bar */}
+                  <div className="mt-14 sm:mt-16 flex items-center gap-6 sm:gap-8">
+                    <span className="font-sans text-[12px] tracking-[0.2em] uppercase text-[#9E9E9E] whitespace-nowrap">
+                      {String(posters.length).padStart(2, '0')} {isId ? 'Poster' : 'Posters'}
+                    </span>
+                    <span className="flex-1 h-px bg-[#1F1F1F] relative overflow-hidden">
+                      <span
+                        className="absolute left-0 top-0 h-px bg-[#FAFAFA] transition-all duration-300"
+                        style={{
+                          width: `${Math.min(100, Math.max(15, ((posterPageIndex + 1) / totalPosterPages) * 100))}%`,
+                        }}
                       />
-                      
-                      {/* Gradient Vignette & Title Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-80 group-hover:opacity-95 transition-opacity p-4 flex flex-col justify-end">
-                        <span className="text-[10px] font-mono tracking-widest text-amber-400 uppercase font-semibold mb-1">
-                          Repertoar #{i + 1}
-                        </span>
-                        <p className="text-xs font-medium text-white line-clamp-2 leading-snug">
-                          {isId ? poster.titleId : (poster.titleEn || poster.titleId)}
-                        </p>
-                        <div className="mt-2.5 flex items-center gap-1.5 text-[11px] text-amber-300/80 font-medium group-hover:text-amber-300 transition-colors">
-                          <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                          </svg>
-                          <span>{isId ? 'Perbesar Poster' : 'Zoom Poster'}</span>
-                        </div>
-                      </div>
+                    </span>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setPosterPageIndex((prev) => Math.max(0, prev - 1))}
+                        disabled={posterPageIndex === 0}
+                        aria-label={isId ? 'Poster sebelumnya' : 'Previous poster'}
+                        className="w-12 h-12 rounded-full border border-[#353535] bg-transparent text-[#FAFAFA] text-lg flex items-center justify-center cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed hover:border-[#FAFAFA] hover:bg-white/5 transition-colors"
+                      >
+                        ←
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPosterPageIndex((prev) => Math.min(totalPosterPages - 1, prev + 1))}
+                        disabled={posterPageIndex >= totalPosterPages - 1}
+                        aria-label={isId ? 'Poster berikutnya' : 'Next poster'}
+                        className="w-12 h-12 rounded-full border border-[#353535] bg-transparent text-[#FAFAFA] text-lg flex items-center justify-center cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed hover:border-[#FAFAFA] hover:bg-white/5 transition-colors"
+                      >
+                        →
+                      </button>
                     </div>
-                  ))
-                ) : (
-                  <p className="text-gray-400 text-sm">{isId ? 'Belum ada poster pagelaran yang diterbitkan.' : 'No performance posters published yet.'}</p>
-                )}
-              </div>
+                  </div>
+                </>
+              ) : (
+                <p className="mt-12 text-[#9E9E9E] text-sm">
+                  {isId ? 'Belum ada poster pagelaran yang diterbitkan.' : 'No performance posters published yet.'}
+                </p>
+              )}
             </div>
           </section>
 
-          {/* 5B. SECTION DOKUMENTASI UPACARA & PANGGUNG (EDITORIAL SHOWCASE) */}
-          <section className="w-full bg-gray-50 py-24 px-6 sm:px-8">
-            <div className="max-w-[1440px] mx-auto">
-              <div className="mb-14 sm:mb-16">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-200/80 text-gray-700 text-xs tracking-[0.2em] uppercase font-semibold mb-3">
-                  <span>📸</span>
-                  <span>{isId ? 'Dokumentasi Lapangan' : 'Live Ceremonies & Events'}</span>
+          {/* 5B. SECTION DOKUMENTASI UPACARA & PANGGUNG (LIGHT EDITORIAL) */}
+          <section className="w-full bg-[#FAFAFA] text-[#141414] py-24 sm:py-32 px-6 sm:px-12 lg:px-16">
+            <div className="max-w-[1320px] mx-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-end">
+                <div className="lg:col-span-7">
+                  <div className="flex items-center gap-5 text-[#6B6B6B]">
+                    <span className="font-sans text-[12px] tracking-[0.2em] uppercase">
+                      {isId ? '02 — Dokumentasi Lapangan' : '02 — Field Documentation'}
+                    </span>
+                    <span className="w-16 h-px bg-[#D1D1D1]" />
+                  </div>
+                  <h2 className="mt-7 font-serif font-normal text-4xl sm:text-5xl lg:text-[60px] leading-[1.08] text-[#141414]">
+                    {isId ? 'Momen Pagelaran' : 'Performance Moments'}
+                    <br />
+                    <span className="text-[#6B6B6B]">
+                      {isId ? '& Upacara Sakral' : '& Sacred Ceremonies'}
+                    </span>
+                  </h2>
                 </div>
-                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
-                  {isId ? 'Momen Pagelaran & Upacara Sakral' : 'Live Ceremonial & Stage Moments'}
-                </h2>
-                <p className="text-sm text-gray-500 mt-2 max-w-xl leading-relaxed">
-                  {isId
-                    ? 'Rekaman autentik penabuh gamelan, tata busana adat, dan kekhidmatan suasana upacara tradisional Bali yang telah kami layani secara profesional.'
-                    : 'Authentic moments of our gamelan musicians, traditional ceremonial attire, and sacred rituals professionally delivered across Bali.'}
-                </p>
+                <div className="lg:col-span-5 flex lg:justify-end">
+                  <p className="text-[15px] sm:text-base leading-[1.7] text-[#6B6B6B] max-w-[380px]">
+                    {isId
+                      ? 'Rekaman autentik penabuh gamelan, tata busana adat, dan suasana upacara tradisional Bali yang kami layani secara profesional.'
+                      : 'Authentic moments of our gamelan musicians, traditional ceremonial attire, and sacred rituals professionally delivered across Bali.'}
+                  </p>
+                </div>
               </div>
 
-              {/* Dynamic Asymmetric Editorial Grid */}
+              {/* Asymmetric Editorial Gallery */}
               {docs && docs.length > 0 ? (
-                <div className="space-y-8">
-                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-                    {/* Featured Large Stage Photo (7 Cols) */}
-                    {featuredDoc && (
-                      <div
-                        onClick={() => setLightboxPhoto(featuredDoc)}
-                        className="group lg:col-span-7 bg-gray-900 rounded-2xl relative overflow-hidden min-h-[380px] sm:min-h-[460px] shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer flex flex-col justify-end"
+                <>
+                  <div className="mt-16 sm:mt-20 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                    {/* Left Column (7 cols): Main Featured Moment (Aspect 4/5) */}
+                    {docItem1 && (
+                      <figure
+                        onClick={() => setLightboxPhoto(docItem1)}
+                        className="lg:col-span-7 group cursor-pointer m-0"
                       >
-                        <Image
-                          src={featuredDoc.imageUrl}
-                          alt={(isId ? featuredDoc.titleId : featuredDoc.titleEn) || 'Dokumentasi Utama NUB'}
-                          fill
-                          unoptimized
-                          className="object-cover group-hover:scale-105 transition-transform duration-700"
-                          sizes="(max-width: 1024px) 100vw, 60vw"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent p-6 sm:p-8 flex flex-col justify-end">
-                          <span className="w-fit text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-full bg-amber-500 text-gray-950 mb-2">
-                            {isId ? 'Momen Sorotan' : 'Featured Moment'}
-                          </span>
-                          <h3 className="text-lg sm:text-xl font-bold text-white line-clamp-2">
-                            {isId ? featuredDoc.titleId : (featuredDoc.titleEn || featuredDoc.titleId)}
-                          </h3>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* 2x2 Grid Supporting Moments (5 Cols) */}
-                    <div className="lg:col-span-5 grid grid-cols-2 gap-4 sm:gap-5">
-                      {gridDocs.map((docItem, idx) => (
-                        <div
-                          key={docItem.id}
-                          onClick={() => setLightboxPhoto(docItem)}
-                          className="group aspect-square bg-gray-200 rounded-xl relative overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer"
-                        >
+                        <div className="aspect-[4/5] bg-[#E8E8E8] relative overflow-hidden">
                           <Image
-                            src={docItem.imageUrl}
-                            alt={(isId ? docItem.titleId : docItem.titleEn) || `Dokumentasi NUB ${idx + 2}`}
+                            src={docItem1.imageUrl}
+                            alt={(isId ? docItem1.titleId : docItem1.titleEn) || 'Dokumentasi'}
                             fill
                             unoptimized
-                            className="object-cover group-hover:scale-105 transition-transform duration-500"
-                            sizes="(max-width: 640px) 50vw, 25vw"
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            sizes="(max-width: 1024px) 100vw, 60vw"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-end">
-                            <p className="text-[11px] font-medium text-white line-clamp-2 leading-tight">
-                              {isId ? docItem.titleId : (docItem.titleEn || docItem.titleId)}
-                            </p>
-                          </div>
                         </div>
-                      ))}
+                        <figcaption className="mt-4 flex gap-4 items-baseline text-sm text-[#6B6B6B]">
+                          <span className="font-serif text-[18px] text-[#141414]">
+                            {String(docPageIndex * DOCS_PER_PAGE + 1).padStart(2, '0')}
+                          </span>
+                          <span className="line-clamp-1 group-hover:text-[#141414] transition-colors">
+                            {isId ? docItem1.titleId : (docItem1.titleEn || docItem1.titleId)}
+                          </span>
+                        </figcaption>
+                      </figure>
+                    )}
+
+                    {/* Right Column (5 cols): 2 Offset Images (Aspect 4/3) with 96px top padding on desktop */}
+                    <div className="lg:col-span-5 flex flex-col gap-10 lg:pt-24">
+                      {docItem2 && (
+                        <figure
+                          onClick={() => setLightboxPhoto(docItem2)}
+                          className="group cursor-pointer m-0"
+                        >
+                          <div className="aspect-[4/3] bg-[#E8E8E8] relative overflow-hidden">
+                            <Image
+                              src={docItem2.imageUrl}
+                              alt={(isId ? docItem2.titleId : docItem2.titleEn) || 'Dokumentasi'}
+                              fill
+                              unoptimized
+                              className="object-cover transition-transform duration-500 group-hover:scale-105"
+                              sizes="(max-width: 1024px) 100vw, 40vw"
+                            />
+                          </div>
+                          <figcaption className="mt-4 flex gap-4 items-baseline text-sm text-[#6B6B6B]">
+                            <span className="font-serif text-[18px] text-[#141414]">
+                              {String(docPageIndex * DOCS_PER_PAGE + 2).padStart(2, '0')}
+                            </span>
+                            <span className="line-clamp-1 group-hover:text-[#141414] transition-colors">
+                              {isId ? docItem2.titleId : (docItem2.titleEn || docItem2.titleId)}
+                            </span>
+                          </figcaption>
+                        </figure>
+                      )}
+
+                      {docItem3 && (
+                        <figure
+                          onClick={() => setLightboxPhoto(docItem3)}
+                          className="group cursor-pointer m-0 ml-auto w-full sm:w-[72%]"
+                        >
+                          <div className="aspect-[4/3] bg-[#E8E8E8] relative overflow-hidden">
+                            <Image
+                              src={docItem3.imageUrl}
+                              alt={(isId ? docItem3.titleId : docItem3.titleEn) || 'Dokumentasi'}
+                              fill
+                              unoptimized
+                              className="object-cover transition-transform duration-500 group-hover:scale-105"
+                              sizes="(max-width: 1024px) 100vw, 30vw"
+                            />
+                          </div>
+                          <figcaption className="mt-4 flex gap-4 items-baseline text-sm text-[#6B6B6B]">
+                            <span className="font-serif text-[18px] text-[#141414]">
+                              {String(docPageIndex * DOCS_PER_PAGE + 3).padStart(2, '0')}
+                            </span>
+                            <span className="line-clamp-1 group-hover:text-[#141414] transition-colors">
+                              {isId ? docItem3.titleId : (docItem3.titleEn || docItem3.titleId)}
+                            </span>
+                          </figcaption>
+                        </figure>
+                      )}
                     </div>
                   </div>
 
-                  {/* Additional Horizontal Glide for Remaining Documentation */}
-                  {remainingDocs.length > 0 && (
-                    <div className="pt-6">
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-xs uppercase tracking-wider font-semibold text-gray-500">
-                          {isId ? 'Arsip Dokumentasi Tambahan' : 'More Ceremonial Moments'}
-                        </span>
-                        <span className="text-xs text-gray-400">
-                          {isId ? 'Geser untuk melihat semua →' : 'Scroll to view all →'}
-                        </span>
-                      </div>
-                      <div
-                        className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory"
-                        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                  {/* Documentation Pagination Controls */}
+                  <div className="mt-14 sm:mt-16 flex items-center gap-6 sm:gap-8">
+                    <span className="font-sans text-[12px] tracking-[0.2em] uppercase text-[#6B6B6B] whitespace-nowrap">
+                      {String(docs.length).padStart(2, '0')} {isId ? 'Dokumentasi' : 'Photographs'}
+                    </span>
+                    <span className="flex-1 h-px bg-[#D1D1D1] relative overflow-hidden">
+                      <span
+                        className="absolute left-0 top-0 h-px bg-[#141414] transition-all duration-300"
+                        style={{
+                          width: `${Math.min(100, Math.max(15, ((docPageIndex + 1) / totalDocPages) * 100))}%`,
+                        }}
+                      />
+                    </span>
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setDocPageIndex((prev) => Math.max(0, prev - 1))}
+                        disabled={docPageIndex === 0}
+                        aria-label={isId ? 'Dokumentasi sebelumnya' : 'Previous documentation'}
+                        className="w-12 h-12 rounded-full border border-[#D1D1D1] bg-transparent text-[#141414] text-lg flex items-center justify-center cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed hover:border-[#141414] hover:bg-black/5 transition-colors"
                       >
-                        {remainingDocs.map((docItem, idx) => (
-                          <div
-                            key={docItem.id}
-                            onClick={() => setLightboxPhoto(docItem)}
-                            className="flex-shrink-0 snap-start w-72 sm:w-80 aspect-[16/10] bg-gray-200 rounded-xl relative overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 cursor-pointer group"
-                          >
-                            <Image
-                              src={docItem.imageUrl}
-                              alt={(isId ? docItem.titleId : docItem.titleEn) || `Dokumentasi NUB ${idx + 6}`}
-                              fill
-                              unoptimized
-                              className="object-cover group-hover:scale-105 transition-transform duration-500"
-                              sizes="(max-width: 640px) 288px, 320px"
-                            />
-                            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent p-3 pt-6 text-white">
-                              <p className="text-xs font-medium tracking-wide line-clamp-1">
-                                {isId ? docItem.titleId : (docItem.titleEn || docItem.titleId)}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                        ←
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDocPageIndex((prev) => Math.min(totalDocPages - 1, prev + 1))}
+                        disabled={docPageIndex >= totalDocPages - 1}
+                        aria-label={isId ? 'Dokumentasi berikutnya' : 'Next documentation'}
+                        className="w-12 h-12 rounded-full border border-[#D1D1D1] bg-transparent text-[#141414] text-lg flex items-center justify-center cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed hover:border-[#141414] hover:bg-black/5 transition-colors"
+                      >
+                        →
+                      </button>
                     </div>
-                  )}
-                </div>
+                  </div>
+                </>
               ) : (
-                <p className="text-gray-400 text-sm">{isId ? 'Belum ada dokumentasi acara yang diterbitkan.' : 'No ceremonial documentation published yet.'}</p>
+                <p className="mt-12 text-[#6B6B6B] text-sm">
+                  {isId ? 'Belum ada dokumentasi acara yang diterbitkan.' : 'No ceremonial documentation published yet.'}
+                </p>
               )}
             </div>
           </section>
@@ -490,7 +578,7 @@ export default function CompanyDetailClient({ company, slug, photos = [] }: Prop
           role="dialog"
           aria-modal="true"
           onClick={() => setLightboxPhoto(null)}
-          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 bg-[#141414]/95 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 animate-in fade-in duration-200"
         >
           {/* Close button */}
           <button
@@ -499,10 +587,10 @@ export default function CompanyDetailClient({ company, slug, photos = [] }: Prop
               e.stopPropagation();
               setLightboxPhoto(null);
             }}
-            aria-label="Tutup Pratinjau"
-            className="absolute top-5 right-5 z-10 w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 text-white flex items-center justify-center transition-colors cursor-pointer border border-white/20"
+            aria-label={isId ? 'Tutup Pratinjau' : 'Close Preview'}
+            className="absolute top-6 right-6 z-10 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-[#FAFAFA] flex items-center justify-center transition-colors cursor-pointer border border-white/15"
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
               <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
@@ -512,25 +600,27 @@ export default function CompanyDetailClient({ company, slug, photos = [] }: Prop
             onClick={(e) => e.stopPropagation()}
             className="relative max-w-4xl max-h-[90vh] flex flex-col items-center"
           >
-            <div className="relative w-auto max-w-[90vw] max-h-[80vh] flex items-center justify-center">
+            <div className="relative w-auto max-w-[90vw] max-h-[78vh] flex items-center justify-center">
               <img
                 src={lightboxPhoto.imageUrl}
                 alt={(isId ? lightboxPhoto.titleId : lightboxPhoto.titleEn) || 'Foto Zoom'}
-                className="max-w-full max-h-[78vh] object-contain rounded-lg shadow-2xl"
+                className="max-w-full max-h-[76vh] object-contain shadow-2xl"
               />
             </div>
             
             {/* Title / Description caption */}
             {((isId && lightboxPhoto.titleId) || (!isId && lightboxPhoto.titleEn)) && (
-              <div className="mt-4 text-center text-white px-4">
-                <p className="text-sm sm:text-base font-medium">
-                  {isId ? lightboxPhoto.titleId : (lightboxPhoto.titleEn || lightboxPhoto.titleId)}
-                </p>
+              <div className="mt-5 text-center text-[#FAFAFA] px-4 max-w-2xl">
                 {lightboxPhoto.category && (
-                  <span className="inline-block mt-1 text-[11px] font-mono tracking-wider text-amber-400 uppercase">
-                    {lightboxPhoto.category === 'poster' ? '🎭 Poster Pagelaran Seni' : '📸 Dokumentasi Lapangan'}
+                  <span className="font-sans text-[11px] tracking-[0.2em] uppercase text-[#9E9E9E] block mb-2">
+                    {lightboxPhoto.category === 'poster'
+                      ? (isId ? '01 — Katalog Repertoar' : '01 — Repertoire Catalog')
+                      : (isId ? '02 — Dokumentasi Lapangan' : '02 — Field Documentation')}
                   </span>
                 )}
+                <h3 className="font-serif text-lg sm:text-xl text-[#FAFAFA] font-normal leading-relaxed">
+                  {isId ? lightboxPhoto.titleId : (lightboxPhoto.titleEn || lightboxPhoto.titleId)}
+                </h3>
               </div>
             )}
           </div>
